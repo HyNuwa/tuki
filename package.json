@@ -1,0 +1,24 @@
+{
+  "name": "recompensas-verificables-noa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Campañas de primera prueba financiadas por marcas en almacenes del NOA, con compras verificadas y escrow de presupuesto en Celo",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "contracts"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

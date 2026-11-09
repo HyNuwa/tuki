@@ -1,0 +1,15 @@
+{
+  "name": "@rvn/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "test": "node scripts/compile.mjs && vitest run"
+  },
+  "devDependencies": {
+    "ganache": "^7.9.2",
+    "solc": "^0.8.30",
+    "viem": "^2.57.17"
+  }
+}
