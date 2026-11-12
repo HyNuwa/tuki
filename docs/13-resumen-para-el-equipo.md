@@ -1,59 +1,72 @@
 # 13 — Resumen ejecutivo para presentar al equipo
 
-**Estado: propuesta de startup para validar, no compañía operativa. Fecha: 10 de noviembre de 2026.**
+**Estado: propuesta de startup para validar, no compañía operativa. Actualizado: 11 de noviembre de 2026.**
+
+**Cambio de dirección:** la versión anterior proponía una app que integraba un único PSP, sin escrow. La dirección actual es una **red RFQ de payment solvers** con liquidación garantizada por un escrow onchain. **La arquitectura no está aprobada para fondos reales.**
 
 ## La idea en 30 segundos
 
-Personas que tienen USDC pueden encontrarse frente a comercios que cobran mediante QR local. Queremos facilitar que paguen desde una wallet compatible y que el negocio cobre en ARS, **utilizando un proveedor existente que procese la conversión y liquidación**. La diferencia que buscamos es una experiencia confiable y enfocada en viajeros y usuarios internacionales, no otra blockchain, pasarela o exchange.
+Una persona con USDC escanea el QR de un comercio argentino. Varios **payment solvers** (proveedores que pagan pesos) cotizan el pago. El USDC del pagador queda bloqueado en un escrow, el solver elegido paga ARS al comercio y cobra el USDC cuando presenta un comprobante firmado. Si nadie toma el pago, el USDC vuelve enseguida. Si algo queda incierto, el pagador tiene un plazo máximo después del cual recupera sus fondos sin depender de nosotros.
+
+Lo que buscamos diferenciar no es el riel ni la wallet: es **qué pasa cuando el pago falla**.
+
+## Tres cosas distintas
+
+| | Qué es | Estado |
+|---|---|---|
+| **Demo de hackathon** | Dos solvers y un PSP simulados, escrow de prueba en testnet, pago fiat simulado | Es lo que vamos a construir primero |
+| **Protocolo RFQ objetivo** | Solvers licenciados, registro y revocación, garantías, evidencia más fuerte | Diseño en los docs 04 y 16 |
+| **Piloto real** | Pagos reales en un segmento pequeño | Condicionado a proveedores, cumplimiento, pruebas y garantías. Nada de eso está resuelto |
 
 ## Primer mercado
 
 - Destino: Argentina.
-- Usuario inicial: viajero internacional o freelance con USDC en wallet EVM.
-- Primer formato: QR argentino que el procesador admita; no todos.
-- Activo/red: USDC en una red admitida por el proveedor, preferencia inicial Base.
-- Canal de adquisición: un socio turístico o comunidad con usuarios reales.
+- Usuario inicial: viajero internacional o freelance con USDC en una wallet propia.
+- Primer formato: QR interoperable argentino.
+- Activo y red: USDC en Base. Otros activos y redes entran después, mediante adaptadores, si hay demanda.
+- Es un mercado de entrada para validar. La ambición es expandir por corredores de pago.
 
 ## Lo que NO vamos a construir aún
 
-- No procesaremos ARS nosotros mismos ni captaremos depósitos.
-- No construiremos liquidez P2P, AMM, cross-chain bridge o escrow propio.
-- No prometeremos KYC cero, anonimato, pagos offline o instantaneidad garantizada.
-- No desarrollaremos una red federada de comercios todavía.
+- No procesamos ARS nosotros ni captamos depósitos. No custodiamos fondos.
+- No construimos un escrow propio: probamos uno existente (`AuthCaptureEscrow`) en un spike, sin aprobarlo para producción.
+- No desplegamos contratos con fondos reales.
+- No sumamos integraciones Web3 para premios, salvo que resuelvan una necesidad identificada o un track específico.
+- No prometemos KYC cero, anonimato, instantaneidad garantizada ni que el comercio cobró: el comprobante es una declaración firmada del proveedor.
 
-## Por qué ahora puede ser viable
+## Qué probará la demo
 
-Existe infraestructura SDK para este flujo: Yodl documenta integración React Native y cobertura argentina; otros proveedores como Interlace y 8B documentan mercados regionales. **Eso es una oportunidad de ahorro de desarrollo y a la vez una amenaza competitiva**: otros también pueden integrarla.
+1. El flujo completo: Payment Intent → RFQ con dos solvers simulados → autorización USDC → ejecución fiat simulada → comprobante verificable → liquidación.
+2. El reembolso rápido cuando ningún solver toma el pago.
+3. El cambio al solver de respaldo sin pedir otra firma.
+4. **El caso más importante:** el solver pagó y la confirmación se perdió. No hay reembolso automático ni doble pago.
+5. Que el pagador recupera sus fondos sin nuestro backend.
 
-## Qué probará el MVP
+La demo no prueba que un PSP real acepte el modelo, ni que haya demanda.
 
-1. Problema real y repetido: pago QR fallido con otras opciones.
-2. Posibilidad técnica, legal y comercial de usar un proveedor para nuestra app.
-3. Costo total y tiempo de pago competitivos.
-4. Un canal capaz de aportar usuarios sin un CAC superior al margen de vida útil.
-5. Soporte y conciliación de casos reales, no solo una demo feliz.
+## Riesgos centrales
 
-## Riesgo central
+- **Ningún PSP confirmó que acepte el modelo.** El solver se compromete antes de pagar, adelanta los pesos y asume la pérdida si no logra probar el pago a tiempo. Sin un proveedor que lo acepte, no hay piloto.
+- **La ventaja es copiable.** Yodl, P2P.me o un PSP como Manteca pueden agregar una garantía parecida. La liquidación garantizada es una cuña, no un foso.
+- **Los reembolsos después de liquidar necesitan financiación.** No hay garantía automática sin fondos o sin responsabilidad contractual (doc 16, §9).
+- **No tenemos prueba de acreditación.** Solo la declaración firmada de quien pagó (doc 16, §7).
 
-Si Yodl o P2P.me ofrecen directamente lo mismo sin mayor costo, y nuestros usuarios pueden acceder igual de fácil, **no existe motivo para crear nuestra aplicación**. Necesitamos demostrar una mejora real en distribución, UX, fiabilidad, ayuda local o integración particular.
+## Modelo de ingresos
 
-## Economía ilustrativa
+Sin definir. La hipótesis es un fee sobre cada pago liquidado, compartido con el solver. No hay cifras validadas, y el ejemplo de la versión anterior (reparto de fee con un único PSP) ya no aplica.
 
-US$30 por pago × 1 % de convenience fee × 70 % para la integración = **US$0,21 de ingreso bruto propio**; 10.000 pagos al mes = US$2.100 **antes de cualquier costo propio**. Es ejemplo, no previsión ni contrato.
+## Camino
 
-## Camino a 8 semanas
-
-- Semanas 1–2: usuarios y proveedores.
-- 3–4: prototipo y SDK sobre ambiente de pruebas.
-- 5–6: error handling, cotizaciones, QA.
-- 7–8: cumplimiento, canal, go/no-go de piloto autorizado.
+1. **Hackathon:** spike del escrow y demo con actores simulados.
+2. **Después de la hackathon:** conversaciones con proveedores, revisión de cumplimiento normativo, elección de la garantía y revisión de seguridad.
+3. **Go/no-go del piloto real:** solo si se cumplen las condiciones del PRD.
 
 ## La visión futura
 
-Si los pagos generan una relación comercial real, explorar beneficios opcionales con comercios adheridos. Solo después investigar redes comerciales federadas y liquidación de recompensas entre participantes; no contar ingresos de esa etapa ahora.
+Una capa de liquidación entre cripto y pagos locales: multiactivo y multired mediante adaptadores, con solvers que compiten y responden con una garantía, y expansión por corredores (por ejemplo, Pix). Es visión, no lo que entregamos hoy. Los beneficios con comercios adheridos quedan fuera de esta etapa.
 
 ## La decisión que necesitamos tomar
 
-**¿Podemos encontrar un grupo de usuarios y un proveedor que nos permitan ofrecer algo objetivamente mejor que las soluciones existentes?** Si no, detener el proyecto o cambiar el segmento antes de escribir infraestructura financiera propia.
+**¿Existe al menos un proveedor dispuesto a operar como solver bajo estas reglas, y un grupo de usuarios para el que la garantía haga una diferencia real?** Si no, hay que cambiar el modelo o el segmento antes de escribir infraestructura financiera para producción.
 
-Ver [01 — Visión](01-vision-y-tesis.md), [03 — PRD](03-prd-mvp.md), [06 — Proveedores](06-evaluacion-de-proveedores.md) y [09 — Validación](09-validacion-y-go-to-market.md).
+Ver [03 — PRD](03-prd-mvp.md), [04 — Arquitectura](04-arquitectura-tecnica.md), [15 — Stack](15-stack-tecnologico.md), [16 — Seguridad y liquidación](16-modelo-seguridad-liquidacion.md) y [14 — Primeros siete días](14-primeros-7-dias.md).

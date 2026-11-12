@@ -1,62 +1,70 @@
 # 14 — Plan operativo: primeros siete días
 
-**Objetivo de la semana:** eliminar incertidumbre crítica, no «terminar la app».
+**Estado:** propuesta. Reemplaza el plan anterior, que giraba en torno a integrar el SDK de un único PSP.
 
-## Día 1: acordar foco y tareas
+**Objetivo de la semana:** eliminar la incertidumbre crítica de la nueva dirección (red RFQ de payment solvers, escrow de prueba, ejecución fiat simulada). No es «terminar la app».
 
-- Confirmar segmento inicial (viajeros con USDC en Argentina), mercado y no-objetivos del README.
-- Designar responsables de producto/entrevistas, integración SDK y proveedores/cumplimiento.
-- Crear tablero de tareas con estados `todo / doing / blocked / done`.
-- Abrir registro de dudas en `12-riesgos-y-decisiones.md`.
+**Límites de la semana:**
 
-**Entregable:** scope congelado por una semana y dueños por tarea.
+- Todo corre en testnet o en una red local, con USDC de prueba y actores simulados.
+- No se despliegan contratos con fondos reales.
+- El código del spike es descartable.
+- No hay pruebas de campo con comercios.
+- La formalización legal y los acuerdos con proveedores van después de la hackathon; esta semana solo se envían preguntas.
 
-## Día 2: estudiar competidores como usuarios
+## Día 1: acordar alcance e invariantes
 
-- Revisar flujos públicos de Yodl, P2P.me, Bitget y CacaoCash.
-- Anotar qué problemas del viajero ya resuelven, qué exigen para operar y cómo tratan pagos pendientes.
-- No realizar pagos reales sin control de riesgos y aceptación contractual.
+- Leer los docs [04](04-arquitectura-tecnica.md), [15](15-stack-tecnologico.md) y [16](16-modelo-seguridad-liquidacion.md), y los ADR.
+- Revisar en equipo las propiedades, los riesgos asignados y las invariantes del doc 16. Anotar los desacuerdos.
+- Asignar responsables: contratos y spike, backend y RFQ, app y UX, preguntas a proveedores.
+- Congelar el alcance de la demo (PRD, "Alcance P0").
 
-**Entregable:** matriz de diferencia de valor; no inventar ventaja competitiva.
+**Entregable:** alcance congelado por una semana, dueños por tarea y lista de dudas sobre el modelo.
 
-## Día 3: entrevistar cinco usuarios
+## Día 2: spike del escrow — expiraciones y devoluciones
 
-- Conseguir 5 relatos de pagos recientes en Argentina, idealmente con un error o alternativa documentable.
-- Registrar frecuencia, volumen, tiempo perdido, costo y herramienta utilizada.
-- No preguntarle a la gente solamente si «le gusta la idea».
+- Probar `AuthCaptureEscrow` con USDC de prueba: `authorize`, `capture`, `void` y `reclaim` (ADR 0001, grupos A y D).
+- Confirmar qué versión de USDC corre en Base Sepolia y la dirección del escrow desplegado.
 
-**Entregable:** evidencia real de dolor o primera señal de que no hay demanda.
+**Entregable:** nota reproducible con el resultado de cada prueba (pasa, falla, no concluyente).
 
-## Día 4: llamadas a proveedores
+## Día 3: spike del operador — compromiso y captura
 
-- Enviar mismo cuestionario a Yodl y dos alternativas B2B.
-- Pedir integración de pruebas, pricing all-in, contractabilidad y estado de KYC.
-- Abrir revisión legal de la actividad concreta en Argentina.
+- Prototipo descartable del `SettlementOperator`: compromiso del solver, bloqueo de `void` después del compromiso, captura contra una declaración firmada (ADR 0001, grupos B, C y G).
+- Probar el caso de la confirmación fiat perdida en sus tres variantes (grupo E).
 
-**Entregable:** tabla de hechos, dudas y obstáculos. Si falta compatibilidad contractual, marcar `BLOCKED`.
+**Entregable:** resultado por grupo y lista de lo que el escrow no permite.
 
-## Día 5: UX de prueba
+## Día 4: RFQ y solvers simulados
 
-- Diseñar screens: scan, unsupported, quote, confirm, processing, success, unknown/failure, soporte.
-- Asegurarse de que el prototipo distinga claramente simulación de pago real.
-- Mostrarlo a dos usuarios entrevistados.
+- Motor RFQ mínimo con dos solvers simulados que firman cotizaciones.
+- PSP simulado que "ejecuta" el pago fiat y emite la declaración firmada, con fallas configurables: no responde, responde tarde, pierde la confirmación.
+- En paralelo y sin bloquear: enviar a dos o tres proveedores las preguntas del doc 16, §7 (qué evidencia entregan, idempotencia, si aceptarían comprometerse antes de pagar).
 
-**Entregable:** prototipo navegable y problemas de comprensión detectados.
+**Entregable:** flujo de punta a punta por línea de comandos o script, y preguntas enviadas.
 
-## Día 6: spike de integración
+## Día 5: wallets y UX de estados
 
-- Instalar SDK elegido en app de prueba, únicamente con parámetros y entornos habilitados.
-- Probar wallet EIP-1193, cambio de red, QR mock y los eventos documentados.
-- Registrar incompatibilidades de entorno nativo, dispositivo y versiones.
+- Firma EIP-3009 con una EOA, con una smart account (ERC-1271) y con el flujo de Base Account (ADR 0001, grupo F).
+- Pantallas: escaneo, no soportado, cotización, confirmación, procesando, liquidado, en verificación, reembolsado, recuperado y ayuda.
+- Revisar que "en verificación" no se lea como fallido y que el sello de demo sea visible.
 
-**Entregable:** nota técnica reproducible con pasos, capturas y blockers.
+**Entregable:** matriz de compatibilidad de wallets y prototipo navegable.
 
-## Día 7: decisión de segunda semana
+## Día 6: escenarios de falla de punta a punta
 
-Reunión de 45 minutos. Revisar: casos reales, cobertura proveedor, precio, UX, dificultades de SDK y respuesta legal preliminar. Elegir:
+- Correr los cuatro escenarios del PRD: nadie se compromete, cambio al solver de respaldo, confirmación perdida, reutilización de firma o declaración.
+- Medir el gas de cada operación (grupo H).
+- Verificar que el pagador recupera sus fondos sin el backend.
 
-- **Avanzar:** hay problemas observados y una ruta de integración plausible.
-- **Reformular:** usuarios o proveedor indican otro nicho.
-- **Detener:** solo copiamos competencia sin diferencia de valor.
+**Entregable:** guion de la demo y registro de cada escenario.
 
-**Salida:** backlog revisado, tres riesgos prioritarios y siguiente experimento con responsable.
+## Día 7: decisión de la segunda semana
+
+Reunión de 45 minutos. Revisar: resultados del spike, compatibilidad de wallets, escenarios de falla, respuestas de proveedores (si llegaron) y dudas abiertas del modelo. Elegir:
+
+- **Avanzar:** el escrow candidato soporta el flujo y las fallas; se sigue con la demo.
+- **Reformular:** el escrow no alcanza en algún punto; se documenta cuál y se evalúan las opciones del ADR 0001.
+- **Detener:** el modelo no se sostiene (por ejemplo, el caso de la confirmación perdida no tiene un manejo aceptable).
+
+**Salida:** informe del spike, ADR actualizados con los resultados (siguen como propuestas hasta una revisión de seguridad) y tres riesgos prioritarios con responsable.
