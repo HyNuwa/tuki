@@ -2,13 +2,13 @@
 
 **Estado: propuesta de startup para validar, no compañía operativa. Actualizado: 11 de noviembre de 2026.**
 
-**Cambio de dirección:** la versión anterior proponía una app que integraba un único PSP, sin escrow. La dirección actual es una **red RFQ de payment solvers** con liquidación garantizada por un escrow onchain. **La arquitectura no está aprobada para fondos reales.**
+**Cambio de dirección:** la versión anterior proponía una app que integraba un único PSP, sin escrow. La dirección actual es una **red RFQ de payment solvers** con un escrow onchain que bloquea el USDC hasta que el pago se liquida o se devuelve. **La arquitectura no está aprobada para fondos reales.** «Liquidación garantizada» no es una promesa ni una categoría adoptada: no hay confirmación bancaria probada, garantías financiadas ni proveedores reales que acepten las reglas ([doc 17](17-posicionamiento.md)).
 
 ## La idea en 30 segundos
 
 Una persona con USDC escanea el QR de un comercio argentino. Varios **payment solvers** (proveedores que pagan pesos) cotizan el pago. El USDC del pagador queda bloqueado en un escrow, el solver elegido paga ARS al comercio y cobra el USDC cuando presenta un comprobante firmado. Si nadie toma el pago, el USDC vuelve enseguida. Si algo queda incierto, el pagador tiene un plazo máximo después del cual recupera sus fondos sin depender de nosotros.
 
-Lo que buscamos diferenciar no es el riel ni la wallet: es **qué pasa cuando el pago falla**.
+Lo que buscamos diferenciar no es el riel ni la wallet. La hipótesis es que proveedores que compiten de verdad por cada pago, con reglas comprobables de ejecución y recuperación ante fallos, le den a una wallet un mejor resultado neto que integrar un proveedor directo o Yodl. Hoy es una hipótesis, no un foso ([doc 17](17-posicionamiento.md), §3).
 
 ## Tres cosas distintas
 
@@ -47,13 +47,13 @@ La demo no prueba que un PSP real acepte el modelo, ni que haya demanda.
 ## Riesgos centrales
 
 - **Ningún PSP confirmó que acepte el modelo.** El solver se compromete antes de pagar, adelanta los pesos y asume la pérdida si no logra probar el pago a tiempo. Sin un proveedor que lo acepte, no hay piloto.
-- **La ventaja es copiable.** Yodl, P2P.me o un PSP como Manteca pueden agregar una garantía parecida. La liquidación garantizada es una cuña, no un foso.
+- **La ventaja es copiable.** Yodl, P2P.me o un PSP como Manteca pueden agregar una garantía parecida. Las reglas de recuperación ante fallos son, como mucho, una cuña, no un foso.
 - **Los reembolsos después de liquidar necesitan financiación.** No hay garantía automática sin fondos o sin responsabilidad contractual (doc 16, §9).
 - **No tenemos prueba de acreditación.** Solo la declaración firmada de quien pagó (doc 16, §7).
 
 ## Modelo de ingresos
 
-Sin definir. La hipótesis es un fee sobre cada pago liquidado, compartido con el solver. No hay cifras validadas, y el ejemplo de la versión anterior (reparto de fee con un único PSP) ya no aplica.
+Sin validar. La propuesta es una comisión transparente por pago completado, compartida con la wallet o el integrador que aporta la demanda. Con supuestos ilustrativos, el volumen de equilibrio va de US$1,6M a US$7,5M por mes según la comisión ([doc 17](17-posicionamiento.md), §4). El ejemplo de la versión anterior (reparto de fee con un único PSP) ya no aplica.
 
 ## Camino
 
