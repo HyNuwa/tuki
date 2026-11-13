@@ -168,7 +168,7 @@
 | Precio al cliente y fee de Agentic.Market, Sella, RentAHuman; precios por ruta de Massive | Define la economía del canal x402 | Revisar listados en Agentic.Market; documentación |
 | Existencia de un Actor de Apify con precios de supermercados argentinos | Sustituto directo de la parte de precio de lista | Buscar en el store de Apify |
 | Costo real del facilitador x402 de Celo para pagos de alrededor de US$0,75 | Viabilidad de micropagos al contribuyente | Prueba en testnet y consulta a Celo |
-| Existencia de Halo (World/MiniPay/LINE); selltoagent.dev | No se pudo verificar en tres búsquedas | Enlace primario del usuario o directorio de World Mini Apps |
+| selltoagent.dev (Halo quedó **verificado** el 2026-11-13, ver [lecciones-halo-x402.md](lecciones-halo-x402.md)) | No se pudo verificar en tres búsquedas | Enlace primario del usuario |
 | Méliuz, Pogo, Ibotta, Scentia, Worldpanel, Vana, Grass no investigados (límite Light) | Posibles competidores o sustitutos | Ronda adicional de perfiles |
 | Voz del comprador agente: sin hilos de HN/Reddit/X; casi todo viene de vendedores x402 con interés comercial | La evidencia sobre demanda está sesgada | Entrevistar a 5 operadores de agentes que compran datos |
 | Sin reseñas de compradores enterprise de Scanntech, Premise o Field Agent; sin reseñas de Google Play ni foros argentinos | El dolor del comprador está documentado solo por vendedores | Solo se valida con entrevistas |

@@ -44,7 +44,7 @@ La revisión del usuario propone tres grupos. Se agregan los dos grupos más cer
 |---|---|---|---|---|
 | **Datos de compras y recompensas** | Fetch | Panel de tickets a cambio de puntos; ~11M de tickets por día (2023, posiblemente desactualizado) | Perfilado [Data] | Encargos automáticos de información específica |
 | | Receipt Hog (Numerator) | Panel pasivo; ~US$0,01 por ticket al usuario; Trustpilot 2,0/5 | Perfilado [Data] | Idem, más aceptación transparente |
-| | Halo (World/MiniPay/LINE) | Tickets en mini apps (según el intake) | **No verificado por nuestra investigación:** tres búsquedas sin resultado [DATA GAP] | Idem |
+| | Halo (mini app de World Chain) | Tickets a cambio de recompensas on-chain para humanos con World ID; OCR de 5 campos (sin SKU); finalista de ETHGlobal Buenos Aires 2025 | **Verificado** en el [showcase de ETHGlobal](https://ethglobal.com/showcase/halo-hi8bv); sin modelo de monetización ni métricas públicas. Ver [lecciones](../agent-data-marketplace/lecciones-halo-x402.md) | Encargos con criterios de entrega y datos por producto |
 | | Pogo | Recompensas por datos de compra (según el intake) | **No investigado** (límite Light) [DATA GAP] | Idem |
 | **Inteligencia comercial tradicional** | Scanntech | Sell-out desde el POS de autoservicios; 3.103 PDV y 24,0% del canal autoservicio en AR, NOA 20,1% (febrero de 2024, posiblemente desactualizado); Serie F de US$180M (2026-10) | Perfilado [Data, autodeclarado]; cobertura del canal tradicional: DATA GAP | Acceso granular y bajo demanda sin contratos empresariales grandes. **Complemento, no reemplazo** |
 | | Scentia | Panel de consumo; publica la lectura bruto vs. neto por canal | **No reverificado** en esta ronda; datos de prensa [DATA GAP] | Idem, con granularidad comercio-semana |
@@ -195,7 +195,7 @@ K2 y el spike S3 ([15](./15-stack-tecnologico.md)) miden cosas distintas: **S3 e
 - **Disposición a pagar** por observación o por lote: ninguna fuente.
 - **CAC de contribuyentes:** sin datos; toda la tabla es hipótesis.
 - **Atributos del equipo fundador:** no aportados.
-- **Competidores no verificados:** Halo (existencia), Pogo (no investigado), Scentia y Worldpanel (no reverificados).
+- **Competidores no verificados:** Pogo (no investigado), Scentia y Worldpanel (no reverificados).
 - **Costo del facilitador x402 en mainnet** y del envío de recompensas.
 - **Investigación profunda** sobre demanda agéntica y verificación: integrada el 2026-11-13 ([demanda-agentica-y-verificacion.md](../agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md)); sus brechas de demanda siguen abiertas.
 
