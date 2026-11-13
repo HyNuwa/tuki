@@ -198,7 +198,7 @@ type Task = {                        // modo B: encargo financiado
   budgetAtomic: string;              // tope; nunca se cobra más
   chargedAtomic: string;             // solo lo incluido en resultados entregados
   deadline: string;
-  refundDeadline: string;            // obligatorio; se fija en la especificación antes de aceptar presupuestos (valor pendiente)
+  refundDeadline: string;            // obligatorio; demo: deadline + 72 h; se informa antes de financiar y no cambia unilateralmente
   exclusivityUntil?: string;         // hasta cuándo sus observaciones no se revenden (doc 16, §7.2)
   funding: PaymentRef;               // exact (demo) o auth-capture (experimento)
   status: TaskStatus;
@@ -416,7 +416,7 @@ interface Verifier {                  // una implementación por capa (doc 16, �
 - **Reserva de garantía:** porcentaje provisional para testnet; se define después con escenarios de pérdidas (doc 16, §4.3).
 - **Umbrales k y m:** k = 5 y m = 3 son valores experimentales; se prueban en privacidad y viabilidad antes de vender resultados.
 - **Exclusividad y reventa:** desactivar inicialmente la reventa de datos encargados hasta fijar las licencias (licencia por defecto `task_only`, reutilización en el pool desactivada).
-- **Plazo de reembolso:** `refundDeadline` es un campo obligatorio de la especificación del encargo, fijado antes de aceptar presupuestos; el valor queda pendiente.
+- **Plazo de reembolso (decidido para la demo, 2026-11-13):** `refundDeadline = deadline + 72 h` (48 h de ventana de apelación + 24 h de margen operativo). Es un campo obligatorio, se informa en la cotización antes de financiar el encargo y no se modifica unilateralmente. Es una regla de testnet aplicada por la plataforma, no una garantía de recuperación on-chain (con x402 `exact` no hay `reclaim`).
 - **Criterios de abandono:** ratificar los umbrales propuestos en el [doc 17](./17-posicionamiento.md) antes de validar compradores (acción del equipo, pendiente).
 
 **Siguen abiertas:**

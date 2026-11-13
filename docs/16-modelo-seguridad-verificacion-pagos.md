@@ -218,7 +218,7 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 
 ## 6. Disputas
 
-- **Agente contra resultado** (dato erróneo): ventana de disputa (hasta `refundDeadline` en el objetivo; plazo fijo en la demo). Si la revisión confirma error, se reembolsan las observaciones afectadas con fondos de la plataforma: transferencia desde el tesoro en la demo, `refund` en el objetivo (el colector de reembolsos del escrow toma liquidez del operador [Verificado en fuente: spec EVM]).
+- **Agente contra resultado** (dato erróneo): ventana de disputa hasta `refundDeadline`. En la demo, `refundDeadline = deadline + 72 h` (48 h de apelación + 24 h de margen operativo), informado antes de financiar y sin cambios unilaterales; es una regla de testnet, no una garantía on-chain. Si la revisión confirma error, se reembolsan las observaciones afectadas con fondos de la plataforma: transferencia desde el tesoro en la demo, `refund` en el objetivo (el colector de reembolsos del escrow toma liquidez del operador [Verificado en fuente: spec EVM]).
 - **Contribuyente contra rechazo:** pide revisión manual una vez, dentro de una ventana de apelación acotada (por ejemplo, 48 h) [Diseño]; la decisión del revisor queda registrada con motivo.
 - **Protección laboral [Diseño]:** sin horarios obligatorios ni exclusividad; motivos de rechazo transparentes y comunicados al contribuyente; sin desactivaciones de cuenta sin revisión. Referencia: caso Roamler en Alemania (demandas por relación laboral encubierta) [Pendiente: fuente externa no verificada].
 - **Contribuyente revocado tras pago:** no hay clawback; se bloquea la cuenta y se registra la pérdida.
