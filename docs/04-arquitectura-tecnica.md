@@ -136,8 +136,8 @@ En el protocolo objetivo el `POST /v1/tasks` podría usar `auth-capture` en luga
 | Payout service | Armar lotes idempotentes y enviarlos desde el tesoro de recompensas | Sí; Safe multifirma | Safe, Disperse en Celo |
 | Catálogo de productos de datos | Publicar cada `DataProduct` con su contrato (cobertura, antigüedad, origen, verificación, cantidades, licencia, precio) | Sí | — |
 | Escrow de presupuestos | Retener presupuesto, `capture` al entregar, `void` del sobrante, `reclaim` del agente | No | `AuthCaptureEscrow` (Base Commerce Payments); experimento separado, fuera del hackathon |
-| Object storage | Imágenes cifradas, acceso por URL firmada, borrado programado | Configuración | Proveedor S3-compatible |
-| Prueba de humano | Un contribuyente = una persona por tarea | Integración | World ID (spike, fuera del hackathon) |
+| Object storage | Imágenes cifradas, acceso por URL firmada, borrado programado | Configuración | Proveedor S3-compatible (R2 o Supabase Storage). Filecoin: NO-GO para imágenes; procedencia de evidencias en [Spike / Pendiente: S8] |
+| Prueba de humano | Un contribuyente = una persona, detrás de `IdentityVerificationProvider` | Integración | zkMe MeID (candidato prioritario, spike S7, veredicto INCONCLUSO); World ID y Human Passport como alternativas. Fuera del P0 |
 
 ## Modelo de datos: entidades núcleo
 
@@ -382,7 +382,53 @@ interface Verifier {                  // una implementación por capa (doc 16, �
   name: string;
   check(obs: Observation, ctx: VerificationContext): Promise<{ result: 'pass' | 'fail' | 'unknown'; evidence?: string }>;
 }
+
+// Prueba de humano [Spike / Pendiente]: independiente de la red de pagos y de la verificación de tickets.
+// Candidato prioritario a validar: zkMe MeID; alternativas: World ID, Human Passport (doc 15, spike S7).
+interface IdentityVerificationProvider {
+  id: string;                         // p. ej. 'zkme-meid', 'world-id', 'human-passport'
+  // Inicia la verificación en el cliente. `appScope` fija el alcance del identificador del proveedor.
+  start(contributorId: string, ctx: { appScope: string; locale: string }): Promise<{ sessionId: string; clientParams: unknown }>;
+  // Verificación en el backend: valida firma o prueba, frescura y un solo uso (anti-replay por sessionId/nonce).
+  verify(sessionId: string, providerPayload: unknown): Promise<IdentityEvidence>;
+  // Estado actual: vencida, revocada por el proveedor o por el usuario.
+  status(subject: ProviderSubject): Promise<'active' | 'expired' | 'revoked' | 'unknown'>;
+}
+
+type ProviderSubject = {
+  provider: string;
+  subject: string;                    // identificador por aplicación del proveedor (nullifier o seudónimo); nunca un dato biométrico
+};
+
+type IdentityEvidence = {
+  subject: ProviderSubject;
+  humanityVerified: {                 // evidencia de que hay una persona viva detrás de la cuenta
+    status: 'verified' | 'failed' | 'unknown';
+    method: 'liveness' | 'orb' | 'document' | 'score';
+    verifiedAt: string;
+    expiresAt?: string;
+  };
+  uniquenessVerified: {               // evidencia de que esa persona no tiene otra cuenta en nuestro sistema
+    status: 'verified' | 'failed' | 'unknown';
+    // Qué deduplica el proveedor. 'per_wallet' o 'none' no alcanzan para `uniquenessVerified = verified`.
+    providerScope: 'global' | 'per_app' | 'per_wallet' | 'none';
+  };
+};
+
+// Resumen por observación: tres pruebas distintas que no se mezclan entre sí.
+type ObservationAssurance = {
+  humanityVerified: boolean;          // de IdentityEvidence del contribuyente
+  uniquenessVerified: boolean;        // IdentityEvidence + restricción única (provider, subject) → un solo contributorId
+  transactionVerified: 'fiscal_qr' | 'arca' | 'consensus' | 'none'; // de los Verifier del ticket, no del proveedor de identidad
+  // Ninguna de las tres prueba que el ticket pertenezca al contribuyente ni que él haya hecho la compra.
+};
 ```
+
+**Reglas de identidad:**
+- Guardamos solo `ProviderSubject`, estado y fechas. Nunca imágenes faciales, plantillas biométricas ni el payload completo del proveedor.
+- `(provider, subject)` es único en todo el sistema y apunta a un solo `contributorId`. Si el proveedor solo garantiza unicidad por wallet, la restricción no impide que una persona abra varias cuentas, y `uniquenessVerified` queda en `false`.
+- Un contribuyente vincula un solo proveedor. Dos proveedores distintos no se pueden deduplicar entre sí; aceptar varios a la vez debilita la unicidad [Pendiente: política al sumar un segundo proveedor].
+- `maxPerContributor` y `minDistinctContributors` cuentan `contributorId` con `uniquenessVerified`. Sin prueba de unicidad, solo cuentan las reglas de dispositivo y de dedupe del doc 16, §3.
 
 **Advertencia:** `holdBudget`, `capture` y `releaseRemainder` son opcionales porque el riel de la demo (`exact`) no los tiene. El task engine no puede asumir escrow si el riel no lo declara.
 
@@ -400,13 +446,14 @@ interface Verifier {                  // una implementación por capa (doc 16, �
 ## Evolución
 
 1. Hackathon: modo A y modo B en Celo Sepolia con el facilitator de testnet, contribuyentes del equipo, revisión manual, cliente automático simple.
-2. Spikes y experimentos separados: `auth-capture` (Base Sepolia o despliegue en Celo), constatación ARCA, extracción con 100 tickets argentinos, World ID, MiniPay.
+2. Spikes y experimentos separados: `auth-capture` (Base Sepolia o despliegue en Celo), constatación ARCA, extracción con 100 tickets argentinos, prueba de humano (MeID en S7; World ID en S5), MiniPay.
 3. Piloto: una zona, pocas categorías, topes, fondos reales solo con el doc 16, §10 cerrado.
 4. Segundo riel: oferta en Base para entrar al índice de Coinbase (Bazaar) si la demanda de agentes lo justifica.
 5. Verificación más fuerte (zkTLS de facturas web, C2PA, atestación de dispositivo) solo si el fraude medido lo exige.
-6. Mapeo a roles estándar [Pendiente]: Client (empresa o su agente) → Provider (la plataforma) → Evaluator (motor determinístico de quórum y calidad), según ERC-8183 [Pendiente: fuente externa no verificada]. Como referencia de escrow `auth-capture` se puede estudiar x402r / Execution Market (su SDK figura en beta) [Pendiente: fuente externa no verificada]; no se adopta sin auditoría propia.
-7. Reparto de ingresos a contribuyentes, solo con ledger de atribución, términos de licencia y reglas de distribución diseñados.
-8. Otros países de LatAm con su propio formato fiscal.
+6. Procedencia de evidencias [Spike / Pendiente: S8]: recibo firmado con `evidenceRoot` por agregado (campos propuestos: `evidenceDigest` y `keyId` en `MediaRef`, `leafSalt` en `Observation`, `evidenceRoot` en `DataProduct`). Filecoin solo como posible almacén de agregados o raíces, nunca de tickets. Ver [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md).
+7. Mapeo a roles estándar [Pendiente]: Client (empresa o su agente) → Provider (la plataforma) → Evaluator (motor determinístico de quórum y calidad), según ERC-8183 [Pendiente: fuente externa no verificada]. Como referencia de escrow `auth-capture` se puede estudiar x402r / Execution Market (su SDK figura en beta) [Pendiente: fuente externa no verificada]; no se adopta sin auditoría propia.
+8. Reparto de ingresos a contribuyentes, solo con ledger de atribución, términos de licencia y reglas de distribución diseñados.
+9. Otros países de LatAm con su propio formato fiscal.
 
 ## Decisiones técnicas abiertas
 
@@ -427,6 +474,8 @@ interface Verifier {                  // una implementación por capa (doc 16, �
 - **Reserva de garantía (valor definitivo):** porcentaje del precio y saldo mínimo para cubrir recompensas de encargos no entregados (doc 16, §4.3).
 - **Verificación vendida como "verificada":** niveles mínimos por producto; ver [ADR 0002](adr/0002-verificacion-de-observaciones.md).
 - **Receptor de capturas:** el `receiver` de `auth-capture` es una sola dirección. Las recompensas pasan por un tesoro nuestro (custodia en tránsito) o por un contrato distribuidor. Sin decidir.
+- **Proveedor de prueba de humano:** zkMe MeID es el candidato prioritario a validar, no una integración aprobada. Antes de adoptarlo, el spike S7 tiene que mostrar unicidad entre cuentas y wallets de nuestra app; hoy el SDK solo devuelve un booleano `isGrant`, sin identificador por app, firma, vencimiento ni revocación. También faltan el precio confirmado por escrito, un DPA y saber retención y país de almacenamiento. Si falla, MeID solo aporta `humanityVerified`. Ver [informe](../agent-data-marketplace/identity/meid-proof-of-personhood.md).
+- **Procedencia de evidencias:** recibo firmado con `evidenceRoot` sobre almacenamiento privado frente a sumar Filecoin para agregados o raíces. Ver spike S8 y [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md).
 - **Token de recompensa:** USDC/USDT en Celo (MiniPay exige USDT y no admite wARS) frente a wARS fuera de MiniPay.
 - **Precio por tipo de observación:** ticket existente frente a visita encargada (ver pricing).
 - **Umbrales k y m definitivos** y política de supresión (doc 16, §7).

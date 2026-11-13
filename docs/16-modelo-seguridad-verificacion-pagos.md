@@ -40,7 +40,7 @@
 ### 1.3 Lo que el diseño no garantiza
 
 - **Que la compra ocurrió tal como dice la imagen.** El QR prueba que existe un comprobante con ese total; los ítems y las promociones salen de la imagen y pueden estar mal leídos o adulterados (§2).
-- **Que el contribuyente compró en persona.** World ID prueba persona única, no compra ni presencia en el comercio.
+- **Que el contribuyente compró en persona.** Una prueba de humano (MeID, World ID u otra) prueba, como mucho, persona única, no compra ni presencia en el comercio. **Una prueba de vida tampoco garantiza unicidad.**
 - **Representatividad estadística.** Los contribuyentes se autoseleccionan; el agregado describe las observaciones, no a la población.
 - **Reembolso después de pagar una recompensa.** Las transferencias de stablecoins son irreversibles; una observación fraudulenta descubierta después del pago es pérdida de la plataforma.
 - **Custodia cero en la demo.** El tesoro de tareas de la demo retiene fondos del agente [Simulado].
@@ -50,7 +50,7 @@
 | ID | Riesgo | Quién lo asume | Mitigación | Estado |
 |---|---|---|---|---|
 | R1 | Observación fraudulenta aceptada y pagada (ticket ajeno, imagen editada, compra inventada) | **Plataforma** paga la recompensa; **agente** recibe un dato contaminado | Capas de §2, consenso entre contribuyentes, topes por persona, revocación antes del pago, reembolso del agente con fondos de la plataforma | [Diseño] |
-| R2 | Granja de cuentas (sybil) que llena una tarea | **Plataforma** y **agente** | Prueba de humano, `maxPerContributor`, mínimo de contribuyentes distintos | Spike S5 |
+| R2 | Granja de cuentas (sybil) que llena una tarea | **Plataforma** y **agente** | Prueba de humano, `maxPerContributor`, mínimo de contribuyentes distintos | Spike S7 (MeID); S5 (World ID) como alternativa |
 | R3 | Extracción errónea del LLM (precio inventado) | **Agente** | Controles determinísticos (suma = total = QR), confianza calibrada, revisión manual | Spike S3 |
 | R4 | Reidentificación del contribuyente o del comercio por consultas finas | **Contribuyente**, **comercio**; legal: **plataforma** | Umbrales k, supresión, sin observaciones crudas (§7) | [Diseño] |
 | R5 | Tesoro de tareas comprometido (demo y piloto sin escrow) | **Agentes** con presupuesto abierto | Safe multifirma, topes por tarea y totales, escrow como objetivo | [Diseño] |
@@ -71,7 +71,7 @@
 | L1 | QR fiscal de ARCA decodificado y consistente con la imagen | Que existe un formato de comprobante con CUIT, punto de venta, número, fecha, total y código de autorización; y que el total extraído coincide | Ítems, promociones, medio de pago, que la persona sea el comprador. Un QR se puede copiar de otro ticket | [Verificado en fuente]: [especificación ARCA](https://www.arca.gob.ar/fe/qr/documentos/QRespecificaciones.pdf) |
 | L2 | Constatación en ARCA | Que ARCA autorizó ese comprobante con ese emisor, número, fecha, total y CAE | Ítems; que no sea un ticket ajeno o encontrado | [Pendiente]: spike S4 |
 | L3 | Corroboración | Que otras observaciones independientes (otros contribuyentes, otros días) muestran precios compatibles en el mismo comercio | Nada individual; reduce el impacto de un fraude aislado | [Diseño] |
-| — | Prueba de humano (World ID) | Que cada cuenta es una persona única | Que la persona compró | [Verificado en fuente]: [docs.world.org](https://docs.world.org/world-id/overview) |
+| — | Prueba de humano (`humanityVerified`) y unicidad (`uniquenessVerified`), doc 04 | Humanidad: que hay una persona viva detrás de la cuenta. Unicidad: que esa persona no tiene otra cuenta en el sistema, solo si el proveedor deduplica entre cuentas y wallets de la app | Que la persona compró ni que el ticket sea suyo (eso es `transactionVerified`, capas L1-L3, y tampoco prueba propiedad) | World ID con Orb: unicidad [Verificado en fuente] ([docs.world.org](https://docs.world.org/world-id/overview)). zkMe MeID, candidato prioritario: prueba de vida verificada, unicidad entre wallets [Spike / Pendiente: S7] ([informe](../agent-data-marketplace/identity/meid-proof-of-personhood.md)) |
 | — | Atestación de dispositivo / C2PA | Que la foto salió de una cámara en un dispositivo íntegro | Que la escena no sea un ticket ajeno fotografiado | [Pendiente] |
 | — | zkTLS de factura web | Que el servidor del comercio entregó esa factura en una sesión TLS | Solo existe si el comercio envía factura web | [Pendiente] |
 
@@ -233,13 +233,18 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 | Consentimiento | Texto versionado por finalidad (venta de agregados a terceros) y por alcance de licencia (§7.2); registro de versión y fecha por contribución; retiro en cualquier momento (§7.1) | [Diseño] |
 | Minimización en ingesta | Se descartan `tipoDocRec` y `nroDocRec` del QR; se enmascaran en la imagen datos del comprador y de tarjeta antes de que la vea un revisor | [Diseño] |
 | Retención | Imágenes borradas a los N días de aceptadas o rechazadas (N por definir); se conservan la observación normalizada y los hashes | [Pendiente] |
-| Separación | La identidad del contribuyente (wallet, World ID) vive en una tabla separada de las observaciones; el agregado nunca la toca | [Diseño] |
+| Separación | La identidad del contribuyente (wallet, `ProviderSubject` del proveedor de identidad) vive en una tabla separada de las observaciones; el agregado nunca la toca | [Diseño] |
+| Biometría | Nunca guardamos imágenes faciales ni plantillas: el flujo facial corre en el widget del proveedor y solo conservamos `ProviderSubject`, estado y fechas. Datos biométricos son sensibles: antes de usar un proveedor hace falta un DPA, conocer el país de almacenamiento y la retención (MeID: plantilla cifrada en servidores de zkMe, "mientras sea necesaria", borrado a pedido en 30 días; país no informado) | [Spike / Pendiente: S7 + revisión legal] |
 | Umbral k | Un agregado se publica solo con ≥ k contribuyentes y ≥ m comercios distintos. **Demo:** k = 5 y m = 3 como valores experimentales; se prueban en privacidad y viabilidad antes de vender resultados | [Diseño] |
 | Supresión de comercio único | Si una zona tiene un solo comercio de un tipo, no se publica precio por comercio | [Diseño] |
 | Granularidad | Tiempo redondeado a día o semana; ubicación a localidad o celda | [Diseño] |
 | Ataque de diferencia | Celdas fijas, presupuesto de consultas y chequeo de solapamiento (§7.3); privacidad diferencial como experimento | [Diseño] |
 | Nada onchain | Ni imágenes, ni hashes de imágenes, ni direcciones de contribuyentes junto a datos de compra | [Diseño] |
 | Registro de la base | Inscripción ante la autoridad de aplicación si corresponde | [Pendiente] |
+| Procedencia de evidencias | Cada observación aceptada genera una hoja con sal `H(sal ‖ evidenceDigest ‖ observationId ‖ nivel ‖ extractionHash)`; cada agregado publica un `evidenceRoot` (Merkle) en un recibo firmado dentro de un log append-only; opcionalmente se ancla la cabeza del log en Celo. El comprador ve solo el recibo; un auditor autorizado verifica una muestra con acceso temporal y registrado | [Spike / Pendiente]: S8 |
+| Filecoin para evidencias | **NO-GO para imágenes de tickets:** el PieceCID, el tamaño y la wallet que paga quedan públicos por ticket (contradice "Nada onchain"), el texto cifrado puede ser recuperable públicamente, el control de acceso figura como "Coming soon" y no está documentado el borrado físico. Solo se evalúa para agregados ya vendidos o raíces de compromisos | [Spike / Pendiente]: S8; ver [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md) |
+
+**Filecoin prueba conservación e integridad de datos, no que una compra haya sucedido ni que el ticket pertenezca al colaborador.** Tampoco garantiza recuperación ni disponibilidad.
 
 **Observación:** los pagos de recompensa son públicos en la cadena. Una dirección que recibe una recompensa por cada ticket revela frecuencia de compra. Pagar en lotes periódicos y no por observación reduce esa señal.
 
@@ -311,7 +316,7 @@ Las claves de API, del facilitator y de los revisores nunca llegan al navegador 
 2. Spikes S1 y S2 (escrow) aprobados, o decisión explícita de operar con tesoro custodial, topes y respaldo legal.
 3. Spike S3 (extracción) con métricas sobre tickets reales argentinos.
 4. Spike S4 (constatación ARCA) para habilitar L2.
-5. Spike S5 (prueba de humano) o alternativa anti-sybil aceptada.
+5. Spike S7 (MeID) o S5 (World ID) aprobado con `uniquenessVerified` real entre cuentas y wallets, o alternativa anti-sybil aceptada.
 6. Umbrales de privacidad (k, m, granularidad) definidos y probados con ataques de diferencia (§7.3).
 7. Conciliación de payouts e invariantes I1–I14 con tests automáticos.
 8. Revisión de seguridad del despliegue de `AuthCaptureEscrow` en Celo, si se despliega.

@@ -34,7 +34,7 @@ Simplificado a propósito: no se implementan a la vez un escrow nuevo, World ID,
 | Entra (Núcleo MVP) | Queda fuera (Spike o Experimento opcional, después del hackathon) |
 |---|---|
 | TypeScript + Hono + `@x402/hono` | Escrow nuevo o `auth-capture` (spikes S1, S2) |
-| PostgreSQL y object storage privado | World ID (spike S5) |
+| PostgreSQL y object storage privado | Prueba de humano: zkMe MeID (spike S7, candidato prioritario); World ID (spike S5) y Human Passport como alternativas |
 | x402 `exact` en Celo Sepolia vía el facilitator de testnet | Integración con MiniPay (spike S6) |
 | MCP + REST, catálogo de `DataProduct` | Varias redes (oferta en Base) |
 | Extracción con LLM de visión contrastada con el total del QR de ARCA | zkTLS, C2PA |
@@ -81,14 +81,14 @@ Simplificado a propósito: no se implementan a la vez un escrow nuevo, World ID,
 | Identidad del agente | ERC-8004 en Celo | Experimento opcional | [Pendiente] | Requisito de algunos tracks de Celo |
 | Base de datos | PostgreSQL (dominio, ledger, cola) | Núcleo MVP | — | Montos como `numeric` o texto de enteros; restricciones únicas para dedupe |
 | Cola de jobs | pg-boss sobre la misma PostgreSQL | Núcleo MVP | [Pendiente]: sin probar | Evita Redis en la demo; BullMQ + Redis como alternativa |
-| Object storage | S3-compatible privado (Cloudflare R2 o Supabase Storage), cifrado, URL firmadas cortas, borrado por ciclo de vida | Núcleo MVP | [Pendiente]: proveedor | Imágenes nunca públicas ni onchain |
+| Object storage | S3-compatible privado (Cloudflare R2 o Supabase Storage), cifrado, URL firmadas cortas, borrado por ciclo de vida | Núcleo MVP | [Pendiente]: proveedor | Imágenes nunca públicas ni onchain. Filecoin (Onchain Cloud + PDP) evaluado para evidencias: **NO-GO para imágenes de tickets**; procedencia con compromisos firmados sobre almacenamiento privado [Spike / Pendiente: S8] ([informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md)) |
 | Decodificación del QR fiscal | Lector QR en cliente y servidor + parser del JSON base64 de ARCA | Núcleo MVP | [Verificado en fuente] (spec ARCA) | Descarta `tipoDocRec` y `nroDocRec` antes de guardar |
 | Extracción de ítems | LLM de visión con salida JSON por esquema + controles determinísticos (suma de ítems = total, total = `importe` del QR) | Núcleo MVP | [Pendiente]: sin set de prueba argentino | Ver spike S3. La evidencia pública es mixta: empate en texto limpio, ventaja del LLM en tickets ruidosos ([AIMultiple](https://research.aimultiple.com/receipt-ocr)) |
 | OCR dedicado | Google Document AI / AWS Textract (expense) | Alternativa | [Pendiente] | Si el LLM alucina ítems o sale caro |
 | Normalización de productos | Match por EAN cuando aparece; si no, descripción → catálogo SEPA como referencia | Núcleo MVP | [Pendiente]: licencia y formato de SEPA | SEPA es gratuito; sirve de precio de lista de referencia, no de producto |
 | Constatación fiscal | Servicio de constatación de comprobantes de ARCA (WSCDC) con el certificado de la plataforma | **Spike** | [Pendiente]: existe ([ARCA](https://www.afip.gob.ar/ws/documentacion/ws-factura-electronica.asp)), sin manual leído | Confirma que el comprobante existe con ese total; no confirma ítems |
 | Dedupe | Único `(cuit, ptoVta, tipoCmp, nroCmp)` + `sha256` + `pHash` 64 bits con distancia de Hamming en ventana comercio/fecha | Núcleo MVP | [Pendiente]: umbral a calibrar | Ver doc 16, §3 |
-| Prueba de humano | World ID (Proof of Human) con un nullifier por acción/tarea | **Spike** (fuera del hackathon) | [Verificado en fuente]: prueba persona única, no compra ([docs.world.org](https://docs.world.org/world-id/overview)) | Alcance exacto del nullifier [Pendiente]; adopción en Argentina [Pendiente] |
+| Prueba de humano | Detrás de `IdentityVerificationProvider` (doc 04). **Candidato prioritario a validar: zkMe MeID** (selfie y prueba de vida, sin Orb ni NFC). Alternativas: World ID (Orb, nullifier por acción) y Human Passport (puntaje por sellos) | **Spike S7** (fuera del P0); veredicto actual **INCONCLUSO** ([informe](../agent-data-marketplace/identity/meid-proof-of-personhood.md)) | [Verificado en fuente]: el SDK de MeID (`@zkmelabs/widget` 0.3.6) solo devuelve `isGrant` booleano desde un endpoint sin API key; no expone nullifier por aplicación, firma, vencimiento ni revocación. World ID: prueba persona única, no compra ([docs.world.org](https://docs.world.org/world-id/overview)) | [Pendiente]: unicidad de MeID entre wallets de la misma app, precio (la página de precios y la guía de facturación se contradicen), retención y país de almacenamiento, sin widget en español |
 | Atestación de dispositivo | Play Integrity / App Attest | Alternativa | [Pendiente] | Exige app nativa |
 | C2PA | Leer Content Credentials de cámaras que los emiten (Pixel 10) | Experimento opcional | [Pendiente]: cobertura de dispositivos en AR baja (fuentes secundarias) | Prueba captura por cámara, no compra |
 | zkTLS de facturas web | Reclaim o TLSNotary sobre la sesión de factura electrónica del comercio | Experimento opcional | [Pendiente]: TLSNotary en alpha; Reclaim con paper 2026 ([ePrint 2026/2187](https://eprint.iacr.org/2026/2187)) | Solo comercios que envían factura web |
@@ -108,7 +108,7 @@ Simplificado a propósito: no se implementan a la vez un escrow nuevo, World ID,
 | Tecnología | Para qué serviría | Condición para incorporarla |
 |---|---|---|
 | `auth-capture` / escrow | Presupuesto sin custodia nuestra | Spikes S1 y S2 aprobados |
-| World ID | Anti-sybil | Spike S5 aprobado y fraude por cuentas múltiples medido |
+| Prueba de humano (MeID; World ID o Human Passport como alternativas) | Anti-sybil | Spike S7 (o S5) aprobado, fraude por cuentas múltiples medido y DPA firmado con el proveedor |
 | MiniPay | Canal de contribuyentes | Spike S6 aprobado |
 | Reparto de ingresos | Recompensar reventas del pool | Ledger de atribución, términos de licencia y reglas de distribución diseñados |
 | Oferta paralela en Base | Aparecer en el índice de Coinbase y x402scan | Que haya agentes que solo descubren por Bazaar |
@@ -117,6 +117,7 @@ Simplificado a propósito: no se implementan a la vez un escrow nuevo, World ID,
 | C2PA | Probar captura con cámara | Cobertura de dispositivos suficiente en la zona |
 | ERC-8004 / ERC-8021 | Identidad del agente y atribución | Track de hackathon que lo exija |
 | Privacidad diferencial | Proteger consultas finas repetidas | Ataques de diferencia observados |
+| Filecoin Onchain Cloud (Synapse SDK, PDP) [Spike / Pendiente] | Prueba verificable por terceros de conservación e integridad de evidencias o de agregados ya vendidos | Spike S8 aprobado; un comprador o regulador exige una prueba de conservación que un log firmado y auditado no cubre; dictamen legal que acepte el borrado criptográfico (destruir la clave) bajo la Ley 25.326 y el art. 12 (transferencia internacional) |
 
 ## Descartados
 
@@ -140,3 +141,5 @@ Simplificado a propósito: no se implementan a la vez un escrow nuevo, World ID,
 | S4 | ¿La constatación de ARCA confirma comprobantes de consumidor final de forma automática? | Respuesta válida para tickets B/C con los datos del QR y certificado propio | Requiere datos que el ticket no tiene o no admite volumen | 2 días |
 | S5 | ¿World ID es viable para contribuyentes en Argentina? | Alta y verificación en < 3 min y nullifier por tarea | Cobertura u onboarding inviable | 2 días |
 | S6 | ¿MiniPay está disponible en Argentina y admite subir fotos desde la MiniApp? | Instalación y subida funcionan en un teléfono argentino | No disponible: PWA con wallet embebida | 1 día |
+| S7 | ¿zkMe MeID impide que una persona verifique varias cuentas o wallets de nuestra app? (**independiente del S0**; 2-3 integrantes del equipo con consentimiento escrito; ninguna biometría pasa por nuestros servidores) | Una misma persona no obtiene `isGrant = true` en una segunda wallet, con un nuevo email de zkMe ni con un segundo `contributorId` (o MeID expone un identificador estable por app); foto impresa, foto en pantalla y video repetido se rechazan; el borrado a pedido funciona; zkMe confirma por escrito precio, retención, país de almacenamiento y encargados | Cualquier cuenta duplicada pasa sin vínculo con la primera: MeID cuenta solo como `humanityVerified`, nunca como `uniquenessVerified` | 3-5 días |
+| S8 | ¿Filecoin aporta una prueba de conservación útil sin filtrar datos ni romper el borrado? (**después del S0**, solo Calibration testnet, 50 tickets sintéticos, sin contratos propios) | Nada vinculable on-chain más allá de lo documentado, pruebas Merkle del recibo de procedencia verificables, costos dentro de ±20 % de la estimación, p95 de lectura por CDN < 2 s y borrado documentado | El texto cifrado sigue descargable más de 5 días hábiles después de `deletePiece`, no se controla la metadata pública o el costo supera 2× la estimación | 2-3 días + 7 días de observación pasiva |
