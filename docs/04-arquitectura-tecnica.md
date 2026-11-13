@@ -1,183 +1,410 @@
-# 04 — Arquitectura técnica: global por diseño, Argentina por ejecución
+# 04 — Arquitectura técnica: marketplace de observaciones verificadas de comercio físico
 
-**Estado:** diseño conceptual. **La arquitectura no está aprobada para fondos reales.** Ninguna pieza está probada en código.
-- La demo usa solvers y PSP **simulados**, y un escrow de prueba en testnet.
-- Los ADR 0001 y 0002 son **propuestas pendientes**.
-- No hay que desplegar contratos con fondos reales antes de cerrar los pendientes de [16 — Modelo de seguridad y liquidación](16-modelo-seguridad-liquidacion.md), §11.
+**Estado:** diseño conceptual (2026-11-12). **La arquitectura no está aprobada para fondos reales.** Ninguna pieza está probada en código.
+- La demo usa testnet, un pago x402 `exact` hacia un tesoro de tareas con custodia temporal y ledger interno [Simulado], y contribuyentes del equipo. **x402 `exact` no es un escrow.**
+- No hay que mover fondos reales de agentes ni pagar a contribuyentes reales antes de cerrar los pendientes de [16 — Modelo de seguridad, verificación y pagos](16-modelo-seguridad-verificacion-pagos.md), §10.
 
 **Documentos relacionados:**
 - [15 — Decisiones del stack](15-stack-tecnologico.md)
-- [16 — Modelo de seguridad y liquidación](16-modelo-seguridad-liquidacion.md)
-- [ADR 0001 — Escrow y autorizaciones](adr/0001-escrow-y-autorizaciones.md)
-- [ADR 0002 — Verificación fiat](adr/0002-verificacion-fiat.md)
+- [16 — Modelo de seguridad, verificación y pagos](16-modelo-seguridad-verificacion-pagos.md)
+- [ADR 0001 — Red principal y custodia de presupuestos](adr/0001-red-y-custodia-de-presupuestos.md), [ADR 0002 — Verificación de observaciones](adr/0002-verificacion-de-observaciones.md)
+- Producto y competencia: [intake](../agent-data-marketplace/intake.md), [pricing](../agent-data-marketplace/raw/pricing-intelligence.md)
+
+**Evidencia:** **[Verificado en fuente]** (se leyó la fuente primaria o se consultó la cadena), **[Pendiente]** (sin verificar), **[Simulado]** (en la demo lo cumple un actor mock), **[Diseño]** (decisión propia sin implementar).
+
+## Qué hace el sistema
+
+> **Marketplace de datos del mundo real para agentes de IA.** Los agentes pueden descubrir, comprar y encargar información verificable mediante x402. Las personas aportan observaciones del mundo físico, como tickets de compra, reciben recompensas y mantienen protegidos sus datos personales.
+
+Un agente de IA puede hacer dos cosas:
+
+- **Modo A — comprar datos existentes:** el agente encuentra información disponible, consulta su cobertura, paga mediante x402 y recibe un agregado utilizable. Ejemplo: precios reales observados de leche en una región.
+- **Modo B — encargar nuevos datos:** el agente define qué necesita, fija un presupuesto y paga por obtener observaciones verificadas que todavía no existen. Ejemplo: 20 observaciones nuevas sobre promociones en almacenes durante una semana. Contribuyentes que dieron su consentimiento envían tickets o fotos de góndola; la plataforma verifica, desidentifica y agrega. El agente paga solo resultados entregables y recupera lo no entregado (doc 16, §5).
+
+**Modo B es el diferencial central.** Modo A demuestra que se puede vender datos de inmediato. Los **tickets de compra son el primer tipo de observación**, no toda la identidad futura del producto.
+
+**Orden de prioridades:** primero demostrar que un agente puede comprar información útil; después, que puede encargarla; finalmente, que el marketplace consigue demanda y oferta recurrentes.
+
+### Tres conceptos que no se mezclan
+
+| Concepto | Qué es | Entidad |
+|---|---|---|
+| Datos aportados | Información física entregada voluntariamente por colaboradores | `Contribution` → `Observation` |
+| Productos de datos | Agregados que los agentes descubren y compran | `DataProduct` (+ `Aggregate` resultados) |
+| Encargos | Solicitudes financiadas por agentes para producir información nueva | `Task` |
 
 ## Principios de diseño
 
-- **La liquidación primero.** La prioridad es resolver la liquidación entre la red RFQ de solvers y el pago fiat, no sumar integraciones.
-- **Sin custodia propia.** El USDC del pagador queda bloqueado en un escrow onchain y nunca en cuentas nuestras. No guardamos claves privadas de usuarios.
-- **Los solvers liquidan el ARS.** Un solver (un PSP licenciado, o un mock en la demo) cotiza en el RFQ y paga ARS al QR del comercio.
-- **El estado fiat es la verdad del pago.** Un tx hash onchain no implica por sí solo que el comercio recibió ARS.
-- **Sin reembolso automático después del compromiso.** El reembolso rápido solo aplica si ningún solver se comprometió. Si el solver pudo haber pagado, el estado es "en verificación", nunca "fallido" (doc 16, §4.3).
-- **Ante la duda, cerrar.** Si el QR, la jurisdicción o el usuario no están permitidos, el flujo se detiene antes de la firma.
-- **Adaptadores para los rieles, sin ingeniería ficticia.** Las interfaces son generales; solo se implementan los solvers y mercados aprobados.
+- **La verificación es el producto.** Un precio sin evidencia compite contra SEPA, que es gratis. Cada dato vendido tiene que poder rastrearse a observaciones aceptadas con su nivel de verificación (doc 16, §2).
+- **Datos personales e imágenes fuera de la cadena.** Onchain solo van pagos y, como mucho, hashes de agregados. Las imágenes, el CUIT del receptor y cualquier dato del contribuyente quedan offchain, cifrados y con plazo de borrado (Ley 25.326).
+- **Se vende el agregado, nunca la observación cruda.** El agente recibe resultados con umbral mínimo de contribuyentes y comercios. Nunca recibe tickets, fotos ni identificadores de contribuyentes.
+- **Cobrar solo lo que se entrega.** En modo A, la cobertura y el contrato del producto se consultan gratis antes de pagar. En modo B, el agente paga por resultados entregables, no por observaciones sueltas, y recupera lo no entregado salvo que haya aceptado antes un resultado parcial (doc 16, §5).
+- **Recompensa y cobro son mecanismos distintos.** El cobro al agente entra por x402; la recompensa al contribuyente sale por transferencias en lote. Una observación válida se paga aunque el encargo no se entregue, con una reserva de la plataforma (doc 16, §4).
+- **No construir lo que ya existe auditado.** Pagos entrantes con x402 y facilitators existentes, pagos salientes con contratos de distribución ya desplegados. El escrow con `AuthCaptureEscrow` de Base Commerce Payments es un experimento separado, fuera del hackathon. Ningún contrato propio en el MVP.
+- **Ante la duda, revisar a mano.** Una observación que no pasa los controles automáticos va a una cola de revisión humana; no se acepta por defecto.
+- **Adaptadores para rieles, verificadores y extracción.** El dominio no depende de una red, un modelo de visión ni un facilitator concreto.
 
 ## Tres alcances
 
-Este documento describe el **protocolo RFQ objetivo**. La demo y el piloto son recortes distintos, y no hay que presentar uno como si fuera otro. El detalle está en el doc 16, §1.1.
+No hay que presentar uno como si fuera otro.
 
 | Alcance | Qué incluye | Qué no |
 |---|---|---|
-| **Demo de hackathon** | Dos solvers simulados, PSP simulado, escrow de prueba en Base Sepolia, declaración firmada de un PSP simulado, las ramas de falla | ARS reales, PSP real, garantías, fondos reales |
-| **Protocolo RFQ objetivo** | Red de payment solvers licenciados, `SettlementOperator` con registro y revocación, garantía del solver, evidencia más fuerte | Todavía no existe: es el diseño de estos documentos |
-| **Piloto real** | Un solver real en un segmento pequeño y con topes | Solo ocurre si se cumplen las condiciones: acuerdo con proveedores, cumplimiento normativo, spike y pruebas aprobados, auditoría y garantía financiada |
+| **Demo de hackathon** | API con x402 `exact` en Celo Sepolia (solo USDC de testnet) vía el facilitator de testnet; servidor MCP; catálogo de productos de datos con contrato legible por agentes; una tarea encargada de punta a punta con 10–30 tickets reales del equipo; extracción con LLM de visión; revisión manual; tesoro de tareas en testnet + ledger interno con reembolso del sobrante [Simulado]; pago de recompensas de prueba en lote; un cliente automático simple (sin LLM) | Fondos reales, contribuyentes externos, escrow nuevo o `auth-capture`, World ID, integración con MiniPay, varias redes, zkTLS, reparto de ingresos, sistema avanzado de recompensas, anti-fraude fuerte, garantías legales |
+| **Protocolo objetivo** | Presupuesto de tareas retenido en escrow (`auth-capture`, si el experimento lo aprueba), captura al entregar y `void` del sobrante; verificación por capas (QR fiscal, constatación ARCA, consenso, dedupe, prueba de humano); agregados con umbrales de privacidad; distribución por Bazaar, agent402.tools y MCP | Todavía no existe: es el diseño de estos documentos |
+| **Piloto real** | Una zona chica (por ejemplo, Jujuy capital), pocas categorías, topes por tarea y por contribuyente, fondos reales | Solo si se cumplen las condiciones del doc 16, §10: revisión legal (datos personales, custodia, impuestos), spikes aprobados, consentimiento y registro de la base de datos |
 
 ## Flujo de la demo
 
+**Modo A — comprar datos existentes**
+
 ```text
-Payment Intent → RFQ con dos solvers simulados → autorización USDC (EIP-3009 + relayer)
-→ compromiso del solver → ejecución fiat simulada → declaración firmada → capture | manejo de fallo
+GET /v1/products?category=...&zone=...   (gratis: catálogo con el contrato de cada DataProduct)
+→ GET /v1/coverage?ean=...&zone=...        (gratis: ¿hay datos suficientes para esa celda?)
+→ GET /v1/prices?ean=...&zone=...&from=... → 402 PAYMENT-REQUIRED (exact, USDC, Celo Sepolia)
+→ el agente firma (EIP-3009) con `payment-identifier` → facilitator verifica → handler arma el agregado → settle → 200 + agregado
 ```
+
+**Modo B — encargar nuevos datos**
+
+```text
+POST /v1/tasks/quote   (gratis: viabilidad, precio por observación entregada, presupuesto sugerido, política de parcial)
+→ POST /v1/tasks → 402 (exact por el presupuesto) → pago → tarea `open`        [demo: tesoro + ledger, custodial]
+→ contribuyentes envían tickets → extracción → verificación → revisión → `accepted` → `aggregation_eligible`
+→ recompensa por observación aceptada (lote, garantizada por la reserva)
+→ resultado `deliverable` → entrega al agente → cobro de lo entregado en el ledger
+→ cierre: reembolso del sobrante (o del 100 % si no hubo resultado entregable)
+GET /v1/tasks/{id} (gratis: estado)   GET /v1/tasks/{id}/result (incluido en el presupuesto)
+```
+
+En el protocolo objetivo el `POST /v1/tasks` podría usar `auth-capture` en lugar de `exact`, si el experimento separado lo aprueba: el presupuesto quedaría retenido en escrow y no en una cuenta nuestra (doc 16, §4.2).
+
+**Cliente de la demo.** No hace falta un agente con LLM. Basta un cliente automático simple que descubre el servicio (`/.well-known/x402`, `GET /v1/products` o la tool MCP `list_products`), consulta la oferta y la cobertura, decide con reglas fijas si el contrato del producto cumple sus requisitos, autoriza el pago x402 y consume el resultado. La IA puede incorporarse encima de esa interfaz.
 
 ## Arquitectura lógica
 
-```mermaid
-flowchart TB
-  U[Pagador con USDC en Base] --> APP[App: cámara, wallet, estados]
-  APP --> QR[Parser EMVCo + capa AR]
-  APP --> API[Backend: Payment Intent, RFQ, relayer, historial]
-  API --> RFQ[Motor RFQ]
-  RFQ --> SA[Solver A - simulado]
-  RFQ --> SB[Solver B - simulado]
-  APP -- firma EIP-3009 --> API
-  API -- relayer --> OP[SettlementOperator]
-  OP --> ESC[AuthCaptureEscrow en Base]
-  SA -- compromiso + declaración firmada --> OP
-  SB -- respaldo --> OP
-  SA --> FIAT[QR del comercio / Transferencias 3.0]
-  SB --> FIAT
-  OP -- capture --> SA
-  ESC -- reclaim tras authorizationExpiry --> U
-  API --> DB[(PostgreSQL)]
+```text
+ Agentes de IA                                        Contribuyentes (AR)
+ ─────────────                                        ───────────────────
+  HTTP + x402 │   MCP (tools pagas)                    PWA en navegador (MiniApp opcional)
+              ▼        ▼                                         │ subida de ticket/foto + consentimiento
+ ┌──────────────────────────────┐                     ┌──────────────────────────────┐
+ │ Agent API (REST + OpenAPI)   │                     │ Contributor API              │
+ │ + servidor MCP               │                     │ (sesión, tareas, envíos)     │
+ │ middleware x402 (@x402/*)    │                     └──────────────┬───────────────┘
+ └──────┬───────────────┬───────┘                                    │
+        │               │                                            ▼
+        │               │                          ┌───────────────────────────────────┐
+        │               │                          │ Pipeline de ingesta (cola de jobs)│
+        │               │                          │ screening → QR fiscal → extracción│
+        │               │                          │ → dedupe → verificación → revisión│
+        │               │                          └──────┬───────────────┬────────────┘
+        │               ▼                                 │               │
+        │   ┌────────────────────────┐                    │               ▼
+        │   │ Task engine            │◄── observaciones ──┘     ┌──────────────────────┐
+        │   │ (presupuesto, criterios│      aceptadas           │ Object storage       │
+        │   │  cierre, reembolso)    │                          │ privado (imágenes,   │
+        │   └───────┬────────────────┘                          │ borrado programado)  │
+        ▼           ▼                                           └──────────────────────┘
+ ┌──────────────────────────────┐        ┌─────────────────────────────┐
+ │ Aggregation & privacy        │        │ Ledger + Payout service     │
+ │ (umbrales k, supresión)      │        │ (recompensas, fee, lotes)   │
+ └──────────────┬───────────────┘        └──────┬──────────────────────┘
+                ▼                               ▼
+        ┌───────────────┐        ┌──────────────────────────────────────────┐
+        │ PostgreSQL    │        │ Rieles: facilitator x402 (Celo), escrow  │
+        │ (dominio,     │        │ auth-capture (experimento), Safe+Disperse│
+        │  ledger)      │        │ para lotes de recompensas                │
+        └───────────────┘        └──────────────────────────────────────────┘
+   Externos: LLM de visión · constatación ARCA (spike) · World ID (spike) · SEPA (referencia)
 ```
 
-**Alcance realista:** en la demo, los solvers y el pago fiat están simulados. Un PSP real requiere un acuerdo comercial y que acepte las invariantes I1 e I7 del doc 16. El SDK con UI encapsulada de Yodl no permite el escrow propio, así que solo sirve como referencia o como un solver más en el futuro.
+**Alcance realista:** la demo corre un monolito modular en TypeScript con una sola base PostgreSQL y una cola de jobs sobre la misma base. Los módulos del diagrama son límites de código, no servicios separados.
 
 ## Componentes y responsabilidades
 
-| Componente | Nuestro control | Tercero |
-|---|---|---|
-| UI, textos, errores, consentimiento | Sí | — |
-| Parser QR y bloqueo de formatos no admitidos | Sí | Especificación del QR interoperable (BCRA) |
-| Payment Intent y RFQ | Sí | Cotizaciones firmadas de los solvers |
-| Firma del pagador (EIP-3009) | Integración | Wallet del usuario: EOA o smart account (ERC-1271), incluida Base Account. Compatibilidad pendiente del spike |
-| Relayer (gas) | Sí; no tiene privilegios sobre los fondos | — |
-| `SettlementOperator` (reglas de liquidación) | Sí: contrato mínimo, sin upgrade; ningún rol mueve fondos (doc 16, §8) | — |
-| Registro de solvers y atestadores | Gobernanza y guardián (doc 16, §8.1) | Cada solver gestiona sus claves |
-| Escrow | No | `AuthCaptureEscrow` de Base: candidato del spike, no aprobado (ADR 0001) |
-| Garantía del solver | Sin definir (doc 16, §9.1) | Solver / PSP |
-| Ejecución ARS | No | Solver / PSP licenciado |
-| Comprobante | Verificación | Declaración firmada del solver o PSP |
-| Identidad requerida (KYC) | Políticas y redirección | PSP habilitado |
-| Conciliación y soporte | Sí, para nuestras órdenes | Referencias y estados del solver |
+| Componente | Responsabilidad | Nuestro control | Tercero |
+|---|---|---|---|
+| Agent API + MCP | Endpoints pagos y gratuitos, esquema OpenAPI, extensión `bazaar` en el 402, tools MCP pagas | Sí | Especificación x402 v2, facilitator |
+| Middleware x402 | Emitir `PAYMENT-REQUIRED`, verificar y liquidar vía facilitator | Integración (`@x402/*`) | Facilitator de Celo (`exact`); facilitator propio o de terceros para `auth-capture` [Pendiente] |
+| Task engine | Cotizar, abrir, cupos por comercio y día, criterios de aceptación, vencimiento, cierre y sobrante | Sí | — |
+| Contributor API y app | Registro, consentimiento y licencia, tareas cercanas, envío, estado, cobro, retiro del consentimiento | Sí | Navegador (MiniPay como experimento opcional) |
+| Pipeline de ingesta | Screening, decodificación del QR fiscal, extracción, normalización, dedupe, verificación, cola de revisión | Sí | LLM de visión; constatación ARCA |
+| Revisión manual | Resolver casos dudosos con evidencia visible solo para el revisor | Sí (operación) | — |
+| Aggregation & privacy | Calcular agregados con umbrales mínimos, supresión y redondeo | Sí | — |
+| Ledger | Asientos de doble entrada: presupuestos, cobros de lo entregado, recompensas, reserva de garantía, fee, créditos y reembolsos | Sí | — |
+| Payout service | Armar lotes idempotentes y enviarlos desde el tesoro de recompensas | Sí; Safe multifirma | Safe, Disperse en Celo |
+| Catálogo de productos de datos | Publicar cada `DataProduct` con su contrato (cobertura, antigüedad, origen, verificación, cantidades, licencia, precio) | Sí | — |
+| Escrow de presupuestos | Retener presupuesto, `capture` al entregar, `void` del sobrante, `reclaim` del agente | No | `AuthCaptureEscrow` (Base Commerce Payments); experimento separado, fuera del hackathon |
+| Object storage | Imágenes cifradas, acceso por URL firmada, borrado programado | Configuración | Proveedor S3-compatible |
+| Prueba de humano | Un contribuyente = una persona por tarea | Integración | World ID (spike, fuera del hackathon) |
 
-## Adaptadores: contrato interno propuesto
+## Modelo de datos: entidades núcleo
 
-Esta interfaz es de **nuestro dominio** y no corresponde a ninguna API real de Yodl, Manteca u otro proveedor.
+Los montos se guardan como enteros en unidades atómicas del token, nunca como `float`.
 
 ```ts
-type PaymentIntent = {
-  intentId: string;
-  qrRaw: string;            // never logged in full
-  fiatCurrency: 'ARS';
-  fiatAmountMinor: string;  // no floats
+type DataProduct = {                 // contrato legible por agentes; se publica gratis
+  dataProductId: string;
+  title: string;                     // p. ej. "Precio pagado de leche entera 1 l, NOA"
+  coverage: {
+    zones: string[];                 // localidades o celdas
+    storeKinds: Array<'supermarket' | 'almacen' | 'kiosco' | 'other'>;
+    storesCount: number;
+    categories: string[];            // o EAN concretos
+  };
+  freshness: { oldestObservedAt: string; newestObservedAt: string; refreshPolicy: string };
+  origin: Array<'receipt' | 'shelf_photo'>;          // tipo de evidencia de origen
+  minVerificationLevel: VerificationLevel;
+  counts: { observations: number; contributors: number };  // siempre ≥ umbrales de privacidad
+  license: { id: string; summary: string; resale: false; reidentification: 'forbidden' };
+  price: { amountAtomic: string; token: TokenRef; unit: 'query' | 'cell' };
+  sample?: object;                   // estructura del resultado, sin precios reales
+};
+
+type Query = {                       // modo A: una consulta paga
+  queryId: string;
+  dataProductId: string;
+  agentAddress: string;              // pagador x402, no es identidad personal
+  params: { ean?: string; productText?: string; zone: string; from: string; to: string };
+  aggregateId: string | null;        // null si no hubo cobertura
+  payment: PaymentRef;               // incluye paymentIdentifier (único) para reintentos idempotentes
+  status: 'answered' | 'insufficient_coverage' | 'failed' | 'credited' | 'refunded';
+};
+
+type Task = {                        // modo B: encargo financiado
+  taskId: string;
+  agentAddress: string;
+  spec: {
+    products: Array<{ ean?: string; description: string }>;
+    zone: { kind: 'locality' | 'polygon'; value: string };
+    stores?: string[];               // CUIT de comercios o storeId propios
+    window: { from: string; to: string };
+    observationKind: 'receipt' | 'shelf_photo';
+  };
+  acceptance: {
+    minObservations: number;
+    minDistinctStores: number;
+    minDistinctContributors: number; // también es el umbral de privacidad (k)
+    minVerificationLevel: VerificationLevel;
+    maxPerContributor: number;
+    partialAccepted: boolean;        // false: sin resultado completo, reembolso del 100 % (doc 16, §5.2)
+    minPartialObservations?: number; // solo si partialAccepted; el parcial también cumple k y m
+  };
+  pricing: { pricePerObservationAtomic: string; feePerObservationAtomic: string; reservePerObservationAtomic: string; token: TokenRef };
+  budgetAtomic: string;              // tope; nunca se cobra más
+  chargedAtomic: string;             // solo lo incluido en resultados entregados
+  deadline: string;
+  exclusivityUntil?: string;         // hasta cuándo sus observaciones no se revenden (doc 16, §7.2)
+  funding: PaymentRef;               // exact (demo) o auth-capture (experimento)
+  status: TaskStatus;
+};
+
+type Contribution = {                // un envío del contribuyente, antes de saber si sirve
+  contributionId: string;
+  contributorId: string;             // id interno; nunca se expone al agente
+  taskId: string | null;             // null = aporte espontáneo al pool del modo A (exige licenseScope 'pool')
+  consentVersion: string;            // versión del texto aceptado
+  licenseScope: 'task_only' | 'pool'; // alcance de reutilización entre compradores
+  mediaKeys: string[];               // claves en object storage, cifradas
+  sha256: string;
+  pHash: string;                     // hash perceptual de 64 bits
+  submittedAt: string;
+  status: ContributionStatus;
+};
+
+type Observation = {                 // un dato normalizado extraído de una contribución
+  observationId: string;
+  contributionId: string;
+  store: { cuit?: string; storeId?: string; locality: string };
+  fiscal?: { ptoVta: number; tipoCmp: number; nroCmp: number; fecha: string; importeTotal: string; codAut: string };
+  items: Array<{ ean?: string; description: string; qty: string; unitPrice: string; lineTotal: string }>;
+  promotions: Array<{ kind: 'bank' | 'wallet' | 'store' | 'unknown'; label: string; amount: string }>;
+  paidTotal: string;                 // lo efectivamente pagado
+  observedAt: string;
+  status: ObservationStatus;         // accepted → aggregation_eligible (ver máquina de estados)
+};
+
+type Verification = {
+  observationId: string;
+  checks: Array<{ name: string; result: 'pass' | 'fail' | 'unknown'; evidence?: string }>;
+  level: VerificationLevel;          // ver doc 16, §2
+  decidedBy: 'auto' | 'reviewer';
+  decidedAt: string;
+};
+
+type Payout = {
+  payoutId: string;
+  contributorId: string;
+  observationIds: string[];
+  amountAtomic: string;
+  token: TokenRef;
+  idempotencyKey: string;            // derivado de los observationIds
+  fundingSource: 'task' | 'reserve'; // reserve si el encargo no entregó resultado (doc 16, §4.3)
+  batchId: string | null;
+  txHash: string | null;
+  status: PayoutStatus;
+};
+
+type Aggregate = {                   // un resultado; lo único que se vende
+  aggregateId: string;
+  dataProductId: string | null;      // null si es el resultado de un encargo
+  taskId: string | null;
+  scope: { ean?: string; zone: string; from: string; to: string };   // celda fija (doc 16, §7.3)
+  stats: { medianPaid: string; p25: string; p75: string; listPriceRef?: string; promoShare: number };
+  n: { observations: number; contributors: number; stores: number };
+  minVerificationLevel: VerificationLevel;
+  status: 'draft' | 'deliverable' | 'suppressed' | 'delivered';
+  datasetHash: string;               // sha256 del resultado; puede anclarse onchain
   createdAt: string;
 };
 
-type SolverQuote = {
-  quoteId: string;
-  intentId: string;
-  solverId: string;
-  token: 'USDC';
-  tokenChainId: number;
-  tokenAmountAtomic: string;   // executable price comes from here
-  fiatAmountMinor: string;
-  feeBreakdown: Array<{ kind: string; amount: string; currency: string }>;
-  validUntil: string;          // maps to preApprovalExpiry
-  signature: string;           // solver signs the quote
-};
+type VerificationLevel = 'L0_unverified' | 'L1_fiscal_qr' | 'L2_fiscal_confirmed' | 'L3_corroborated';
+```
 
-type SettlementAttestation = {
-  paymentInfoHash: string;
-  solverId: string;
-  fiatAmountMinor: string;
-  railReference: string;       // e.g. transfer/operation id reported by the PSP
-  issuedAt: string;
-  signature: string;           // EIP-712; a signed claim, not proof of credit
-};
+### Contrato de datos legible por agentes
 
-interface SolverAdapter {
-  canHandleQr(qrRaw: string, country: 'AR'): Promise<boolean>;
-  requestQuote(intent: PaymentIntent): Promise<SolverQuote>;
-  // Must only execute after the onchain commitment is final (invariant I1).
-  executeFiat(paymentInfoHash: string, idempotencyKey: string): Promise<void>;
-  getSettlementStatus(paymentInfoHash: string): Promise<'pending' | 'executed' | 'not_executed' | 'unknown'>;
-  getAttestation(paymentInfoHash: string): Promise<SettlementAttestation | null>;
+Cada `DataProduct` expone, gratis y antes de cualquier pago, lo necesario para que un agente decida automáticamente si vale la pena comprar:
+
+| Campo | Qué responde |
+|---|---|
+| `coverage` | Geografía, tipos y cantidad de comercios, categorías |
+| `freshness` | Antigüedad de la observación más vieja y más nueva, y cada cuánto se actualiza |
+| `origin` | Tipo de evidencia: ticket o foto de góndola |
+| `minVerificationLevel` | Nivel mínimo (L0–L3) de las observaciones usadas (doc 16, §2) |
+| `counts` | Cantidad de observaciones y de contribuyentes distintos |
+| `license` | Uso permitido del resultado; sin reventa ni reidentificación (doc 16, §7.2) |
+| `price` | Monto, token y unidad de cobro |
+
+**Dónde se publica:** `GET /v1/products` y `GET /v1/products/{id}` (REST, gratis), la tool MCP `list_products` y la descripción de cada recurso pago en la extensión `bazaar` del 402. La descripción de la tool MCP de compra (`get_prices`) incluye el `dataProductId` y remite a ese contrato. Los `counts` publicados nunca bajan de los umbrales de privacidad: un producto bajo el umbral no se lista.
+
+### Licencias y monetización de datos existentes
+
+El pool de datos existentes del modo A se alimenta con contribuciones espontáneas (`taskId: null`) y con observaciones de encargos cuya licencia lo permite (`licenseScope: 'pool'`, vencida `exclusivityUntil`). La misma observación puede contribuir a ventas a varios agentes.
+
+| Opción | Cómo se recompensa | Requisitos | Estado |
+|---|---|---|---|
+| **Pago único al aceptar** | Una recompensa fija cuando la observación pasa a `accepted`; las ventas posteriores son ingreso de la plataforma | Licencia `pool` clara en el consentimiento | **Elegida para la demo** [Diseño] |
+| Pool limitado a datos de prueba | Sin recompensa por reventa: el pool del modo A de la demo solo contiene tickets del equipo | Ninguno | Alternativa para la demo |
+| Reparto de ingresos (regalías) | Una parte de cada venta se reparte entre las observaciones que contribuyeron al agregado | Ledger de atribución por agregado, términos de licencia y reglas de distribución; ninguno está diseñado | Opción futura, fuera del hackathon |
+
+El retiro del consentimiento saca la observación de ventas futuras (doc 16, §7.1).
+
+## Máquina de estados de la tarea
+
+```text
+quoted ──pago/authorize──► funded ──► open ──resultado deliverable──► fulfilled ──► delivered ──► settled
+                                       │  ▲                                                     (cobro de lo
+                                       │  └─ paused (fraude sospechado, sin cupo, reserva baja)  entregado, sobrante
+                                       │                                                         devuelto)
+                                       ├──deadline sin criterios──► expired ──► partially_delivered | refunded
+                                       ├──cancelación del agente──► cancelled ──► refunded (sobrante o 100 %)
+                                       ├──la plataforma no puede operar──► cancelled ──► refunded (100 %)
+                                       └──impugnación──────────────► disputed ──► settled | refunded
+```
+
+- `funded` solo existe con el pago verificado y liquidado (demo) o con la retención confirmada onchain (experimento `auth-capture`).
+- En `expired` pasa a `partially_delivered` solo si `partialAccepted` es `true` y el parcial es `deliverable` (cumple `minPartialObservations` y los umbrales de privacidad); el agente paga solo lo incluido. En cualquier otro caso pasa a `refunded` y recupera el 100 %. La regla se publica en la cotización (doc 16, §5.2).
+- La cancelación no anula recompensas de observaciones ya aceptadas: esas se pagan siempre, con cargo a la reserva si no hubo cobro (invariante I4 del doc 16).
+
+## Máquina de estados de la contribución y la observación
+
+```text
+submitted ──► screening ──fail──► rejected (formato, sin consentimiento, duplicado exacto)
+                 │
+                 ▼
+             extracting ──► verifying ──pass──► accepted ──licencia, consentimiento y nivel──► aggregation_eligible
+                                │                  │
+                                ├──dudoso──► needs_review ──► accepted | rejected
+                                └──fail──► rejected
+ accepted ──fraude detectado antes del pago──► revoked
+ cualquier estado ──el contribuyente retira el consentimiento──► withdrawn (sale de agregados futuros)
+
+ Recompensa (independiente de la elegibilidad):  accepted ──► reward_pending ──► paid
+
+ Resultado (Aggregate):  draft ──criterios del comprador + umbrales de privacidad──► deliverable ──► delivered
+                           └──no alcanza k, m o los criterios──► suppressed (no se cobra)
+```
+
+Tres estados que no hay que confundir (esta tabla es la definición canónica; los docs 03, 16 y el ADR 0002 la repiten):
+
+| Estado | Nivel | Qué significa | Consecuencia |
+|---|---|---|---|
+| `accepted` | Observación | Pasó la verificación del nivel exigido | Genera la recompensa del contribuyente |
+| `aggregation_eligible` | Observación | Aceptada, con licencia que permite este uso, consentimiento vigente y nivel de verificación igual o mayor que el exigido por el producto o la tarea. Los umbrales de privacidad no se evalúan aquí: se aplican al resultado `deliverable` | Puede entrar en un agregado |
+| `deliverable` | Resultado | El agregado cumple los requisitos del comprador y los umbrales de privacidad | Se entrega y se cobra |
+
+- `accepted` genera la obligación de recompensa; solo un resultado `deliverable` genera cobro al agente.
+- `revoked` solo es posible antes de `paid`. Después del pago no hay clawback: el riesgo lo asume la plataforma (doc 16, §1.4).
+- Los estados de payout (`pending → batched → submitted → confirmed | failed | unknown`) son independientes: un `unknown` nunca se reintenta sin conciliar primero contra la cadena.
+
+## Contratos de adaptadores
+
+Son interfaces de **nuestro dominio**; no reproducen la API de ningún proveedor.
+
+```ts
+interface PaymentRail {
+  // Modo A y demo de modo B: cobro directo (x402 exact). No es un escrow.
+  buildRequirements(route: string, amountAtomic: string, token: TokenRef): PaymentRequirements;
+  // Experimento separado para modo B: presupuesto retenido (x402 auth-capture).
+  holdBudget?(taskId: string, maxAtomic: string, deadline: string): Promise<HoldRef>;
+  capture?(hold: HoldRef, amountAtomic: string, feeAtomic: string, idempotencyKey: string): Promise<TxRef>;
+  releaseRemainder?(hold: HoldRef): Promise<TxRef>;      // void
+  refund?(paymentRef: PaymentRef, amountAtomic: string): Promise<TxRef>; // demo: transferencia desde el tesoro
+}
+
+interface PayoutRail {
+  sendBatch(items: Array<{ to: string; amountAtomic: string; idempotencyKey: string }>, token: TokenRef): Promise<BatchRef>;
+  getBatchStatus(batch: BatchRef): Promise<'pending' | 'confirmed' | 'failed' | 'unknown'>;
+}
+
+interface Extractor {                 // LLM de visión u OCR dedicado
+  extract(media: MediaRef, hints: { expectedTotal?: string; storeCuit?: string }): Promise<{
+    observation: Omit<Observation, 'observationId' | 'contributionId'>;
+    confidence: number;               // 0..1, calibrado contra el set de prueba
+    modelVersion: string;
+  }>;
+}
+
+interface Verifier {                  // una implementación por capa (doc 16, §2)
+  name: string;
+  check(obs: Observation, ctx: VerificationContext): Promise<{ result: 'pass' | 'fail' | 'unknown'; evidence?: string }>;
 }
 ```
 
-**Advertencia:** un PSP real puede no exponer todas estas operaciones. No hay que forzar el adaptador sobre capacidades que no existen: mapear la integración a lo que el contrato con el PSP permita.
-
-## Estado y conciliación
-
-El modelo completo está en el doc 16, §4. Este es el resumen de estados de negocio:
-
-```mermaid
-stateDiagram-v2
-  [*] --> created
-  created --> quoted: RFQ ok
-  created --> failed: QR o usuario no elegible
-  quoted --> failed: cotización vencida
-  quoted --> authorized: firma + authorize
-  authorized --> committed: el solver se compromete
-  authorized --> refunded: sin compromiso a tiempo → void
-  committed --> succeeded: declaración válida → capture
-  committed --> refunded: el solver firma "no ejecutado" → void
-  committed --> unknown: no llega la confirmación
-  unknown --> succeeded: llega la declaración antes de authorizationExpiry
-  unknown --> reclaimed: vence authorizationExpiry → reclaim del pagador
-  succeeded --> disputed: impugnación antes de refundExpiry
-  disputed --> refunded: solo con reembolso financiado
-  disputed --> succeeded
-```
-
-- `unknown` **nunca** se muestra como fallido ni como reembolsado: el usuario ve "Pago en verificación" y el plazo máximo.
-- Los estados de negocio propios no se equiparan automáticamente a los estados de cada solver. Hay que mantener una tabla de mapeo versionada.
+**Advertencia:** `holdBudget`, `capture` y `releaseRemainder` son opcionales porque el riel de la demo (`exact`) no los tiene. El task engine no puede asumir escrow si el riel no lo declara.
 
 ## Política de integridad
 
-- `intentId` es un UUID propio. Las referencias externas son únicas por solver.
-- La clave de idempotencia del pago fiat deriva de `paymentInfoHash`. El solver rechaza duplicados.
-- Un intent por escaneo: si hay un pago en `committed` o `unknown` para el mismo QR, se muestra ese pago y no se crea otro.
-- Las actualizaciones por eventos solo pasan a estados permitidos; se rechazan los retrocesos incoherentes.
-- Los callbacks se aceptan con firma o HMAC, chequeo de timestamp y protección contra repetición. Los duplicados no cambian estados correctos.
-- No se registran en logs el QR completo ni secretos. Onchain van solo hashes, nunca CVU, alias ni nombres.
-- La confirmación onchain y la confirmación fiat están desacopladas.
+- `taskId`, `contributionId` y `observationId` son UUID propios.
+- Dedupe fiscal: `(cuit, ptoVta, tipoCmp, nroCmp)` del QR fiscal es único en todo el sistema. Un mismo comprobante no se acepta dos veces, ni en tareas distintas.
+- Dedupe de imagen: `sha256` exacto y `pHash` con distancia de Hamming bajo umbral, en ventana por comercio y fecha (doc 16, §3).
+- La recompensa se calcula una sola vez por observación aceptada; la clave de idempotencia del payout deriva de los `observationId`.
+- Cada pago x402 guarda su `payment-identifier` con restricción única; un reintento con el mismo identificador devuelve el resultado ya pagado sin volver a cobrar (doc 16, §5.3).
+- Del JSON del QR fiscal se descartan `tipoDocRec` y `nroDocRec` (documento del comprador) antes de persistir.
+- Logs sin imágenes, sin URL firmadas y sin el payload completo del QR.
+- Callbacks y webhooks a agentes firmados con HMAC y protegidos contra repetición.
 
 ## Evolución
 
-1. Hackathon: dos solvers simulados, USDC en Base Sepolia, el flujo completo con sus ramas de falla.
-2. Argentina: un PSP real como solver, si acepta las invariantes y entrega evidencia (doc 16, §7).
-3. Un segundo solver real solo si mejora la confiabilidad o el costo y el contrato lo permite.
-4. Más activos o redes solo con demanda validada (doc 15, experimentos opcionales).
-5. Brasil (Pix) después de validar la demanda y el cumplimiento normativo.
-6. Solvers con garantía y slashing (estilo ERC-7683) como visión.
+1. Hackathon: modo A y modo B en Celo Sepolia con el facilitator de testnet, contribuyentes del equipo, revisión manual, cliente automático simple.
+2. Spikes y experimentos separados: `auth-capture` (Base Sepolia o despliegue en Celo), constatación ARCA, extracción con 100 tickets argentinos, World ID, MiniPay.
+3. Piloto: una zona, pocas categorías, topes, fondos reales solo con el doc 16, §10 cerrado.
+4. Segundo riel: oferta en Base para entrar al índice de Coinbase (Bazaar) si la demanda de agentes lo justifica.
+5. Verificación más fuerte (zkTLS de facturas web, C2PA, atestación de dispositivo) solo si el fraude medido lo exige.
+6. Reparto de ingresos a contribuyentes, solo con ledger de atribución, términos de licencia y reglas de distribución diseñados.
+7. Otros países de LatAm con su propio formato fiscal.
 
 ## Decisiones técnicas abiertas
 
-- Spike de `AuthCaptureEscrow` (ADR 0001): expiraciones, compromiso, `capture`, `void`, `reclaim`, confirmación fiat perdida y wallets (EOA, ERC-1271, Base Account). No se construye un escrow propio por ahora.
-- Spike de Chainlink CRE (ADR 0002): pedir acceso de despliegue solo si se decide probarlo.
-- Plazos de producción: `commitDeadline`, `authorizationExpiry`, `refundExpiry`.
-- Garantía de los solvers: alternativas en el doc 16, §9.1, sin elegir. Sin una garantía financiada no hay reembolso después de `capture`.
-- Alcance de la suspensión de un solver y composición de la gobernanza (doc 16, §8.5).
-- Expo development build o React Native bare, según las dependencias de wallet.
-- Qué evidencia bancaria entrega realmente cada PSP, y si hay fixtures reales de QR argentinos.
+- **Red principal:** Celo (wARS, facilitator con gas patrocinado, MiniPay, lotes baratos) frente a Base (escrow ya desplegado, índice de Coinbase). La recomendación es Celo para la demo y el escrow como experimento separado; ver doc 15 y [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md).
+- **Escrow de presupuestos:** desplegar `AuthCaptureEscrow` en Celo, operar los encargos en Base, o mantener el tesoro con custodia y topes. Ver doc 16, §4.
+- **Monetización del pool:** pago único al aceptar (demo) frente a reparto de ingresos (futuro); exclusividad de los encargos y su precio (doc 16, §7.2).
+- **Reserva de garantía:** porcentaje del precio y saldo mínimo para cubrir recompensas de encargos no entregados (doc 16, §4.3).
+- **Verificación vendida como "verificada":** niveles mínimos por producto; ver [ADR 0002](adr/0002-verificacion-de-observaciones.md).
+- **Receptor de capturas:** el `receiver` de `auth-capture` es una sola dirección. Las recompensas pasan por un tesoro nuestro (custodia en tránsito) o por un contrato distribuidor. Sin decidir.
+- **Token de recompensa:** USDC/USDT en Celo (MiniPay exige USDT y no admite wARS) frente a wARS fuera de MiniPay.
+- **Precio por tipo de observación:** ticket existente frente a visita encargada (ver pricing).
+- **Umbral k** por defecto y política de supresión (doc 16, §7).
+- **App del contribuyente:** MiniApp de MiniPay frente a app nativa (necesaria para atestación de dispositivo y C2PA).
+- **Disponibilidad de MiniPay en Argentina** [Pendiente].
