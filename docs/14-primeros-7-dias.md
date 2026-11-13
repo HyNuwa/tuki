@@ -79,17 +79,20 @@ Revisión del usuario (cita textual):
 - Cotización gratuita del encargo: viabilidad, presupuesto sugerido y regla de reembolso.
 - Financiación con x402 `exact` hacia el tesoro de tareas en testnet (custodia temporal); el ledger registra el presupuesto retenido.
 - App web mínima del contribuyente: aceptar condiciones (texto versionado), ver encargos, subir ticket, ver estado.
-- Conectar la subida al pipeline del día 3; solo `accepted` consume presupuesto.
+- Conectar la subida al pipeline del día 3 y separar dos asientos económicos en el ledger:
+  - **Observación `accepted`** → pasivo de recompensa al contribuyente (`contributor.owed`), pagado con el presupuesto del encargo o con la reserva de la plataforma según el [doc 16](16-modelo-seguridad-verificacion-pagos.md), §4.3. No cobra nada al comprador.
+  - **Resultado `deliverable`** → cobro al comprador (`task.charged`, capturado del presupuesto) solo por las observaciones incluidas en el resultado entregado.
 - Cierre del encargo: resultado al cliente y devolución del presupuesto no usado.
 
 **Entregable:** el cliente automático crea y financia un encargo; el equipo aporta tickets; el encargo cierra con resultado.
-**Chequeo:** el presupuesto nunca se excede; al cerrar, presupuesto = capturado + reembolsado.
+**Chequeo:** el cobro nunca excede el presupuesto; al cerrar, presupuesto = cobrado por resultados entregables + reembolsado; y, por separado, recompensas devengadas = pagadas + pendientes, imputadas al cobro o a la reserva.
 
 ## Día 6: verificación, privacidad, ledger, pagos de prueba y fallas
 
 - Pagos de recompensa en lote con USDC de testnet desde el tesoro: una obligación idempotente por observación aceptada.
 - Conciliación: un pago en estado `unknown` no se reintenta sin revisar la cadena.
 - Umbral k y supresión: un agregado que no lo cumple no expone precios.
+- Probar los dos asientos por separado: un encargo incompleto sin parcial aceptado cobra 0 al comprador, reembolsa el 100 % y aun así paga las recompensas aceptadas con cargo a la reserva.
 - Correr los escenarios del PRD: presupuesto agotado, encargo incompleto por debajo de k con reembolso, ticket duplicado, falla de extracción, x402 cobrado sin resultado entregable, retiro del consentimiento.
 - Revisar que no haya datos personales ni imágenes en logs, respuestas ni cadena.
 

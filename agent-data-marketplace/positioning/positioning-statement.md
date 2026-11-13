@@ -7,7 +7,7 @@ Las declaraciones siguientes son para el **primer comprador que paga** (wedge). 
 
 ## Declaración de Moore
 
-Para **gerentes comerciales o de trade de marcas regionales de consumo masivo y sus distribuidores con venta relevante en almacenes, kioscos y autoservicios sin POS**, que necesitan saber a qué precio se vende de verdad su producto y el de la competencia (después de promociones bancarias y de billetera) y si está en la góndola en comercios que su fuerza de ventas no cubre, **el marketplace es un servicio de relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional** que entrega, por encargo, observaciones verificadas con ticket fiscal y foto, desde pocos dólares por observación. **A diferencia de** las olas de auditoría de campo (bemyeye, desde €10.000 por ola) y de los reportes de los propios preventistas, **el marketplace** permite encargar lotes chicos con reglas de aceptación y niveles de verificación declarados antes de pagar, reembolsa el resultado no entregado, y lo puede comprar directamente el agente de pricing del cliente vía API, MCP y x402.
+Para **gerentes comerciales o de trade de marcas regionales de consumo masivo y sus distribuidores con venta relevante en almacenes, kioscos y autoservicios sin POS**, que necesitan saber a qué precio se vende de verdad su producto y el de la competencia (con las promociones bancarias y de billetera aplicadas en caja) y si está en la góndola en comercios que su fuerza de ventas no cubre, **el marketplace es un servicio de relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional** que entrega, por encargo, lotes de observaciones verificadas con ticket fiscal y foto y criterios de entrega declarados. **A diferencia de** las olas de auditoría de campo (bemyeye, desde €10.000 por ola) y de los reportes de los propios preventistas, **el marketplace** permite encargar lotes chicos con reglas de aceptación y niveles de verificación declarados antes de pagar, reembolsa el resultado no entregado, y lo puede comprar directamente el agente de pricing del cliente vía API, MCP y x402.
 
 El cierre (reembolso y compra vía API/MCP/x402) completa la oferta; no es diferencial: la compra nativa para agentes es el atributo 5, declarado requisito de entrada en `positioning-doc.md`.
 
@@ -17,16 +17,16 @@ El cierre (reembolso y compra vía API/MCP/x402) completa la oferta; no es difer
 
 **Solo uso interno.** No usar "el único" en público antes del piloto (ver `messaging-implications.md`).
 
-El marketplace es el único servicio de relevamiento de precio pagado que permite encargar, desde pocos dólares por observación y con reglas de aceptación públicas, observaciones verificadas del canal tradicional argentino, compradas por una persona o por su agente.
+El marketplace es el único servicio de relevamiento de precio pagado que permite encargar lotes de observaciones verificadas del canal tradicional argentino, con criterios de entrega y reglas de aceptación públicas, compradas por una persona o por su agente.
 
 > **Confianza: Media** en que la combinación no existe hoy (búsqueda Light); **Baja** en que se pueda entregar.
 
 ## Declaración de unicidad (extendida)
 - **QUÉ:** servicio de relevamientos bajo demanda de precio pagado y disponibilidad (subcategoría de inteligencia de precios).
-- **CÓMO:** encargos programáticos chicos (US$1-50 por observación) con reglas de aceptación públicas y niveles L0-L3, sobre tickets con total conciliado contra el QR fiscal.
+- **CÓMO:** lotes de observaciones comerciales con calidad y criterios de entrega (el diferencial no es el precio pequeño: Loopuman y WURK ya ofrecen encargos baratos [Data, deep research 2026-11-13]) con reglas de aceptación públicas y niveles L0-L3, sobre tickets con total conciliado contra el QR fiscal.
 - **QUIÉN:** gerentes comerciales y de trade de marcas regionales y distribuidores con venta en el canal tradicional; consultoras de precios como design partners.
 - **DÓNDE:** Argentina, empezando por una geografía del interior (NOA) como primera zona operativa, no como diferencial.
-- **POR QUÉ:** decidir precios y promociones con el precio neto que paga el consumidor, en comercios sin POS ni e-commerce.
+- **POR QUÉ:** decidir precios y promociones con el precio neto que paga el consumidor (total del ticket con promociones visibles en caja; los reintegros posteriores son una señal aparte), en comercios sin POS ni e-commerce.
 - **CUÁNDO:** en un momento en que un mismo producto tiene más de cinco precios según el medio de pago y los agentes de pricing empiezan a llegar a marcas medianas.
 
 > **Confianza: Media.** El QUÉ, el CÓMO y el CUÁNDO tienen evidencia de mercado; el QUIÉN es [Assumption].

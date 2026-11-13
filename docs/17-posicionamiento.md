@@ -9,10 +9,11 @@
 
 1. **El producto se define así** (definición del usuario, adoptada sin cambios):
    > **Marketplace de datos del mundo real para agentes de IA.** Los agentes pueden descubrir, comprar y encargar información verificable mediante x402. Las personas aportan observaciones del mundo físico, como tickets de compra, reciben recompensas y mantienen protegidos sus datos personales.
-2. **El diferencial central es Modo B: encargar información que todavía no existe.** El mecanismo por sí solo no diferencia: Vangrid ya opera bounties físicos pagados por agentes vía x402 [Data]. Diferencia la combinación de Modo B con la vertical de comercio físico (precio pagado y disponibilidad), el rango de US$1-50 por observación y las reglas de aceptación públicas [Opinion].
+2. **El diferencial central es Modo B: encargar información que todavía no existe.** El mecanismo por sí solo no diferencia: Vangrid ya opera bounties físicos pagados por agentes vía x402 [Data]. La hipótesis diferencial es **el lote de observaciones comerciales con calidad y criterios de entrega, no el precio pequeño**: Modo B en la vertical de comercio físico (precio pagado y disponibilidad), con reglas de aceptación públicas y umbrales de privacidad. Los encargos baratos ya existen (Loopuman, WURK) [Opinion; Data, deep research 2026-11-13].
 3. **La demanda agéntica no está medida.** El volumen x402 genuinamente agéntico ronda US$5.000-11.000 por mes a nivel global en 2026 (TRM Labs); RentAHuman tenía 81.000 humanos frente a 82 agentes activos (2026-02) [Data, Tier 2-3]. No afirmamos ser los primeros ni tener demanda validada.
 4. **Recomendación de entrada al mercado (wedge):** vender primero a un **comprador humano** (gerente comercial o de trade de una marca regional o distribuidor con venta en almacenes y kioscos) bajo el marco **"relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional"**, con los agentes como canal de compra. El agente compra; la persona financia y firma el presupuesto [Opinion; confianza Media].
-5. **Fortaleza del posicionamiento: Moderada, como hipótesis testeable.** Es específico y falsable, pero ningún comprador lo confirmó y la premisa central (brecha entre precio de lista y precio pagado) no está medida.
+5. **Separación estratégica.** Quién financia primero: una empresa con presupuesto real. Quién interactúa con el sistema: su agente, mediante API/MCP y x402. Qué vendemos: un resultado de datos verificados, no horas de trabajo humano. La tecnología sigue siendo agent-first: el agente descubre datos, evalúa contratos de entrega, gasta dentro de límites autorizados y encarga automáticamente.
+6. **Fortaleza del posicionamiento: Moderada, como hipótesis testeable.** Es específico y falsable, pero ningún comprador lo confirmó y la premisa central (brecha entre precio de lista y precio pagado) no está medida.
 
 ## El producto en dos modos
 
@@ -30,7 +31,7 @@ Tres conceptos que no se mezclan: **datos aportados** (información física entr
 ## Por qué un comprador humano primero
 
 - **Hay presupuesto existente del lado humano:** el trade marketing ya paga olas de auditoría (bemyeye desde €10.000 por ola), preventistas y apps de trade [Data/Assumption].
-- **No hay presupuesto medido del lado agéntico:** ver punto 3 de la conclusión. Además, la transacción promedio de comercio agéntico es de US$0,14 (Visa/Artemis, vía prensa) frente a nuestros US$1-50 por observación [Data, secundaria].
+- **No hay presupuesto medido del lado agéntico:** ver punto 3 de la conclusión. Además, la transacción promedio de comercio agéntico es de US$0,14 (Visa/Artemis, vía prensa) frente a nuestros US$1,50-10 por observación incluida en un lote entregable [Data, secundaria; Estimate]. Por eso vendemos lotes con criterios de entrega, no microtransacciones.
 - **El comprador no usa nuestro vocabulario:** "agente", "x402" y "stablecoins" no aparecen en ninguna fuente del lado comprador; sí aparecen "precio neto", "canal tradicional", "relevamiento" [Opinion sobre la muestra].
 - **Los agentes llegan por adentro del comprador:** el comprador agéntico realista es el agente interno de pricing o RGM de una marca o distribuidor (47% de retail y CPG usa o evalúa IA agéntica, encuesta NVIDIA 2026-01), no un agente autónomo en la web abierta [Data, vendor; Opinion].
 - **El canal agéntico abierto se ocupa igual, sin contar con él:** listarse en Bazaar y en registries MCP cuesta casi nada [Data].
@@ -51,12 +52,12 @@ La revisión del usuario propone tres grupos. Se agregan los dos grupos más cer
 | **Infraestructura de datos para agentes** | Apify (x402) | Scrapers pagables por agentes; Actor de Jumbo AR desde ~US$6,15 por 1.000 resultados | Perfilado [Data] | Información generada físicamente por personas, no solamente datasets existentes |
 | | Massive | Datos financieros vía x402, precio por ruta | Perfilado [Data] | Idem |
 | | Sella (selltoagent.dev) | Marketplace de servicios para agentes, créditos ante fallas | Perfilado [Data] | Idem |
-| **Tareas físicas para agentes** (los más cercanos) | Vangrid | Bounties físicos vía x402 con atestación EAS (la prensa describe pago por x402 con escrow liberado on-chain al aceptar la entrega y reembolso total al cancelar o vencer; no se verificó con documentación primaria si los fondos quedan en un contrato de escrow o en una wallet operadora custodial); desde US$50; sin LatAm; seed de US$9M autodeclarado | Perfilado [Data, prensa Tier 2; custodia confianza Media] | Vertical de comercio, US$1-50 por observación, Argentina. **El mecanismo no diferencia** |
+| **Tareas físicas para agentes** (los más cercanos) | Vangrid | Bounties físicos vía x402 con atestación EAS (la prensa describe pago por x402 con escrow liberado on-chain al aceptar la entrega y reembolso total al cancelar o vencer; no se verificó con documentación primaria si los fondos quedan en un contrato de escrow o en una wallet operadora custodial); desde US$50; sin LatAm; seed de US$9M autodeclarado | Perfilado [Data, prensa Tier 2; custodia confianza Media] | Vertical de comercio, lotes con criterios de entrega, Argentina. **El mecanismo no diferencia** |
 | | RentAHuman | Agentes contratan humanos por hora vía MCP; 787k perfiles (2026-11, contador del sitio); 81.000 humanos frente a 82 agentes activos (2026-02) | Perfilado [Data, Tier 3] | Dato estructurado y verificado, no horas de trabajo |
 | | Loopuman | Agentes encargan presencia física o datos vía API/MCP, revisión del solicitante, pago **en Celo**; 20 % de comisión y retiro mínimo de US$1 (2026-11-12); primer encargo creado por agente declarado el 2026-10-09 | Deep research [Data, autodeclarado] | Vertical de comercio con precio pagado, reglas de aceptación y umbrales de privacidad; Loopuman es horizontal y la revisión la hace el solicitante |
 | | Execution Market | MCP/REST/A2A; evidencia tipada (foto geolocalizada, recibo), escrow EVM al asignar, pago USDC; prueba E2E propia en Base (2026-02-13) | Deep research [Data, sin clientes independientes] | Producto de datos agregado y entregable, no tarea suelta |
 | | WURK | Microtrabajos x402/USDC en Solana y Base con API/MCP; un caso documentado de tarea física (volantes, 2026-07-10); presets desde US$0,02 por posición premiada | Deep research [Data, del proveedor] | Observación verificada con nivel declarado, no premio de microtarea |
-| **Auditoría de campo** (los más cercanos en Modo B) | Premise | Microtareas de campo; 6M de contribuyentes declarados; en contracción | Perfilado [Data] | Encargo programático chico, aceptación pública, precio pagado |
+| **Auditoría de campo** (los más cercanos en Modo B) | Premise | Microtareas de campo; 6M de contribuyentes declarados; en contracción | Perfilado [Data] | Lote programático con criterios de entrega, aceptación pública, precio pagado |
 | | bemyeye | Auditorías de tienda por ola, desde €10.000 | Perfilado [Data] | Lote de 200 observaciones: US$300 (tickets) a US$1.000-2.000 (visitas encargadas) [Estimate; tabla de precios por tipo]; calidad comparable no probada |
 
 **Status quo, la competencia real del primer comprador:** la fuerza de ventas propia (preventistas), las planillas y la intuición. El argumento es "lo que tu fuerza de ventas no llega a ver", no "más barato que Scanntech" [Opinion]. Mapa completo en [competitive-alternatives.md](../agent-data-marketplace/positioning/competitive-alternatives.md).
@@ -67,7 +68,7 @@ La revisión del usuario propone tres grupos. Se agregan los dos grupos más cer
 |---|---|---|
 | 1 | Precio efectivamente pagado, incluida la promoción bancaria o de billetera visible en el ticket, con el total conciliado contra el QR fiscal | Sí, en AR [Data/Assumption]. Los reintegros acreditados después no figuran en el ticket |
 | 2 | Cobertura bajo demanda del canal tradicional (almacenes, kioscos); NOA como primera geografía, no como diferencial | Hipótesis: el canal tradicional de Scanntech no está publicado |
-| 3 | Encargos programáticos chicos, US$1-50 por observación | **Parcial**: Vangrid arranca en US$50, pero Loopuman (Celo, retiro desde US$1) y WURK ya cubren microtareas chicas de forma horizontal. Lo que queda es el formato de lote de observaciones de comercio con criterios de entrega [Data, deep research 2026-11-13] |
+| 3 | Lote de observaciones comerciales con calidad y criterios de entrega (no el precio pequeño) | **Parcial, como hipótesis**: el precio chico no diferencia: Vangrid arranca en US$50, pero Loopuman (Celo, retiro desde US$1) y WURK ya cubren microtareas chicas de forma horizontal. Lo que queda es el formato de lote de observaciones de comercio con criterios de entrega [Data, deep research 2026-11-13] |
 | 4 | Reglas de aceptación públicas y niveles de verificación declarados L0-L3 ([ADR 0002](./adr/0002-verificacion-de-observaciones.md)) | Sí frente a paneles y field audit: el rechazo opaco es el primer motivo de abandono de contribuyentes [Data] |
 | 5 | Compra y encargo nativos para agentes (x402, MCP) | **No**: Vangrid, RentAHuman, Loopuman, Execution Market, WURK, Apify, Massive y Sella ya lo tienen |
 
@@ -78,14 +79,14 @@ Atributos que solo conoce el equipo fundador (experiencia, relaciones, acceso a 
 ## Declaraciones de posicionamiento
 
 **Moore (comprador que paga primero):**
-> Para gerentes comerciales o de trade de marcas regionales de consumo masivo y sus distribuidores con venta relevante en almacenes, kioscos y autoservicios sin POS, que necesitan saber a qué precio se vende de verdad su producto y el de la competencia (después de promociones bancarias y de billetera) y si está en la góndola en comercios que su fuerza de ventas no cubre, el marketplace es un servicio de relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional que entrega, por encargo, observaciones verificadas con ticket fiscal y foto, desde pocos dólares por observación. A diferencia de las olas de auditoría de campo (bemyeye, desde €10.000 por ola) y de los reportes de los propios preventistas, el marketplace permite encargar lotes chicos con reglas de aceptación y niveles de verificación declarados antes de pagar, reembolsa el resultado no entregado, y lo puede comprar directamente el agente de pricing del cliente vía API, MCP y x402.
+> Para gerentes comerciales o de trade de marcas regionales de consumo masivo y sus distribuidores con venta relevante en almacenes, kioscos y autoservicios sin POS, que necesitan saber a qué precio se vende de verdad su producto y el de la competencia (con las promociones bancarias y de billetera aplicadas en caja) y si está en la góndola en comercios que su fuerza de ventas no cubre, el marketplace es un servicio de relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional que entrega, por encargo, lotes de observaciones verificadas con ticket fiscal y foto y criterios de entrega declarados. A diferencia de las olas de auditoría de campo (bemyeye, desde €10.000 por ola) y de los reportes de los propios preventistas, el marketplace permite encargar lotes chicos con reglas de aceptación y niveles de verificación declarados antes de pagar, reembolsa el resultado no entregado, y lo puede comprar directamente el agente de pricing del cliente vía API, MCP y x402.
 
 **Neumeier (unicidad; solo uso interno, no usar "el único" en público antes del piloto):**
-> El marketplace es el único servicio de relevamiento de precio pagado que permite encargar, desde pocos dólares por observación y con reglas de aceptación públicas, observaciones verificadas del canal tradicional argentino, compradas por una persona o por su agente.
+> El marketplace es el único servicio de relevamiento de precio pagado que permite encargar lotes de observaciones verificadas del canal tradicional argentino, con criterios de entrega y reglas de aceptación públicas, compradas por una persona o por su agente.
 
 **Escalera mental (Ries/Trout):** "Precio neto real del canal tradicional, por encargo."
 
-**Regla de vocabulario:** "precio pagado" va en la etiqueta de categoría y en el texto técnico; "precio neto" va en titulares y copy de venta (igual que en [messaging-implications.md](../agent-data-marketplace/positioning/messaging-implications.md)).
+**Regla de vocabulario:** "precio pagado" va en la etiqueta de categoría y en el texto técnico; "precio neto" va en titulares y copy de venta (igual que en [messaging-implications.md](../agent-data-marketplace/positioning/messaging-implications.md)). En ambos casos significa el total del ticket (`receiptTotal`) con las promociones visibles en caja; los reintegros acreditados después de la compra (por ejemplo, créditos posteriores de MODO o de un banco) son una señal aparte con su propia evidencia (`rebateAmount`, [04](./04-arquitectura-tecnica.md)), nunca sumada al total.
 
 **Resultado de las pruebas:**
 - Iteración 1, agéntica pura ("el único marketplace donde agentes compran y encargan datos físicos verificados vía x402"): **falla** las tres pruebas. Vangrid y RentAHuman ya ocupan ese mecanismo y ese peldaño, y "agentes de IA" no es un cliente con presupuesto medido.
@@ -133,7 +134,7 @@ Todos los números son [Estimate] o [Assumption]. El comprador paga por **result
 
 **Reserva por encargos incompletos.** Si un encargo no alcanza el umbral mínimo, el comprador recupera el dinero del resultado no entregado (salvo que haya aceptado pagar un resultado parcial), y las recompensas ya válidas se pagan igual: la plataforma asume ese riesgo. Ejemplo: de 10 lotes como el anterior, uno se corta al 60%: se pierden US$90 de recompensas y US$42 de procesamiento sin ingreso. Margen total: 9 × 80 − 132 = **US$588 sobre US$2.700 de ingreso (~22%)** [Estimate]. Con dos lotes fallidos de 10, el margen cae a ~16%.
 
-**Reventa en Modo A.** Una observación se recompensa una sola vez al aceptarse; cada venta adicional del mismo agregado tiene costo marginal cercano a cero, siempre que la licencia de reutilización lo permita (doc 16). Ahí está la palanca de margen; las regalías a contribuyentes quedan como opción futura [Opinion].
+**Reventa en Modo A.** Una observación se recompensa una sola vez al aceptarse; cada venta adicional del mismo agregado tiene costo marginal cercano a cero, siempre que la licencia de reutilización lo permita (doc 16). Ahí está la palanca de margen; las regalías a contribuyentes quedan como opción futura [Opinion]. Decisión para la demo: los datos encargados en Modo B **no se revenden** inicialmente (licencia por defecto `task_only`, ver [16](./16-modelo-seguridad-verificacion-pagos.md)) hasta fijar las licencias; la palanca aplica solo a datos aportados con licencia de reutilización.
 
 **Costos no incluidos [DATA GAP]:** costo del facilitador x402 en mainnet para pagos de ~US$0,75 (la demo usa el facilitador de testnet de Celo Sepolia con créditos gratuitos), costo de enviar recompensas en stablecoins, revisión manual, soporte y antifraude.
 
@@ -169,7 +170,7 @@ No hay ningún dato de costo de adquisición de contribuyentes en Argentina. Tod
 
 ## Criterios explícitos de abandono
 
-Umbrales propuestos por este análisis; el equipo debe ratificarlos antes de empezar el piloto. Cumplir un criterio de abandono significa detener la inversión en esa línea, no "seguir intentando".
+Umbrales propuestos por este análisis. **Pendiente (acción del equipo):** ratificar los umbrales propuestos en este documento antes de validar compradores. Cumplir un criterio de abandono significa detener la inversión en esa línea, no "seguir intentando".
 
 Los criterios de compradores son etapas sucesivas, no contradictorias: día 7 de la demo, 2 compradores interesados y 1 que acepta pagar un lote ([14](./14-primeros-7-dias.md)); go/no-go del piloto, 2-3 compromisos escritos ([03](./03-prd-mvp.md)); K1, al menos 2 pilotos pagados al 2027-01-31.
 
@@ -196,7 +197,7 @@ K2 y el spike S3 ([15](./15-stack-tecnologico.md)) miden cosas distintas: **S3 e
 - **Atributos del equipo fundador:** no aportados.
 - **Competidores no verificados:** Halo (existencia), Pogo (no investigado), Scentia y Worldpanel (no reverificados).
 - **Costo del facilitador x402 en mainnet** y del envío de recompensas.
-- **Investigación profunda** sobre demanda agéntica y verificación: en curso al sintetizar; el archivo todavía no está publicado.
+- **Investigación profunda** sobre demanda agéntica y verificación: integrada el 2026-11-13 ([demanda-agentica-y-verificacion.md](../agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md)); sus brechas de demanda siguen abiertas.
 
 ## Entregables de posicionamiento
 

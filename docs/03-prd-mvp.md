@@ -13,7 +13,7 @@
 
 En la demo, el comprador es un **cliente automático simple, sin LLM**: descubre el servicio, consulta la oferta, autoriza un pago y consume el resultado. Un agente con IA puede incorporarse después encima de esa misma interfaz (REST y MCP).
 
-La investigación recomienda que el primer comprador real sea una persona (gerente comercial o de trade de una marca regional o de un distribuidor con venta en canal tradicional; consultoras de inflación como design partners) que usa agentes como canal ([doc 17](17-posicionamiento.md)). La demanda de esos compradores no está validada.
+La investigación recomienda que el primer comprador real sea una persona (gerente comercial o de trade de una marca regional o de un distribuidor con venta en canal tradicional; consultoras de inflación como design partners) que usa agentes como canal ([doc 17](17-posicionamiento.md)). La demanda de esos compradores no está validada. Quién financia primero: una empresa con presupuesto real. Quién interactúa con el sistema: su agente, mediante API/MCP y x402. Qué vendemos: un resultado de datos verificados, no horas de trabajo humano.
 
 ## Dos modos
 

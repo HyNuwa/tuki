@@ -188,6 +188,9 @@ type Task = {                        // modo B: encargo financiado
     minDistinctContributors: number; // también es el umbral de privacidad (k)
     minVerificationLevel: VerificationLevel;
     maxPerContributor: number;
+    minQuorum: number;               // [Diseño] mínimo de privacidad y estadístico; nunca menor que k y m
+    targetQuorum: number;            // [Diseño] cantidad objetivo (= minObservations)
+    minGroundTruthScore?: number;    // [Diseño] concordancia mínima entre contribuyentes independientes (0..1)
     partialAccepted: boolean;        // false: sin resultado completo, reembolso del 100 % (doc 16, §5.2)
     minPartialObservations?: number; // solo si partialAccepted; el parcial también cumple k y m
   };
@@ -195,6 +198,7 @@ type Task = {                        // modo B: encargo financiado
   budgetAtomic: string;              // tope; nunca se cobra más
   chargedAtomic: string;             // solo lo incluido en resultados entregados
   deadline: string;
+  refundDeadline: string;            // obligatorio; se fija en la especificación antes de aceptar presupuestos (valor pendiente)
   exclusivityUntil?: string;         // hasta cuándo sus observaciones no se revenden (doc 16, §7.2)
   funding: PaymentRef;               // exact (demo) o auth-capture (experimento)
   status: TaskStatus;
@@ -220,7 +224,13 @@ type Observation = {                 // un dato normalizado extraído de una con
   fiscal?: { ptoVta: number; tipoCmp: number; nroCmp: number; fecha: string; importeTotal: string; codAut: string };
   items: Array<{ ean?: string; description: string; qty: string; unitPrice: string; lineTotal: string }>;
   promotions: Array<{ kind: 'bank' | 'wallet' | 'store' | 'unknown'; label: string; amount: string }>;
-  paidTotal: string;                 // lo efectivamente pagado
+  receiptTotal: string;              // total bruto impreso en el ticket (= `importe` del QR fiscal), con las promociones visibles en caja
+  rebate?: {                         // señal separada: reintegro acreditado después de la compra (p. ej. crédito posterior de MODO o del banco)
+    rebateAmount: string;            // nunca se suma ni se resta de receiptTotal
+    source: 'bank' | 'wallet' | 'other';
+    evidence: MediaRef;              // evidencia propia: comprobante del crédito bancario o de la billetera
+    verified: boolean;
+  };
   observedAt: string;
   status: ObservationStatus;         // accepted → aggregation_eligible (ver máquina de estados)
 };
@@ -276,11 +286,13 @@ Cada `DataProduct` expone, gratis y antes de cualquier pago, lo necesario para q
 | `license` | Uso permitido del resultado; sin reventa ni reidentificación (doc 16, §7.2) |
 | `price` | Monto, token y unidad de cobro |
 
+**Contrato de entrega de un encargo [Diseño].** Además de los criterios de `acceptance`, el resultado entregable declara un `groundTruthScore` (concordancia entre contribuyentes independientes) y un umbral mínimo (`minGroundTruthScore`); los conflictos de precio entre observaciones se señalan en el resultado, no se ocultan. **Las tools MCP aceptan solo esquemas estructurados de observación comercial** (zona, producto o EAN, ventana, tipo de observación, criterios de aceptación): no hay tareas físicas arbitrarias en texto libre, lo que reduce la superficie de inyección de prompts y de bounties abusivos.
+
 **Dónde se publica:** `GET /v1/products` y `GET /v1/products/{id}` (REST, gratis), la tool MCP `list_products` y la descripción de cada recurso pago en la extensión `bazaar` del 402. La descripción de la tool MCP de compra (`get_prices`) incluye el `dataProductId` y remite a ese contrato. Los `counts` publicados nunca bajan de los umbrales de privacidad: un producto bajo el umbral no se lista.
 
 ### Licencias y monetización de datos existentes
 
-El pool de datos existentes del modo A se alimenta con contribuciones espontáneas (`taskId: null`) y con observaciones de encargos cuya licencia lo permite (`licenseScope: 'pool'`, vencida `exclusivityUntil`). La misma observación puede contribuir a ventas a varios agentes.
+El pool de datos existentes del modo A se alimenta con contribuciones espontáneas (`taskId: null`) y con observaciones de encargos cuya licencia lo permite (`licenseScope: 'pool'`, vencida `exclusivityUntil`). La misma observación puede contribuir a ventas a varios agentes. **Decisión para la demo:** los datos encargados no se revenden inicialmente; la licencia por defecto de un encargo es `task_only` y la reutilización en el pool queda desactivada hasta definir las licencias.
 
 | Opción | Cómo se recompensa | Requisitos | Estado |
 |---|---|---|---|
@@ -392,19 +404,31 @@ interface Verifier {                  // una implementación por capa (doc 16, �
 3. Piloto: una zona, pocas categorías, topes, fondos reales solo con el doc 16, §10 cerrado.
 4. Segundo riel: oferta en Base para entrar al índice de Coinbase (Bazaar) si la demanda de agentes lo justifica.
 5. Verificación más fuerte (zkTLS de facturas web, C2PA, atestación de dispositivo) solo si el fraude medido lo exige.
-6. Reparto de ingresos a contribuyentes, solo con ledger de atribución, términos de licencia y reglas de distribución diseñados.
-7. Otros países de LatAm con su propio formato fiscal.
+6. Mapeo a roles estándar [Pendiente]: Client (empresa o su agente) → Provider (la plataforma) → Evaluator (motor determinístico de quórum y calidad), según ERC-8183 [Pendiente: fuente externa no verificada]. Como referencia de escrow `auth-capture` se puede estudiar x402r / Execution Market (su SDK figura en beta) [Pendiente: fuente externa no verificada]; no se adopta sin auditoría propia.
+7. Reparto de ingresos a contribuyentes, solo con ledger de atribución, términos de licencia y reglas de distribución diseñados.
+8. Otros países de LatAm con su propio formato fiscal.
 
 ## Decisiones técnicas abiertas
 
-- **Red principal:** Celo (wARS, facilitator con gas patrocinado, MiniPay, lotes baratos) frente a Base (escrow ya desplegado, índice de Coinbase). La recomendación es Celo para la demo y el escrow como experimento separado; ver doc 15 y [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md).
+**Decididas para la demo** (no son decisiones de producción):
+
+- **Red:** Celo Sepolia para la demo; Base queda como alternativa para la evolución (escrow `auth-capture`, índice de Coinbase).
+- **Reserva de garantía:** porcentaje provisional para testnet; se define después con escenarios de pérdidas (doc 16, §4.3).
+- **Umbrales k y m:** k = 5 y m = 3 son valores experimentales; se prueban en privacidad y viabilidad antes de vender resultados.
+- **Exclusividad y reventa:** desactivar inicialmente la reventa de datos encargados hasta fijar las licencias (licencia por defecto `task_only`, reutilización en el pool desactivada).
+- **Plazo de reembolso:** `refundDeadline` es un campo obligatorio de la especificación del encargo, fijado antes de aceptar presupuestos; el valor queda pendiente.
+- **Criterios de abandono:** ratificar los umbrales propuestos en el [doc 17](./17-posicionamiento.md) antes de validar compradores (acción del equipo, pendiente).
+
+**Siguen abiertas:**
+
+- **Red principal después de la demo:** Celo (wARS, facilitator con gas patrocinado, MiniPay, lotes baratos) frente a Base (escrow ya desplegado, índice de Coinbase). La recomendación es Celo para la demo y el escrow como experimento separado; ver doc 15 y [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md).
 - **Escrow de presupuestos:** desplegar `AuthCaptureEscrow` en Celo, operar los encargos en Base, o mantener el tesoro con custodia y topes. Ver doc 16, §4.
-- **Monetización del pool:** pago único al aceptar (demo) frente a reparto de ingresos (futuro); exclusividad de los encargos y su precio (doc 16, §7.2).
-- **Reserva de garantía:** porcentaje del precio y saldo mínimo para cubrir recompensas de encargos no entregados (doc 16, §4.3).
+- **Monetización del pool:** pago único al aceptar (demo) frente a reparto de ingresos (futuro); exclusividad de los encargos y su precio una vez definidas las licencias (doc 16, §7.2).
+- **Reserva de garantía (valor definitivo):** porcentaje del precio y saldo mínimo para cubrir recompensas de encargos no entregados (doc 16, §4.3).
 - **Verificación vendida como "verificada":** niveles mínimos por producto; ver [ADR 0002](adr/0002-verificacion-de-observaciones.md).
 - **Receptor de capturas:** el `receiver` de `auth-capture` es una sola dirección. Las recompensas pasan por un tesoro nuestro (custodia en tránsito) o por un contrato distribuidor. Sin decidir.
 - **Token de recompensa:** USDC/USDT en Celo (MiniPay exige USDT y no admite wARS) frente a wARS fuera de MiniPay.
 - **Precio por tipo de observación:** ticket existente frente a visita encargada (ver pricing).
-- **Umbral k** por defecto y política de supresión (doc 16, §7).
+- **Umbrales k y m definitivos** y política de supresión (doc 16, §7).
 - **App del contribuyente:** MiniApp de MiniPay frente a app nativa (necesaria para atestación de dispositivo y C2PA).
 - **Disponibilidad de MiniPay en Argentina** [Pendiente].

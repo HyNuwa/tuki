@@ -25,8 +25,11 @@ Hechos verificados el 2026-11-12:
 | **B. Celo + `AuthCaptureEscrow` desplegado por nosotros** (`auth-capture`, facilitator propio) | Sin custodia del presupuesto; el agente puede hacer `reclaim` si desaparecemos | Hay que desplegar el contrato y operar un facilitator; sin auditoría propia del despliegue |
 | **C. Encargos en Base, recompensas en Celo** | Escrow ya desplegado; índice de Coinbase Bazaar | Dos redes, puente o doble tesorería; más complejidad operativa |
 
+Precedente de la opción C: un informe externo afirma que Loopuman y Agentic Eye ya cobran a agentes con x402 en Base y pagan a personas en Celo, y que el SDK de x402r (escrow `auth-capture`) sigue en beta [Pendiente: fuente externa no verificada].
+
 ## Decisión propuesta
 
+- **Red para la demo (decidida):** Celo Sepolia; Base queda como alternativa para la evolución.
 - **Demo de hackathon:** opción A en Celo Sepolia con el facilitator de testnet: pago `exact` en USDC hacia un tesoro + ledger interno, marcado como [Simulado] y custodial, con el límite de custodia declarado. El agente paga solo resultados entregables y recupera lo no entregado (doc 16, §5). El alcance del hackathon excluye escrow nuevo, `auth-capture`, World ID, MiniPay y varias redes (doc 15).
 - **Protocolo objetivo:** `auth-capture` se mantiene como experimento separado hasta demostrar que el flujo funciona. Opción B si los spikes S1 y S2 lo confirman en Celo Sepolia, y opción C si no.
 - **Recompensas:** lotes de prueba en USDC de testnet en la demo. En un piloto, USDT/USDC en Celo si MiniPay llega a ser el canal de contribuyentes; wARS para quien no use MiniPay. La recompensa es una salida propia, distinta del cobro x402 (doc 16, §4.0).

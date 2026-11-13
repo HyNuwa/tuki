@@ -59,7 +59,7 @@
 | R8 | El emisor pausa USDC/USDT o bloquea una dirección | Quien tenga fondos en tránsito | Ninguna; riesgo del emisor | [Pendiente] |
 | R9 | Regulación: retener fondos de agentes y pagar a terceros puede requerir licencia; recompensas con efecto impositivo | **Plataforma** | Escrow no custodial, topes, revisión legal antes del piloto | [Pendiente] |
 | R10 | El comercio objeta que se publiquen sus precios | **Plataforma** | Solo agregados por zona; política de exclusión; revisión legal (la Ley 25.326 también alcanza a personas de existencia ideal) | [Pendiente] |
-| R11 | Encargos que no llegan al umbral: la plataforma paga recompensas sin cobrarle al agente | **Plataforma** | Reserva de garantía provisionada (§4.3), cotización que rechaza encargos inviables, reutilización de las observaciones en el pool si la licencia lo permite (§7.2) | [Diseño] |
+| R11 | Encargos que no llegan al umbral: la plataforma paga recompensas sin cobrarle al agente | **Plataforma** | Reserva de garantía provisionada (§4.3), cotización que rechaza encargos inviables, reutilización en el pool solo como opción futura, desactivada mientras no se definan las licencias (§7.2) | [Diseño] |
 | R12 | Pago x402 liquidado pero resultado no entregado (error, timeout, respuesta perdida) | **Agente** (temporalmente) y **plataforma** | Orden verify → handler → settle, idempotencia con `payment-identifier`, crédito o reembolso (§5.3) | [Diseño] |
 | R13 | Reidentificación por consultas repetidas o solapadas (ataque de diferencia) | **Contribuyente**; legal: **plataforma** | Celdas fijas, presupuesto de consultas, chequeo de solapamiento global y auditoría (§7.3) | [Diseño] |
 
@@ -93,6 +93,18 @@
 | Granja de cuentas | Muchas cuentas, mismo dispositivo/red, envíos sincronizados | Prueba de humano, `maxPerContributor`, límite de cuentas por dispositivo |
 | Colusión con el comprador (agente que paga para inflar sus propios datos) | Tarea con contribuyentes concentrados | Mínimo de contribuyentes distintos; el agregado no se publica a otros si no pasa los umbrales |
 | Contribuyente que inventa promociones | Promoción no visible en la imagen | Solo se registran promociones legibles en el ticket |
+
+**Controles adicionales [Diseño]** (patrones de auditoría de campo; los casos citados son [Pendiente: fuente externa no verificada]):
+
+| Ataque | Control |
+|---|---|
+| Cuenta nueva que entra directo a encargos pagos | Una o dos tareas de calificación sin pago antes de habilitar recompensas |
+| Cuentas simultáneas en el mismo comercio (colusión) | Regla "no groups": se bloquean envíos simultáneos de varias cuentas en el mismo comercio y ventana |
+| Foto de una pantalla o de un ticket impreso | Detección de pantalla o papel reimpreso (moiré, bordes, reflejos) → revisión |
+| Metadatos sensibles en la imagen (EXIF, ubicación exacta) | Redacción en el cliente antes de subir |
+| Falta de stock inventada | Foto de góndola completa obligatoria al reportar producto faltante |
+
+**Reputación:** nunca se basa en feedback onchain crudo (por ejemplo, ERC-8004). Exige prueba de humano único y se pondera por liquidaciones verificadas. El caso Sentinel8004 (cuentas títere que inflaron reputaciones en el registro) es [Pendiente: fuente externa no verificada].
 
 Umbrales de `pHash`, ventanas y topes se calibran con datos reales [Pendiente]; las fuentes públicas no dan un valor fijo.
 
@@ -153,9 +165,9 @@ Agente ──firma authorize (máx. = B, captureDeadline, refundDeadline)──�
 ### 4.3 Garantía de recompensas y reserva
 
 - **Regla [Diseño]:** toda observación `accepted` y no `revoked` se paga, aunque el encargo termine sin resultado entregable o el agente cancele. El riesgo lo asume la plataforma.
-- **Provisión:** la plataforma mantiene una reserva de garantía (`reserve`) separada del presupuesto de los agentes. Cada cotización destina una parte del precio a la reserva, y el saldo de la reserva debe cubrir, como mínimo, las recompensas devengadas de todos los encargos abiertos que todavía no tienen resultado entregable. El porcentaje y el saldo mínimo se fijan con datos de la demo [Pendiente].
+- **Provisión:** la plataforma mantiene una reserva de garantía (`reserve`) separada del presupuesto de los agentes. Cada cotización destina una parte del precio a la reserva, y el saldo de la reserva debe cubrir, como mínimo, las recompensas devengadas de todos los encargos abiertos que todavía no tienen resultado entregable. **Decisión para la demo:** porcentaje provisional para testnet; el porcentaje y el saldo mínimo definitivos se fijan después con escenarios de pérdidas [Pendiente].
 - **Cotización prudente:** `POST /v1/tasks/quote` rechaza o advierte encargos cuya probabilidad de alcanzar el umbral sea baja (zona sin contribuyentes, ventana corta). Menos encargos fallidos implica menos uso de la reserva.
-- **Recuperación parcial:** observaciones aceptadas de un encargo no entregado pueden pasar al pool del modo A si la licencia del contribuyente lo permite (§7.2), y sus ventas posteriores reponen la reserva.
+- **Recuperación parcial (opción futura, no en la demo) [Diseño]:** las observaciones aceptadas de un encargo de Modo B no terminado podrían pasar al pool del modo A y sus ventas reponer la reserva. Queda condicionada a definir licencias: hoy choca con la decisión de no revender datos encargados (§7.2).
 - **Tope:** si la reserva no cubre el mínimo, el task engine deja de abrir encargos nuevos (estado `paused`) hasta reponerla.
 
 ## 5. Unidad entregable, encargos incompletos y reembolsos
@@ -176,6 +188,8 @@ Al cotizar, el agente elige una de dos opciones, que quedan firmadas en la cotiz
 
 - **`partialAccepted: false` (por defecto):** si al vencer no hay resultado entregable completo, el agente recupera el 100 % de lo no entregado.
 - **`partialAccepted: true` con `minPartialObservations`:** el agente acepta de antemano pagar un resultado parcial, siempre que ese parcial también cumpla los umbrales de privacidad. Paga solo las observaciones incluidas.
+
+**Quórum mínimo y objetivo [Diseño]:** la cotización fija `minQuorum` (mínimo de privacidad y estadístico, nunca menor que k y m) y `targetQuorum` (cantidad objetivo). La captura proporcional entre `minQuorum` y `targetQuorum` solo ocurre si el agente aceptó antes el parcial (`partialAccepted: true`); si no, reembolso del 100 %. `refundDeadline` es un campo obligatorio de la especificación, fijado antes de aceptar presupuestos (valor pendiente).
 
 | Caso | Agente paga | Agente recupera | Contribuyentes |
 |---|---|---|---|
@@ -205,7 +219,8 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 ## 6. Disputas
 
 - **Agente contra resultado** (dato erróneo): ventana de disputa (hasta `refundDeadline` en el objetivo; plazo fijo en la demo). Si la revisión confirma error, se reembolsan las observaciones afectadas con fondos de la plataforma: transferencia desde el tesoro en la demo, `refund` en el objetivo (el colector de reembolsos del escrow toma liquidez del operador [Verificado en fuente: spec EVM]).
-- **Contribuyente contra rechazo:** pide revisión manual una vez; la decisión del revisor queda registrada con motivo.
+- **Contribuyente contra rechazo:** pide revisión manual una vez, dentro de una ventana de apelación acotada (por ejemplo, 48 h) [Diseño]; la decisión del revisor queda registrada con motivo.
+- **Protección laboral [Diseño]:** sin horarios obligatorios ni exclusividad; motivos de rechazo transparentes y comunicados al contribuyente; sin desactivaciones de cuenta sin revisión. Referencia: caso Roamler en Alemania (demandas por relación laboral encubierta) [Pendiente: fuente externa no verificada].
 - **Contribuyente revocado tras pago:** no hay clawback; se bloquea la cuenta y se registra la pérdida.
 - Toda disputa se resuelve offchain; onchain solo queda el `refund` cuando corresponde.
 
@@ -219,7 +234,7 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 | Minimización en ingesta | Se descartan `tipoDocRec` y `nroDocRec` del QR; se enmascaran en la imagen datos del comprador y de tarjeta antes de que la vea un revisor | [Diseño] |
 | Retención | Imágenes borradas a los N días de aceptadas o rechazadas (N por definir); se conservan la observación normalizada y los hashes | [Pendiente] |
 | Separación | La identidad del contribuyente (wallet, World ID) vive en una tabla separada de las observaciones; el agregado nunca la toca | [Diseño] |
-| Umbral k | Un agregado se publica solo con ≥ k contribuyentes y ≥ m comercios distintos (valores por defecto a decidir, por ejemplo k = 5, m = 3) | [Diseño] |
+| Umbral k | Un agregado se publica solo con ≥ k contribuyentes y ≥ m comercios distintos. **Demo:** k = 5 y m = 3 como valores experimentales; se prueban en privacidad y viabilidad antes de vender resultados | [Diseño] |
 | Supresión de comercio único | Si una zona tiene un solo comercio de un tipo, no se publica precio por comercio | [Diseño] |
 | Granularidad | Tiempo redondeado a día o semana; ubicación a localidad o celda | [Diseño] |
 | Ataque de diferencia | Celdas fijas, presupuesto de consultas y chequeo de solapamiento (§7.3); privacidad diferencial como experimento | [Diseño] |
@@ -242,7 +257,8 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 ### 7.2 Licencias de reutilización entre compradores
 
 - **Del contribuyente a la plataforma:** el consentimiento declara el alcance: `task_only` (solo para el encargo en el que se aportó) o `pool` (también para agregados vendidos a otros compradores en el modo A). Un aporte espontáneo (`taskId: null`) exige `pool`. Sin ese alcance, la observación no es `aggregation_eligible` para otros compradores.
-- **Exclusividad del encargo [Diseño]:** las observaciones producidas por un encargo pueden reservarse para su comprador durante una ventana (`exclusivityUntil`). Después, si la licencia es `pool`, entran a agregados de otros productos. La exclusividad, si se ofrece, se cotiza aparte.
+- **Decisión para la demo:** los datos encargados no se revenden inicialmente. La licencia por defecto de un encargo es `task_only` y la reutilización en el pool queda desactivada hasta fijar las licencias.
+- **Exclusividad del encargo [Diseño, futuro]:** cuando haya licencias definidas, las observaciones de un encargo podrían reservarse para su comprador durante una ventana (`exclusivityUntil`) y después, si la licencia es `pool`, entrar a agregados de otros productos. La exclusividad, si se ofrece, se cotiza aparte.
 - **De la plataforma al comprador:** cada `DataProduct` y cada resultado declara su licencia: uso interno, prohibición de reventa del agregado crudo y prohibición de intentar reidentificar contribuyentes o comercios [Pendiente: términos legales].
 - **Una observación puede contribuir a muchos agregados.** En la demo la recompensa es un pago único al aceptarla; el reparto de ingresos por reutilización es una opción futura (doc 04).
 

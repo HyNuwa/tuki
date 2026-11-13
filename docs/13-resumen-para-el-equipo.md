@@ -10,13 +10,15 @@
 
 ## La idea en una página
 
-- **Problema:** los datos del comercio físico (precio efectivamente pagado después de promociones bancarias y de billetera, disponibilidad real, canal tradicional) son difíciles de obtener programáticamente. SEPA publica precios de lista gratis; lo que paga la gente y lo que hay en la góndola no está en una API.
+- **Problema:** los datos del comercio físico (precio efectivamente pagado con las promociones bancarias y de billetera aplicadas en caja, disponibilidad real, canal tradicional) son difíciles de obtener programáticamente. SEPA publica precios de lista gratis; lo que paga la gente y lo que hay en la góndola no está en una API.
 - **Solución:** agentes que compran o encargan información mediante x402. **Modo A:** comprar un agregado que ya existe. **Modo B:** encargar observaciones nuevas con un presupuesto. Modo B es el diferencial central; Modo A demuestra que se puede vender datos de inmediato.
 - **Oferta inicial:** tickets de compra y observaciones comerciales verificadas, aportadas por personas que dan su consentimiento y reciben recompensas. Los tickets son el primer tipo de observación, no toda la identidad del producto.
 - **Demanda:** empresas, investigadores y aplicaciones con agentes. La investigación sugiere empezar por un comprador humano (marca regional o distribuidor con venta en canal tradicional; consultoras de inflación como design partners) que usa agentes como canal.
 - **Modelo de ingresos:** pago por consulta y comisión por encargos.
 - **Diferenciación:** recolección bajo demanda, calidad verificable y acceso automatizado.
 - **Riesgo principal:** demostrar compradores recurrentes.
+
+**Separación estratégica.** Quién financia primero: una empresa con presupuesto real. Quién interactúa con el sistema: su agente, mediante API/MCP y x402. Qué vendemos: un resultado de datos verificados, no horas de trabajo humano. La tecnología sigue siendo agent-first: el agente descubre datos, evalúa contratos de entrega, gasta dentro de límites autorizados y encarga automáticamente. La hipótesis diferencial es el lote de observaciones comerciales con calidad y criterios de entrega, no el precio pequeño ([17 — Posicionamiento](17-posicionamiento.md)).
 
 No afirmamos ser los primeros ni que exista demanda validada para nuestra implementación.
 
@@ -44,7 +46,7 @@ No afirmamos ser los primeros ni que exista demanda validada para nuestra implem
 ## Riesgos centrales
 
 - **Demanda de agentes.** Es el riesgo número uno. RentAHuman tenía más de 81.000 humanos registrados frente a 82 agentes activos (febrero de 2026); el volumen x402 genuinamente agéntico se estima en US$5.000–11.000 por mes en 2026 (TRM Labs). Sin compradores que repitan, no hay negocio.
-- **Vangrid ya opera el mismo mecanismo.** Bounties físicos pagados por agentes vía x402 (seed de US$9M, desde US$50 por bounty, sin operación en LatAm). El mecanismo no diferencia; lo que puede diferenciar es la vertical (precio pagado, canal tradicional) y la geografía.
+- **Vangrid, Loopuman y Execution Market ya operan el mismo mecanismo.** Vangrid: bounties físicos pagados por agentes vía x402 (seed de US$9M, desde US$50 por bounty, sin operación en LatAm). Loopuman: encargos de agentes a personas vía API/MCP con pago en Celo y 20 % de comisión. Execution Market: MCP, escrow EVM al asignar y evidencia tipada (foto geolocalizada, recibo). El mecanismo no diferencia; lo que puede diferenciar es el lote de observaciones comerciales con calidad y criterios de entrega, la vertical (precio pagado, canal tradicional) y la geografía ([17 — Posicionamiento](17-posicionamiento.md)).
 - **Verificación y fraude residual.** El QR fiscal prueba que existe un comprobante con ese total, no que los ítems estén bien leídos ni que el ticket sea propio. Un fraude descubierto después de pagar la recompensa es pérdida de la plataforma.
 - **Custodia en la demo.** El presupuesto de los encargos queda en un tesoro nuestro en testnet. Con fondos reales eso requiere revisión legal y topes ([ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md)).
 - **Ley 25.326.** Los tickets pueden contener datos personales. Hace falta consentimiento informado, finalidad, registro de la base y revisión de cómo afecta a los comercios antes de cualquier piloto.
