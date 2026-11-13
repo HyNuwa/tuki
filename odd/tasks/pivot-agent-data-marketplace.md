@@ -1,0 +1,38 @@
+# Pivot: agent data marketplace for verified physical-commerce observations
+Objective: replace the QR-USDC RFQ direction with the agent data marketplace idea, backed by competitor, positioning, deep research, architecture and stack analysis.
+Branch: `HyNuwa/pivot-agent-data-marketplace` · Delivery: ask-on-risk · Test runner: none (passive docs; structural readback only).
+
+## Specs
+
+- **S1** — Switch the repo to the new idea: "necesito cambiar o elimines los documentos necesarios, cambiamos a esta idea". The new idea is the "marketplace donde agentes compran o encargan datos físicos verificados a personas" (two modes: "Comprar información existente" and "Encargar información que todavía no existe"). Previous direction preserved at tag `archive/qr-usdc-rfq`.
+- **S2** — "haz la investigacion necesaria, puedes delegar una parte a codex para paralelizar". Deep research delegated to a Codex worker → `agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md`.
+- **S3** — Competitor analysis with `/startup:startup-competitors` (Light tier, user choice "light") → `agent-data-marketplace/` deliverables (report, matrix, pricing landscape, battle cards, verification).
+- **S4** — Positioning with `/anthropic-skills:startup-positioning`.
+- **S5** — "al igual que con la idea anterior quiero analizar la arquitectura y el stack tecnologico que usaremos para hacerla realidad" → new architecture, stack, and verification/payout security docs replacing docs 04, 15, 16.
+- **S6** — Docs that only applied to the QR-USDC direction are rewritten or deleted (README, 03, 13, 14, 17, ADRs 0001-0002, docs/research, reports/research_notes that are QR-specific).
+
+- **S7** — Apply the user's review (L6). Product definition, verbatim: "**Marketplace de datos del mundo real para agentes de IA.** Los agentes pueden descubrir, comprar y encargar información verificable mediante x402. Las personas aportan observaciones del mundo físico, como tickets de compra, reciben recompensas y mantienen protegidos sus datos personales." Modo B is "el diferencial central"; tickets are "el primer tipo de observación". Separate "Datos aportados", "Productos de datos", "Encargos". Priority: "primero demostrar que un agente puede comprar información útil; después, que puede encargarla; finalmente, que el marketplace consigue demanda y oferta recurrentes." Per-doc changes: 03 rewrite with P0-01..P0-10; 13 rewrite with phrase "«La infraestructura para que agentes de IA compren información verificable del mundo real, directamente de una red de colaboradores»"; 14 new 7-day table; 17 replace (three competitor groups, economics per observation, contributor CAC, buyers, kill criteria); 04 add data licensing/reward model, agent-readable data contract, accepted vs aggregation-eligible vs deliverable; 15 simplify hackathon scope, define testnet facilitator, `exact` is not escrow; 16 deliverable unit + incomplete-task refund policy, consent withdrawal, reuse licenses, repeated-query protection, reward vs x402 charge, paid-but-undeliverable; fix internal links.
+
+## Tasks
+
+| ID | Specs | Route | Status | Evidence |
+|---|---|---|---|---|
+| T0 | S1 | inline | done | commit 242f367, tag `archive/qr-usdc-rfq` |
+| T1 | S3 | delegated (parallel with T2; disjoint surface `agent-data-marketplace/` deliverables) | done; verification 1 critical + 9 warnings, fix batch running | V1 report |
+| T2 | S5 | delegated (parallel with T1; disjoint surface `docs/04`, `docs/15`, `docs/16`) | done (structural readback) | docs 04, 15, 16 new |
+| T3 | S2 | Codex worker (Orca) | in progress | |
+| T4 | S4 | positioning research delegated (A1, B1 parallel), synthesis inline → docs/17 | in progress | |
+| T6 | S7 (17) | delegated W1 (parallel) | done; Onliness passes with conditions, strength Moderate | docs/17 + positioning/*.md |
+| T7 | S7 (04, 15, 16, ADRs) | delegated W2 (parallel) | done (structural readback) | refund policy §5, reserve §4.3, spike S0 |
+| T8 | S7 (03, 13, 14, README, links) | delegated W3 (parallel) | done (links resolve) | |
+| T9 | S3-S7 | delegated V1 (final verification) | in progress | positioning/verification-report.md |
+| T5 | S1, S6 | inline | in progress: QR-only docs removed (44 files, recoverable from tag); ADR 0001/0002 rewritten; pending README, 03, 13, 14, 17 | |
+
+## Log
+
+- **L1 (2026-11-12, user):** "necesito cambiar o elimines los documentos necesarios, cambiamos a esta idea, haz la investigacion necesaria, puedes delegar una parte a codex para paralelizar, /deep-research /anthropic-skills:startup-positioning /startup:startup-competitors" (with pasted analysis of the agent data marketplace and `Recibos Web3, x402 y Startups.md`).
+- **L2 (2026-11-12, user):** research depth "light".
+- **L3 (2026-11-12, user):** "coincide, pero al igual que con la idea anterior quiero analizar la arquitectura y el stack tecnologico que usaremos para hacerla realidad".
+- **L4:** Waves 1-3 done (Light). Key: Vangrid already ships x402 physical bounties (US$50 min, not in LatAm); agent demand is the binding constraint; SEPA is a free list-price floor; Scanntech US$180M Series F, closed agents. T1 and T2 launched as parallel writers (writer reason: two independent units with disjoint surfaces).
+- **L5 (2026-11-12, user):** "modificaste los demas documentos de 03-prd-mvp 13-resumen-para-el-equipo 14-primeros-7-dias 17-posicionamiento, y la documentacion q pertencia a la idea anterior, si necesitas haz otro research para terminar". Answer: not yet. Removed QR-only docs (qr-usdc-argentina/, reports QR + ganadores, research_notes QR, docs/research/, old ADRs, old ODD doc); kept generic `reports/referencias-tecnologias-web3.md` and `research_notes/ganadores-ethglobal/`. Positioning Light (same tier as competitors).
+- **L6 (2026-11-12, user):** pasted review "Cambios necesarios en la documentación del marketplace de datos con x402" (full text is the source for S7). Verified its claims: doc 16:134 charges accepted observations under k (true); doc 15 hosted facilitator mainnet vs Celo Sepolia demo (true; testnet facilitator `https://api.x402.sepolia.celo.org` exists, `exact`, USDC only on `eip155:11142220`, needs `X402_API_KEY`, verified via `/supported` 2026-11-12); doc 04:162 `taskId: null` without reward model for resale (true); stale links in 03/13/14/17/README/reports (true). Divergence recorded: research recommends selling to a human buyer under "paid price / traditional channel" frame; agentic category has no measured demand (TRM: US$5-11k/month genuinely agentic). Doc 17 adopts user's product definition and states the wedge recommendation. Old docs preserved via tags, not a folder. Launched 3 parallel writers: W1 (17 + positioning deliverables), W2 (04, 15, 16, ADRs), W3 (03, 13, 14, README, reports link).

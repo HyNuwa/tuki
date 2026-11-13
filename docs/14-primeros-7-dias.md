@@ -1,70 +1,135 @@
 # 14 — Plan operativo: primeros siete días
 
-**Estado:** propuesta. Reemplaza el plan anterior, que giraba en torno a integrar el SDK de un único PSP.
+**Estado:** propuesta (2026-11-12). Reemplaza el plan anterior, que giraba en torno al spike de escrow de la red RFQ de pagos QR (archivado en el tag `archive/qr-usdc-rfq`).
 
-**Objetivo de la semana:** eliminar la incertidumbre crítica de la nueva dirección (red RFQ de payment solvers, escrow de prueba, ejecución fiat simulada). No es «terminar la app».
+**Objetivo de la semana:** demostrar que un cliente automático puede comprar información útil (Modo A) y encargarla (Modo B), y obtener la primera señal de si existen compradores concretos que pagarían por ella. No es «terminar el producto».
 
 **Límites de la semana:**
 
-- Todo corre en testnet o en una red local, con USDC de prueba y actores simulados.
-- No se despliegan contratos con fondos reales.
-- El código del spike es descartable.
-- No hay pruebas de campo con comercios.
-- La formalización legal y los acuerdos con proveedores van después de la hackathon; esta semana solo se envían preguntas.
+- Todo corre en Celo Sepolia o en local, con USDC de testnet. Sin fondos reales ni contribuyentes externos: solo tickets del equipo.
+- Pagos con x402 `exact` a través del facilitator de testnet `https://api.x402.sepolia.celo.org` (solo USDC `0x01C5C0122039549AD1493B8220cABEdD739BC44E`, red `eip155:11142220`). Requiere `X402_API_KEY` creada en `https://x402.celo.org`. `exact` no es un escrow.
+- Fuera de la semana: `auth-capture`, World ID, MiniPay, otras redes, zkTLS, regalías y recompensas avanzadas.
+- El código es de demo; se reescribe lo que haga falta si hay piloto.
 
-## Día 1: acordar alcance e invariantes
+## Plan
 
-- Leer los docs [04](04-arquitectura-tecnica.md), [15](15-stack-tecnologico.md) y [16](16-modelo-seguridad-liquidacion.md), y los ADR.
-- Revisar en equipo las propiedades, los riesgos asignados y las invariantes del doc 16. Anotar los desacuerdos.
-- Asignar responsables: contratos y spike, backend y RFQ, app y UX, preguntas a proveedores.
-- Congelar el alcance de la demo (PRD, "Alcance P0").
+| Día | Objetivo                                                                |
+| --- | ----------------------------------------------------------------------- |
+| 1   | Congelar PRD, vertical inicial y contratos de datos de la API           |
+| 2   | Construir API de cobertura y catálogo de información                    |
+| 3   | Probar extracción, normalización y deduplicación con tickets del equipo |
+| 4   | Implementar una compra x402 de datos existentes                         |
+| 5   | Crear el flujo de encargo y recepción de observaciones                  |
+| 6   | Probar verificación, privacidad, ledger, pagos de prueba y fallas       |
+| 7   | Demo completa y evaluación de viabilidad comercial                      |
 
-**Entregable:** alcance congelado por una semana, dueños por tarea y lista de dudas sobre el modelo.
+Revisión del usuario (cita textual):
 
-## Día 2: spike del escrow — expiraciones y devoluciones
+> En paralelo, investigaría qué información pagarían por obtener compradores concretos. No esperaría a terminar la demo para validar esa pregunta.
 
-- Probar `AuthCaptureEscrow` con USDC de prueba: `authorize`, `capture`, `void` y `reclaim` (ADR 0001, grupos A y D).
-- Confirmar qué versión de USDC corre en Base Sepolia y la dirección del escrow desplegado.
+## Día 1: congelar PRD, vertical inicial y contratos de datos
 
-**Entregable:** nota reproducible con el resultado de cada prueba (pasa, falla, no concluyente).
+- Leer los docs [03](03-prd-mvp.md), [04](04-arquitectura-tecnica.md), [15](15-stack-tecnologico.md) y [16](16-modelo-seguridad-verificacion-pagos.md), y los ADR [0001](adr/0001-red-y-custodia-de-presupuestos.md) y [0002](adr/0002-verificacion-de-observaciones.md). Anotar desacuerdos.
+- Elegir la vertical inicial: categorías (por ejemplo, almacén básico: leche, yerba, aceite), zona y tipos de comercio.
+- Congelar el contrato de `DataProduct`: cobertura, antigüedad, origen, nivel de verificación, cantidad de observaciones y contribuyentes, licencia y precio.
+- Congelar el contrato de `Task`: requisitos, presupuesto, vencimiento, umbral k, tope por contribuyente y regla de reembolso para encargos incompletos.
+- Esquema inicial en PostgreSQL y esqueleto del monolito TypeScript con Hono.
+- Crear la `X402_API_KEY` de testnet y comprobar `GET /supported` del facilitator.
+- Asignar responsables: API y pagos, ingesta y extracción, ledger y recompensas, cliente automático y demo, validación con compradores.
 
-## Día 3: spike del operador — compromiso y captura
+**Entregable:** PRD congelado por una semana, contratos de API escritos (OpenAPI), vertical elegida y responsables.
+**Chequeo:** el facilitator responde con `exact` en `eip155:11142220` usando nuestra clave.
 
-- Prototipo descartable del `SettlementOperator`: compromiso del solver, bloqueo de `void` después del compromiso, captura contra una declaración firmada (ADR 0001, grupos B, C y G).
-- Probar el caso de la confirmación fiat perdida en sus tres variantes (grupo E).
+## Día 2: API de cobertura y catálogo
 
-**Entregable:** resultado por grupo y lista de lo que el escrow no permite.
+- Cargar en PostgreSQL un conjunto de observaciones de prueba, marcadas como tales, para poblar el catálogo.
+- Endpoint gratuito de catálogo: lista de `DataProduct` con su contrato de datos.
+- Endpoint gratuito de cobertura: dada una consulta (producto, zona, período), responde si hay datos suficientes y a qué precio.
+- Exponer las mismas operaciones como tools MCP.
+- Primera versión del cliente automático: lista el catálogo, consulta cobertura y decide comprar o no según reglas fijas.
 
-## Día 4: RFQ y solvers simulados
+**Entregable:** catálogo y cobertura consultables por REST y MCP; cliente que toma una decisión registrada en el log.
+**Chequeo:** la consulta de cobertura nunca devuelve precios individuales ni datos de contribuyentes.
 
-- Motor RFQ mínimo con dos solvers simulados que firman cotizaciones.
-- PSP simulado que "ejecuta" el pago fiat y emite la declaración firmada, con fallas configurables: no responde, responde tarde, pierde la confirmación.
-- En paralelo y sin bloquear: enviar a dos o tres proveedores las preguntas del doc 16, §7 (qué evidencia entregan, idempotencia, si aceptarían comprometerse antes de pagar).
+## Día 3: extracción, normalización y deduplicación
 
-**Entregable:** flujo de punta a punta por línea de comandos o script, y preguntas enviadas.
+- Juntar tickets reales del equipo (objetivo: 10 a 30) con consentimiento interno.
+- Spike de extracción (S3 del doc 15) con LLM de visión: comercio, fecha, ítems, precios, promociones legibles y total.
+- Decodificar el QR fiscal de ARCA y comparar su total con el extraído; descartar los datos del comprador que trae el QR.
+- Normalizar productos y unidades contra la vertical elegida.
+- Dedupe: clave fiscal única, `sha256` de la imagen y `pHash` para recortes o recompresiones.
+- Cola de revisión manual para los casos dudosos.
 
-## Día 5: wallets y UX de estados
+**Entregable:** nota con resultados por ticket: totales correctos, ítems correctos, ítems inventados detectados o no, duplicados detectados.
+**Chequeo:** el criterio completo de S3 pide 100 tickets; con la muestra del equipo solo se obtiene una señal temprana y así se informa.
 
-- Firma EIP-3009 con una EOA, con una smart account (ERC-1271) y con el flujo de Base Account (ADR 0001, grupo F).
-- Pantallas: escaneo, no soportado, cotización, confirmación, procesando, liquidado, en verificación, reembolsado, recuperado y ayuda.
-- Revisar que "en verificación" no se lea como fallido y que el sello de demo sea visible.
+## Día 4: compra x402 de datos existentes (Modo A)
 
-**Entregable:** matriz de compatibilidad de wallets y prototipo navegable.
+- Integrar `@x402/hono` en el endpoint pago del agregado.
+- Flujo: pedido → `402 Payment Required` → firma del cliente → verificación y liquidación vía facilitator → agregado con metadatos de calidad.
+- Si la cobertura es insuficiente, responder con error antes de liquidar.
+- Usar `payment-identifier` para que un reintento no cobre dos veces.
+- Registrar el cobro en el ledger interno.
 
-## Día 6: escenarios de falla de punta a punta
+**Entregable:** el cliente automático compra un agregado de punta a punta en Celo Sepolia.
+**Chequeo:** una compra sin cobertura no se cobra; un reintento con el mismo identificador no se cobra dos veces.
 
-- Correr los cuatro escenarios del PRD: nadie se compromete, cambio al solver de respaldo, confirmación perdida, reutilización de firma o declaración.
-- Medir el gas de cada operación (grupo H).
-- Verificar que el pagador recupera sus fondos sin el backend.
+## Día 5: flujo de encargo y recepción de observaciones (Modo B)
 
-**Entregable:** guion de la demo y registro de cada escenario.
+- Cotización gratuita del encargo: viabilidad, presupuesto sugerido y regla de reembolso.
+- Financiación con x402 `exact` hacia el tesoro de tareas en testnet (custodia temporal); el ledger registra el presupuesto retenido.
+- App web mínima del contribuyente: aceptar condiciones (texto versionado), ver encargos, subir ticket, ver estado.
+- Conectar la subida al pipeline del día 3; solo `accepted` consume presupuesto.
+- Cierre del encargo: resultado al cliente y devolución del presupuesto no usado.
 
-## Día 7: decisión de la segunda semana
+**Entregable:** el cliente automático crea y financia un encargo; el equipo aporta tickets; el encargo cierra con resultado.
+**Chequeo:** el presupuesto nunca se excede; al cerrar, presupuesto = capturado + reembolsado.
 
-Reunión de 45 minutos. Revisar: resultados del spike, compatibilidad de wallets, escenarios de falla, respuestas de proveedores (si llegaron) y dudas abiertas del modelo. Elegir:
+## Día 6: verificación, privacidad, ledger, pagos de prueba y fallas
 
-- **Avanzar:** el escrow candidato soporta el flujo y las fallas; se sigue con la demo.
-- **Reformular:** el escrow no alcanza en algún punto; se documenta cuál y se evalúan las opciones del ADR 0001.
-- **Detener:** el modelo no se sostiene (por ejemplo, el caso de la confirmación perdida no tiene un manejo aceptable).
+- Pagos de recompensa en lote con USDC de testnet desde el tesoro: una obligación idempotente por observación aceptada.
+- Conciliación: un pago en estado `unknown` no se reintenta sin revisar la cadena.
+- Umbral k y supresión: un agregado que no lo cumple no expone precios.
+- Correr los escenarios del PRD: presupuesto agotado, encargo incompleto por debajo de k con reembolso, ticket duplicado, falla de extracción, x402 cobrado sin resultado entregable, retiro del consentimiento.
+- Revisar que no haya datos personales ni imágenes en logs, respuestas ni cadena.
 
-**Salida:** informe del spike, ADR actualizados con los resultados (siguen como propuestas hasta una revisión de seguridad) y tres riesgos prioritarios con responsable.
+**Entregable:** guion de la demo y registro del resultado de cada escenario.
+**Chequeo:** el ledger cuadra por encargo y ningún escenario entrega imágenes ni datos personales al comprador.
+
+## Día 7: demo completa y evaluación de viabilidad comercial
+
+- Demo de punta a punta: Modo A, Modo B y los escenarios de falla, con la marca «DEMO — TESTNET, SIN DINERO REAL».
+- Reunión de 60 minutos: resultados técnicos, resultados de la validación con compradores y decisión.
+
+**Salida:** informe de la semana, ADR actualizados con los resultados (siguen como propuestas) y tres riesgos prioritarios con responsable.
+
+## Validación con compradores (en paralelo, desde el día 1)
+
+No espera a que la demo esté terminada.
+
+- **Día 1:** lista de 10 a 15 compradores posibles: gerentes comerciales o de trade de marcas regionales de consumo masivo, distribuidores con venta en canal tradicional y consultoras de inflación. Guion de entrevista.
+- **Días 2 a 5:** al menos 5 entrevistas. Preguntas: qué información de precio, promociones o disponibilidad no consiguen hoy; cómo la obtienen (fuerza de ventas, agencias, Scanntech, SEPA, intuición); qué decisión cambiaría con ese dato; cuánto pagan hoy por algo parecido; si pagarían por un primer lote chico y cuánto; si usan o usarían agentes para obtenerlo.
+- **Días 5 y 6:** ofrecer a quienes mostraron interés un primer lote concreto (producto, zona, cantidad de observaciones, plazo, precio).
+- **Día 7:** síntesis con citas textuales de los entrevistados y lista de compromisos obtenidos.
+
+Las conclusiones se registran con la evidencia que las sostiene; una opinión favorable no cuenta como demanda validada.
+
+## Decisión del día 7
+
+**Avanzar hacia la preparación de un piloto** si se cumplen todos:
+
+- Modo A y Modo B corren de punta a punta en testnet con el cliente automático.
+- Los seis escenarios de falla obligatorios dan el resultado esperado y el ledger cuadra.
+- La extracción da una señal aceptable en los tickets del equipo (totales coinciden con el QR; ningún ítem inventado sin detectar).
+- Al menos **dos compradores concretos** describen, en sus palabras, un dato que hoy no consiguen y que cambiaría una decisión, y al menos **uno** acepta pagar (o firma un compromiso de pagar) un primer lote.
+
+**Reformular** (segmento, tipo de dato o precio) si la demo funciona pero:
+
+- los entrevistados solo quieren datos que ya obtienen gratis (SEPA, scraping) o los quieren sin pagar; o
+- el precio que mencionan no cubre recompensa, procesamiento, revisión y reserva por resultado entregable.
+
+**Detener** esta dirección si:
+
+- ningún comprador entrevistado identifica un dato que pagaría por obtener; o
+- la extracción no es confiable ni con revisión manual a un costo razonable; o
+- no hay forma de entregar agregados útiles respetando los umbrales de privacidad.

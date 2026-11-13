@@ -1,6 +1,6 @@
 # Referencia de Tecnologías Web3
 
-> **Nota (2026-11-11):** esta es la lista de referencia original de tecnologías de sponsors, copiada tal cual. Los datos que aparecen acá (chain IDs, direcciones, RPC) **no están verificados**. En particular, el chain ID `1874` y el USDT gasless de Whitechain no aparecieron en la documentación oficial durante la investigación. El veredicto de cada tecnología para nuestro caso está en [`ganadores-ethglobal.md`](ganadores-ethglobal.md) y las decisiones del stack en [`docs/15-stack-tecnologico.md`](../docs/15-stack-tecnologico.md).
+> **Nota (2026-11-11):** esta es la lista de referencia original de tecnologías de sponsors, copiada tal cual. Los datos que aparecen acá (chain IDs, direcciones, RPC) **no están verificados**. En particular, el chain ID `1874` y el USDT gasless de Whitechain no aparecieron en la documentación oficial durante la investigación. Las decisiones del stack están en [`docs/15-stack-tecnologico.md`](../docs/15-stack-tecnologico.md).
 
 ### 1. Arkiv (Base de datos Web3 / DB-Chain alineada a Ethereum)
 * **Qué ofrece:** Entidades con consultas tipo SQL, propiedad por wallet y expiración configurable. SDK `@arkiv-network/sdk` / JSON-RPC API. Integración con **Swarm** para almacenamiento de archivos.

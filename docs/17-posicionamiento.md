@@ -1,230 +1,227 @@
-# Tuki: síntesis estratégica de la red cripto → pagos locales
+# Posicionamiento: marketplace de datos del mundo real para agentes de IA
 
-**Fecha y consulta de fuentes:** 2026-11-12. **Estado:** investigación y propuestas para validar; no decisión de arquitectura ni aprobación de producción.
-**Dirección vigente:** instrucciones del fundador (2026-11-12, investigación interna no versionada), por encima del intake anterior. Sin commit, despliegues, contacto con proveedores ni movimientos de fondos en esta investigación.
+**Fecha:** 2026-11-12. **Estado:** síntesis estratégica para validar. No hay producto, compradores, contribuyentes ni dinero real. No es una decisión de inversión ni una aprobación para operar con fondos reales.
+**Base:** investigación de competidores y de posicionamiento en [`agent-data-marketplace/`](../agent-data-marketplace/) (nivel Light) y revisión del usuario del 2026-11-12. La investigación profunda sobre demanda agéntica y verificación (`agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md`) estaba en curso y no se usó.
+
+**Etiquetas:** [Data] dato con fuente · [Estimate] cálculo con supuestos · [Assumption] supuesto sin verificar · [Opinion] juicio analítico.
 
 ## Conclusión ejecutiva
 
-**La red es una hipótesis comercial razonable, pero RFQ no es una categoría propia ni una ventaja competitiva demostrada.** Paycrest documenta proveedores independientes, escrow y ruteo; Circle Payments Network agrega cotizaciones institucionales; Yodl documenta varios procesadores, selección por costo total y pagos desde la wallet existente. La combinación general ya tiene comparables cercanos. ([Paycrest: arquitectura](https://docs.paycrest.io/concepts/architecture), [CPN: cotizaciones y flujo](https://developers.circle.com/cpn/fiat-payouts), [Yodl: precios](https://docs.yodl.me/pricing), [Yodl: SDK](https://docs.yodl.me/))
+1. **El producto se define así** (definición del usuario, adoptada sin cambios):
+   > **Marketplace de datos del mundo real para agentes de IA.** Los agentes pueden descubrir, comprar y encargar información verificable mediante x402. Las personas aportan observaciones del mundo físico, como tickets de compra, reciben recompensas y mantienen protegidos sus datos personales.
+2. **El diferencial central es Modo B: encargar información que todavía no existe.** El mecanismo por sí solo no diferencia: Vangrid ya opera bounties físicos pagados por agentes vía x402 [Data]. Diferencia la combinación de Modo B con la vertical de comercio físico (precio pagado y disponibilidad), el rango de US$1-50 por observación y las reglas de aceptación públicas [Opinion].
+3. **La demanda agéntica no está medida.** El volumen x402 genuinamente agéntico ronda US$5.000-11.000 por mes a nivel global en 2026 (TRM Labs); RentAHuman tenía 81.000 humanos frente a 82 agentes activos (2026-02) [Data, Tier 2-3]. No afirmamos ser los primeros ni tener demanda validada.
+4. **Recomendación de entrada al mercado (wedge):** vender primero a un **comprador humano** (gerente comercial o de trade de una marca regional o distribuidor con venta en almacenes y kioscos) bajo el marco **"relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional"**, con los agentes como canal de compra. El agente compra; la persona financia y firma el presupuesto [Opinion; confianza Media].
+5. **Fortaleza del posicionamiento: Moderada, como hipótesis testeable.** Es específico y falsable, pero ningún comprador lo confirmó y la premisa central (brecha entre precio de lista y precio pagado) no está medida.
 
-La oportunidad a investigar no es «inventamos que varios proveedores compitan», sino **si podemos ofrecer a una wallet una ejecución local materialmente mejor y condiciones de fallo más claras que integrar Yodl o un proveedor directamente**. La recuperación verificable podría contribuir, pero hoy es diseño pendiente, no un resultado propio.
+## El producto en dos modos
 
-Recomendación: continuar con validación comercial y de condiciones de participación, no invertir todavía en desarrollar una red de producción. Mantener la demo como demostración simulada. No adoptar «liquidación garantizada» y no definir el producto como una wallet para turistas argentinos.
-
-## Cómo interpretar la evidencia
-
-| Marca | Qué demuestra | Qué no demuestra |
-|---|---|---|
-| **D — documentación técnica** | La fuente oficial describe una capacidad o un flujo concreto | Que lo probamos, que funcione para todo usuario o que tenga un SLA efectivo |
-| **A — afirmación del proveedor** | El proveedor publica una promesa comercial o sus términos | Auditoría independiente, volumen real, calidad operativa o cobertura exhaustiva |
-| **C — código inspeccionado** | El archivo público contiene la condición indicada | Correspondencia con un despliegue, auditoría o comportamiento de todo el sistema |
-| **H — hipótesis / diseño** | Un objetivo de Tuki, una inferencia o un supuesto de cálculo explícito | Capacidad existente, compromiso de un tercero o requisito ya aprobado |
-| **SD — sin dato suficiente** | No se obtuvo prueba adecuada en esta pasada | Que la capacidad no exista |
-
-Las fuentes web se consultaron en la fecha de cabecera; salvo fecha explícita, no publican fecha de actualización. Son fotografías documentales, no pruebas operativas. Los tres informes de categoría y de economía (investigación interna no versionada) y de [usuario](research/b2c-beneficio-vs-alternativas.md) se conservan como antecedentes; esta síntesis no hereda automáticamente sus etiquetas de «verificado».
-
-Tuki no tiene código de producto ni proveedores reales confirmados según la dirección vigente. La demo prevista usa dos proveedores y un PSP simulados. [ADR 0001](adr/0001-escrow-y-autorizaciones.md) y [ADR 0002](adr/0002-verificacion-fiat.md) siguen como propuestas pendientes. **Una demo exitosa no valida disposición de proveedores, precio real ni acreditación bancaria.**
-
-## Correcciones importantes a los antecedentes
-
-| Afirmación anterior | Tratamiento en esta síntesis |
-|---|---|
-| «La tarjeta compra 10,5% menos pesos» y la brecha creció en 2026 | No se reutiliza como dato comercial: no se reconstruyó una comparación ejecutable, contemporánea y con todos los cargos. Las capturas anteriores mezclan horas, fechas y tasas de venta de cripto con pagos QR. No se afirma que sea falso; queda sin validar |
-| Tasas minoristas de venta de USDC ≈ margen del PSP y precio QR | No son equivalentes. Faltan cotizaciones B2B de pago, reposición, mínimos, costos del rail y riesgo. No se deduce un take «realista» de esa captura |
-| «Con margen de 1%, el fallo de prueba debe ser menor que 0,1%» | No existe ese umbral universal: la pérdida esperada es probabilidad × exposición. Una pérdida total en 0,1% de pagos consume 0,1% del volumen, es decir, 10% de un margen bruto de 1%, antes de otros costos |
-| Yodl sería solo una wallet o no tendría varios procesadores argentinos | Sus docs listan Argentina con Transferencias/Mercado Pago y dos procesadores; la integración permite pagar desde la wallet existente. Son capacidades documentadas, no ensayadas aquí ([países](https://docs.yodl.me/supported-countries), [SDK](https://docs.yodl.me/)) |
-| Yodl exige siempre KYC en Argentina | La documentación granular actual lista siete mercados, incluido Argentina, sin KYC inicial; sus términos permiten requisitos por proveedor. No prometer elegibilidad universal ni usar la afirmación anterior como diferenciador ([países](https://docs.yodl.me/supported-countries), [términos](https://yodl.me/terms-of-service)) |
-| Binance QR podría estar disponible para cualquier turista verificado | Su FAQ limita esta función a personas residentes en Argentina con verificación de identidad. Actualización publicada: 2026-06-09; no generalizar a otros exchanges ([Binance: FAQ ARS](https://www.binance.com/en/support/faq/detail/9e3a768dc3ce47a0bce2488cfb31aab8)) |
-| P2P.me tiene spread fijo y asignación por reputación, confirmado | No se usa como hecho: el espejo del whitepaper es autogenerado, su enlace al repositorio devolvió 404 y una nueva lectura devolvió 410. La mecánica actual de precio/asignación queda SD |
-| CPN no soporta Base | No se reafirma: la página de redes consultada no entregó una lista utilizable. La lista pública de métodos sí muestra Argentina como WIRE en USD; eso no demuestra QR en ARS ([métodos](https://developers.circle.com/cpn/references/payments/supported-payment-methods)) |
-| Más proveedores necesariamente produce un foso; con menos de tres no hay competencia | No demostrado. Dos ofertas independientes pueden competir; muchos proveedores registrados pueden no cotizar el mismo pago. Se debe medir concurrencia efectiva, correlación de fallos y mejora neta |
-| Equilibrio = costo fijo / fee bruto | Solo vale si el fee ya es margen de contribución. Se corrige abajo descontando distribución y costos variables; los volúmenes resultantes siguen siendo escenarios, no pronósticos |
-
-## Dónde podría existir valor comercial
-
-### Comprador, oferta y usuario no son la misma persona
-
-- **Comprador B2B propuesto:** wallet o aplicación con usuarios que ya poseen cripto y necesitan pagar localmente. Decide integrar por conversión de usuarios, costo operativo, cobertura, ingresos y responsabilidad ante fallos; no por la palabra RFQ.
-- **Oferta necesaria:** proveedores capaces de cotizar, disponer de moneda local, ejecutar el rail y entregar evidencia bajo condiciones aceptadas. Un exchange que vende USDC no es automáticamente un proveedor de pagos QR. Acceso, elegibilidad y obligaciones no están confirmados.
-- **Usuario B2C inicial propuesto:** persona con saldo en una wallet compatible que encuentra fricción para pagar QR o transferencias locales. Extranjeros de estadía larga pueden servir para investigar ese problema; no constituyen una estimación fiable del mercado total.
-- **Comercio:** beneficiario del pago local. No se presupone una nueva integración comercial ni se propone una prueba de campo con comercios, conforme a la restricción del fundador.
-
-### Beneficio frente a las alternativas
-
-| Alternativa | Cuándo puede seguir siendo mejor | Beneficio de Tuki que habría que demostrar |
-|---|---|---|
-| Tarjeta | Ya disponible y aceptada, sin una nueva experiencia de cripto; costo depende de emisor, cambio y cargos | Acceso a un pago local que la tarjeta no resuelve, o menor costo final medido. No afirmar ahorro porcentual permanente |
-| Efectivo | Ya en poder del usuario o con descuento del comercio; no exige conexión ni firma de wallet | Evitar retiro/cambio y gestión de efectivo. No suponer que QR recibe el mismo descuento que efectivo |
-| Exchange con QR | El usuario ya tiene allí el saldo y cumple los requisitos; Binance documenta el flujo para residentes argentinos | Evitar traslado a un exchange para quien ya tiene fondos en su propia wallet. No venderlo como necesidad del usuario ya servido ([Binance](https://www.binance.com/en/support/faq/detail/9e3a768dc3ce47a0bce2488cfb31aab8)) |
-| Apps cripto → pagos locales | Ya tienen acceso operativo, cobertura y usuarios; Yodl documenta precisamente wallet propia y precio por pago | Mejor resultado medido o condiciones de recuperación superiores, no simplemente «también pagamos QR» ([Yodl SDK](https://docs.yodl.me/), [precios](https://docs.yodl.me/pricing)) |
-
-El beneficio inicial a contrastar es **pagar desde el saldo que ya se tiene, con costo total visible y requisitos conocidos antes de confirmar**. No es exclusivo: debe ganar por ejecución o por menor fricción para un segmento identificable. Si el saldo está en otra red o en un exchange, «sin cargar saldo» puede dejar de aplicar. Velocidad, aprobación y asistencia importan tanto como precio; aún no tenemos medidas propias.
-
-### Arranque de oferta y demanda: propuesta, no operación aprobada
-
-1. **Precisar un solo caso de pago inicial:** USDC en Base → un método QR/transferencia argentino explícitamente soportado. Evitar «todos los QR». Validar condiciones con posibles proveedores antes de pedirles construir un nodo.
-2. **Investigar proveedores y distribución en paralelo, sin fingir liquidez existente:** una wallet candidata aporta escenarios y demanda potencial; dos proveedores candidatos permiten contrastar ofertas y restricciones. Todavía no hay acuerdos ni contactos realizados en esta investigación.
-3. **Reducir el costo de entrada del proveedor:** proponer reutilizar su API y evidencia disponibles, conocer mínimos, prefondos, límites y responsabilidad. Esto no autoriza modificar las reglas del protocolo: si nadie acepta las actuales, es evidencia para volver al fundador.
-4. **Comparar ofertas equivalentes sin mover fondos:** mismo importe local, beneficiario/tipo de rail, perfil elegible, tiempo y condiciones. Una tasa pública de venta de cripto sirve como referencia secundaria, no como cotización ejecutable de pago.
-5. **No confundir subsidiar con validar:** una comisión exonerada o integración financiada puede facilitar el arranque, pero se registra separada del margen recurrente. No emitir un token ni vender prioridad al proveedor para maquillar falta de demanda.
-
-El incentivo del proveedor sería **flujo incremental rentable**, menor costo comercial y un mecanismo previsible para cobrar; no «participar de una red» en abstracto. Debe descontar conversión/reposición, pago local, capital, conciliación y pérdidas. Si `q` es la probabilidad de pagar sin poder capturar y `L` la pérdida no recuperable, el costo esperado es `q × L`. La tolerancia a ese riesgo y a sus colas de pérdida requiere su aceptación explícita; no la determina esta investigación.
-
-El incentivo de la wallet sería añadir utilidad/retención o ingresos sin operar cada integración. Debe compararlo con Yodl, Paycrest cuando corresponda y un contrato directo con un proveedor. El competidor también puede ser **no integrar nada** si la demanda es baja.
-
-## Alcance internacional y efecto de red
-
-**Unidad de mercado:** corredor y perfil elegible, no país ni blockchain por separado. Que una red liste Argentina, o soporte USDC en Base, no prueba que ejecute ese QR para ese usuario. CPN, por ejemplo, publica WIRE/USD para Argentina; Paycrest publica cuatro corredores africanos. ([CPN: métodos](https://developers.circle.com/cpn/references/payments/supported-payment-methods), [Paycrest: corredores](https://docs.paycrest.io/resources/supported-currencies))
-
-Mantener la ambición multichain/multipaís sin cambiar el diseño. Base → Argentina es un punto de entrada para aprender. Una segunda expansión debería justificarse por demanda de un integrador, proveedores dispuestos y economía positiva, no por completar un mapa. La abstracción técnica no elimina nuevos riesgos, permisos, liquidez, verificación ni soporte por corredor.
-
-**Hipótesis de efecto de red cruzado:** más demanda útil puede atraer oferta; oferta realmente solapada puede mejorar precio, disponibilidad o límites; eso puede atraer demanda. No es un hecho ya medido en Tuki. Un proveedor adicional que atiende otro corredor aporta cobertura, no competencia para el pago existente.
-
-Las defensas potencialmente acumulables serían distribución integrada, datos propios de ejecución, integración reutilizable y confianza ganada resolviendo incidentes. Hoy no existen. El proveedor puede vender por varias vías y la wallet puede integrar varias redes; la no exclusividad es una posibilidad a validar, no un defecto que debamos impedir. Los datos solo serán un foso si mejoran resultados y no son fácilmente replicables. No se presupone un efecto global de «el ganador se lleva todo».
-
-## Bloqueantes que la estrategia no cierra
-
-El [modelo de seguridad](16-modelo-seguridad-liquidacion.md) y los ADR mantienen la autoridad sobre el diseño técnico. Esta tabla conserva riesgos; no cambia la arquitectura ni selecciona garantías.
-
-| Bloqueante | Consecuencia comercial que debe conservarse |
-|---|---|
-| Solver comprometido que no paga ni libera | El pagador puede esperar hasta `authorizationExpiry`; restringir quién se compromete limita acceso, no demuestra ausencia de bloqueo |
-| Solver que paga pero no prueba antes del vencimiento | Puede perder el USDC frente al `reclaim`. Alargar el plazo protege al proveedor, pero agrava la espera del pagador; no hay plazo aprobado |
-| Vínculo verificable entre EIP-3009 e intención mostrada | Un nonce derivado del pago no garantiza que la wallet muestre un beneficiario e intención comprensibles. No prometer autorización informada extremo a extremo sin verificar ese vínculo |
-| Congelamiento o pausa del emisor | Puede impedir transferencias y recuperación, incluido `reclaim`. Un vencimiento no elimina riesgo de USDC ni de la red |
-| Reembolsos posteriores a captura | Necesitan fondos y reglas de responsabilidad/disputa. Ninguna de las alternativas de garantía del doc 16 fue elegida ni financiada |
-| Confirmación fiat | La declaración firmada del PSP simulado identifica al declarante; no prueba independientemente la acreditación al comercio. No nombrarla «liquidación verificable» sin explicar qué verifica |
-
-La formalización jurídica sigue diferida en esta etapa de investigación, no resuelta ni declarada innecesaria. La elegibilidad de cada actor y los permisos de operación quedan abiertos. Ningún resultado comercial habilita por sí solo fondos reales.
-
-## 1. Propuestas de posicionamiento B2B y B2C
-
-### B2B — categoría de compra propuesta
-
-**Infraestructura de ejecución de pagos locales con cripto para wallets y aplicaciones.**
-
-> Tuki propone conectar wallets y aplicaciones con proveedores independientes de pagos locales. La red buscaría comparar ofertas por cada pago y coordinar su ejecución con reglas explícitas de confirmación y recuperación.
-
-**Versión técnica de apoyo:** red RFQ de payment solvers para cripto → moneda local. Explica el mecanismo a un interlocutor técnico; no reclama una categoría inventada ni una red operativa.
-
-El comprador es la wallet/aplicación; los proveedores son el lado de oferta. La ventaja prometida a investigar es menor carga operativa y mejor ejecución que las alternativas, no «desintermediación» sin responsables. Hoy debe presentarse como propuesta en validación, con primer corredor Base → Argentina y sin SLA, cobertura global ni garantía de pago.
-
-### B2C — propuesta para probar, no promesa vigente
-
-> Paga en moneda local con las criptomonedas de tu wallet. Conoce el costo total antes de confirmar.
-
-**Mensaje permitido hoy en investigación:** «Estamos diseñando esa experiencia y evaluando si mejora tus alternativas actuales». No usar RFQ, solver, intent o escrow en la pieza comercial. No agregar «siempre», «todos los QR», «sin KYC», «más barato» o «tu dinero nunca queda bloqueado».
-
-Esta propuesta solo corresponde al usuario con saldo compatible y elegibilidad confirmada; no obliga a cambiarle de wallet. «Sin cargar saldo en otra app» puede probarse como beneficio secundario, pero Yodl ya lo documenta y no es una exclusividad de Tuki. ([Yodl: SDK](https://docs.yodl.me/))
-
-## 2. Matriz competitiva basada en capacidades documentadas
-
-**Lectura:** D/A/C verifican la existencia de esa evidencia, no una prueba nuestra de funcionamiento. H marca solo diseño de Tuki. SD nunca significa «no existe». No se comparan cifras comerciales de volumen porque no se validaron sus períodos, alcance ni metodología.
-
-### Precio, ejecución y caso de uso
-
-| Actor | Selección de proveedores/precio | Ejecución cripto → local | Evidencia de Argentina/QR |
+| Modo | Qué hace el agente | Ejemplo | Rol |
 |---|---|---|---|
-| **Tuki [H]** | RFQ por pago y proveedores independientes propuestos; dos simulados en la demo prevista | Diseño de escrow, compromiso, declaración y captura; sin producto | Primer corredor propuesto USDC/Base → QR argentino; PSP simulado (dirección del fundador, 2026-11-12) |
-| **Paycrest [D]** | Libro público y cola priorizada de hasta tres proveedores; no equivalente a una subasta RFQ por orden | Nodos independientes conectan PSP; escrow Gateway y agregador ([arquitectura](https://docs.paycrest.io/concepts/architecture), [tasas](https://docs.paycrest.io/api-reference/general/get-token-rate)) | Lista NGN, KES, UGX y TZS; incluye canales de comercio kenianos. No lista ARS; QR argentino no demostrado ([corredores](https://docs.paycrest.io/resources/supported-currencies)) |
-| **Yodl [D/A]** | Docs comparan costo total de varios procesadores por pago; no demuestran RFQ abierto ni acceso de cualquier proveedor | SDK desde wallet propia, con procesador local ([SDK](https://docs.yodl.me/), [precios](https://docs.yodl.me/pricing)) | Docs listan Transferencias/Mercado Pago y dos procesadores en Argentina; no implica todo QR ni todo perfil ([países](https://docs.yodl.me/supported-countries)) |
-| **P2P.me [A/SD]** | Publica red de liquidity partners; mecanismo actual de competencia de precios SD | Declara pagos QR con USDC y canales locales; no probado aquí ([producto](https://p2p.me/en)) | La web muestra Alias/ARS y la app lista Argentina. Alcance de QR interoperable y condiciones por usuario SD ([web](https://p2p.me/en), [app](https://app.p2p.me/)) |
-| **Peer / ZKP2P [D]** | Makers depositan USDC y fijan tasas; comprador selecciona liquidez | Intercambio entre saldo offchain y tokens; no equiparar automáticamente con pagar un QR comercial de tercero ([makers](https://docs.peer.xyz/guides/for-sellers/provide-liquidity-sell-usdc)) | Pago de QR argentino bajo el flujo propuesto por Tuki: SD en las fuentes consultadas |
-| **Circle CPN [D]** | Agrega cotizaciones de varios BFI; OFI selecciona y se fija FX | El BFI paga fiat después de confirmar el tramo onchain ([flujo](https://developers.circle.com/cpn/fiat-payouts)) | Tabla pública: WIRE en USD, no evidencia de QR en ARS; disponibilidad depende de ruta/configuración ([métodos](https://developers.circle.com/cpn/references/payments/supported-payment-methods)) |
-| **UniswapX / intents [D]** | RFQ y fillers competitivos en swaps; no innovación exclusiva de Tuki | Flujo documentado de tokens. No aporta por sí mismo acreditación bancaria ni proveedor local ([RFQ](https://developers.uniswap.org/docs/liquidity/uniswapx/concepts/uniswaprfq)) | SD para QR fiat argentino; no se afirma imposibilidad futura |
+| **Modo A — comprar datos existentes** | Encuentra información disponible, consulta su cobertura, paga mediante x402 y recibe un agregado utilizable | Precios reales observados de leche en una región | Demuestra que se pueden vender datos de inmediato |
+| **Modo B — encargar nuevos datos** | Define qué necesita, fija un presupuesto y paga por obtener observaciones verificadas que todavía no existen | 20 observaciones nuevas sobre promociones en almacenes durante una semana | **Diferencial central** |
 
-### Confirmación, fallos y límites de la comparación
+Los **tickets de compra son el primer tipo de observación**, no toda la identidad futura del producto.
 
-| Actor | Evidencia de ejecución / confianza | Recuperación y dependencia |
+Tres conceptos que no se mezclan: **datos aportados** (información física entregada voluntariamente por colaboradores: `Contribution` → `Observation`), **productos de datos** (agregados que los agentes descubren y compran: `DataProduct`) y **encargos** (solicitudes financiadas por agentes para producir información nueva: `Task`). Detalle técnico en [04 — Arquitectura técnica](./04-arquitectura-tecnica.md).
+
+**Orden de prioridades:** primero demostrar que un agente puede comprar información útil; después, que puede encargarla; finalmente, que el marketplace consigue demanda y oferta recurrentes. Este orden describe la **prueba del producto**; la recomendación de wedge describe **quién paga primero**. No se contradicen: el agente es la interfaz que se demuestra, y el comprador humano es quien financia los encargos mientras la demanda agéntica autónoma no exista.
+
+## Por qué un comprador humano primero
+
+- **Hay presupuesto existente del lado humano:** el trade marketing ya paga olas de auditoría (bemyeye desde €10.000 por ola), preventistas y apps de trade [Data/Assumption].
+- **No hay presupuesto medido del lado agéntico:** ver punto 3 de la conclusión. Además, la transacción promedio de comercio agéntico es de US$0,14 (Visa/Artemis, vía prensa) frente a nuestros US$1-50 por observación [Data, secundaria].
+- **El comprador no usa nuestro vocabulario:** "agente", "x402" y "stablecoins" no aparecen en ninguna fuente del lado comprador; sí aparecen "precio neto", "canal tradicional", "relevamiento" [Opinion sobre la muestra].
+- **Los agentes llegan por adentro del comprador:** el comprador agéntico realista es el agente interno de pricing o RGM de una marca o distribuidor (47% de retail y CPG usa o evalúa IA agéntica, encuesta NVIDIA 2026-01), no un agente autónomo en la web abierta [Data, vendor; Opinion].
+- **El canal agéntico abierto se ocupa igual, sin contar con él:** listarse en Bazaar y en registries MCP cuesta casi nada [Data].
+
+## Matriz competitiva
+
+La revisión del usuario propone tres grupos. Se agregan los dos grupos más cercanos al producto según la investigación: marketplaces de tareas físicas para agentes y auditoría de campo.
+
+| Grupo | Referente | Qué hace | Estado en nuestra investigación | Nuestra hipótesis de diferenciación |
+|---|---|---|---|---|
+| **Datos de compras y recompensas** | Fetch | Panel de tickets a cambio de puntos; ~11M de tickets por día (2023, posiblemente desactualizado) | Perfilado [Data] | Encargos automáticos de información específica |
+| | Receipt Hog (Numerator) | Panel pasivo; ~US$0,01 por ticket al usuario; Trustpilot 2,0/5 | Perfilado [Data] | Idem, más aceptación transparente |
+| | Halo (World/MiniPay/LINE) | Tickets en mini apps (según el intake) | **No verificado por nuestra investigación:** tres búsquedas sin resultado [DATA GAP] | Idem |
+| | Pogo | Recompensas por datos de compra (según el intake) | **No investigado** (límite Light) [DATA GAP] | Idem |
+| **Inteligencia comercial tradicional** | Scanntech | Sell-out desde el POS de autoservicios; 3.103 PDV y 24,0% del canal autoservicio en AR, NOA 20,1% (febrero de 2024, posiblemente desactualizado); Serie F de US$180M (2026-10) | Perfilado [Data, autodeclarado]; cobertura del canal tradicional: DATA GAP | Acceso granular y bajo demanda sin contratos empresariales grandes. **Complemento, no reemplazo** |
+| | Scentia | Panel de consumo; publica la lectura bruto vs. neto por canal | **No reverificado** en esta ronda; datos de prensa [DATA GAP] | Idem, con granularidad comercio-semana |
+| | SEPA / Precios Claros | Más de 12M de precios de lista en cadenas, gratis | Perfilado [Data] | Solo el delta que SEPA no ve: precio pagado y canal tradicional; SEPA como línea base |
+| **Infraestructura de datos para agentes** | Apify (x402) | Scrapers pagables por agentes; Actor de Jumbo AR desde ~US$6,15 por 1.000 resultados | Perfilado [Data] | Información generada físicamente por personas, no solamente datasets existentes |
+| | Massive | Datos financieros vía x402, precio por ruta | Perfilado [Data] | Idem |
+| | Sella (selltoagent.dev) | Marketplace de servicios para agentes, créditos ante fallas | Perfilado [Data] | Idem |
+| **Tareas físicas para agentes** (los más cercanos) | Vangrid | Bounties físicos vía x402 con atestación EAS (la prensa describe pago por x402 con escrow liberado on-chain al aceptar la entrega y reembolso total al cancelar o vencer; no se verificó con documentación primaria si los fondos quedan en un contrato de escrow o en una wallet operadora custodial); desde US$50; sin LatAm; seed de US$9M autodeclarado | Perfilado [Data, prensa Tier 2; custodia confianza Media] | Vertical de comercio, US$1-50 por observación, Argentina. **El mecanismo no diferencia** |
+| | RentAHuman | Agentes contratan humanos por hora vía MCP; 787k perfiles (2026-11, contador del sitio); 81.000 humanos frente a 82 agentes activos (2026-02) | Perfilado [Data, Tier 3] | Dato estructurado y verificado, no horas de trabajo |
+| **Auditoría de campo** (los más cercanos en Modo B) | Premise | Microtareas de campo; 6M de contribuyentes declarados; en contracción | Perfilado [Data] | Encargo programático chico, aceptación pública, precio pagado |
+| | bemyeye | Auditorías de tienda por ola, desde €10.000 | Perfilado [Data] | Lote de 200 observaciones: US$300 (tickets) a US$1.000-2.000 (visitas encargadas) [Estimate; tabla de precios por tipo]; calidad comparable no probada |
+
+**Status quo, la competencia real del primer comprador:** la fuerza de ventas propia (preventistas), las planillas y la intuición. El argumento es "lo que tu fuerza de ventas no llega a ver", no "más barato que Scanntech" [Opinion]. Mapa completo en [competitive-alternatives.md](../agent-data-marketplace/positioning/competitive-alternatives.md).
+
+## Atributos únicos y temas de valor
+
+| # | Atributo (intención de diseño) | ¿Diferencia? |
 |---|---|---|
-| **Tuki [H]** | Declaración EIP-712 del PSP simulado; no prueba de acreditación | `void`/`reclaim` diseñados para fondos no capturados; reembolso posterior exige financiación. Todo pendiente ([ADR 0001](adr/0001-escrow-y-autorizaciones.md), [ADR 0002](adr/0002-verificacion-fiat.md)) |
-| **Paycrest [D/C]** | El proveedor confirma entrega y el agregador coordina settlement ([ciclo](https://docs.paycrest.io/concepts/transaction-lifecycle)) | Docs describen devolución automática; la cola agotada no significa devolución inmediata. En el `Gateway.sol` inspeccionado, `refund` es `onlyAggregator`; no se verificó el despliegue ni se auditó toda vía de recuperación ([tasas](https://docs.paycrest.io/api-reference/general/get-token-rate), [código](https://raw.githubusercontent.com/paycrest/contracts/main/contracts/Gateway.sol)) |
-| **Yodl [A]** | Términos identifican proveedores AEON, Holdstation y Manteca; la contraparte de payout es el proveedor | Marketing ofrece devoluciones integradas; términos §5d no aseguran si, cuándo ni cuánto vuelve y remiten el reclamo al proveedor. Diferencia documental relevante, no garantía de que Tuki sea mejor ([SDK](https://yodl.me/sdk/), [términos](https://yodl.me/terms-of-service)) |
-| **P2P.me [A/SD]** | Red de partners y verificación privada según proveedor; prueba actual de acreditación para el corredor objetivo SD | Publica cobertura por determinados congelamientos bancarios, sujeta a revisión de soporte. No equivale a una recuperación autónoma ni a cobertura de congelamiento del emisor USDC ([FAQ](https://p2p.me/en)) |
-| **Peer / ZKP2P [D]** | V3 documenta verificación en AWS Nitro y atestación EIP-712 vinculada al intent; no es simplemente una declaración de nuestro PSP | Escrow y políticas de disputa documentados; no se auditó exhaustivamente recuperación ni equivalencia con comercio argentino ([protocolo](https://docs.peer.xyz/protocol/zkp2p-protocol)) |
-| **Circle CPN [D/A]** | Notificación del BFI sobre inicio/completitud del fiat; reglas institucionales | La guía describe devoluciones como transacciones nuevas acordadas, no chargebacks automáticos. Guía publicada 2025-11-07, no sustituye contrato de participante ([flujo](https://developers.circle.com/cpn/fiat-payouts), [guía](https://www.circle.com/blog/circle-payments-network-cpn-a-concise-field-guide-for-prospective-network-participants)) |
+| 1 | Precio efectivamente pagado, incluida la promoción bancaria o de billetera visible en el ticket, con el total conciliado contra el QR fiscal | Sí, en AR [Data/Assumption]. Los reintegros acreditados después no figuran en el ticket |
+| 2 | Cobertura bajo demanda del canal tradicional (almacenes, kioscos); NOA como primera geografía, no como diferencial | Hipótesis: el canal tradicional de Scanntech no está publicado |
+| 3 | Encargos programáticos chicos, US$1-50 por observación | Sí: hueco entre x402 sub-dólar y el mínimo de US$50 de Vangrid [Data] |
+| 4 | Reglas de aceptación públicas y niveles de verificación declarados L0-L3 ([ADR 0002](./adr/0002-verificacion-de-observaciones.md)) | Sí frente a paneles y field audit: el rechazo opaco es el primer motivo de abandono de contribuyentes [Data] |
+| 5 | Compra y encargo nativos para agentes (x402, MCP) | **No**: Vangrid, RentAHuman, Apify, Massive y Sella ya lo tienen |
 
-**Contexto de estándares:** SEP-38 ya especifica una API RFQ para activos on/offchain; no resuelve el mecanismo de intercambio. El borrador ERC-7683 estandariza una interfaz para solvers, no exige escrow o liquidación comunes ni prueba pagos bancarios. No se propone adoptarlos ni cambiar arquitectura. ([SEP-38](https://raw.githubusercontent.com/stellar/stellar-protocol/master/ecosystem/sep-0038.md), [ERC-7683](https://eips.ethereum.org/EIPS/eip-7683))
+Atributos que solo conoce el equipo fundador (experiencia, relaciones, acceso a datos): **no se aportaron [DATA GAP].**
 
-**Veredicto de categoría:** hay evidencia suficiente para rechazar «RFQ como novedad defendible». No hay evidencia suficiente para afirmar que ningún competidor combina todas las capacidades o que la recuperación de Tuki será superior. Yodl es el contraste comercial más directo; Paycrest, el comparable de red más cercano entre las fuentes revisadas. CPN y Peer aportan modelos distintos de distribución, financiación y confianza.
+**Temas de valor:** (1) el precio que de verdad se paga; (2) ojos donde tu fuerza de ventas no llega, cuando los necesitás (Modo B); (3) dato con reglas claras, también para tu agente.
 
-## 3. Hipótesis de ventaja competitiva
+## Declaraciones de posicionamiento
 
-> Para wallets con usuarios que necesitan pagar localmente desde cripto, una red con proveedores realmente solapados y condiciones comprobables de ejecución/recuperación podría entregar mejores resultados netos y menor carga operativa que una integración directa o un agregador existente.
+**Moore (comprador que paga primero):**
+> Para gerentes comerciales o de trade de marcas regionales de consumo masivo y sus distribuidores con venta relevante en almacenes, kioscos y autoservicios sin POS, que necesitan saber a qué precio se vende de verdad su producto y el de la competencia (después de promociones bancarias y de billetera) y si está en la góndola en comercios que su fuerza de ventas no cubre, el marketplace es un servicio de relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional que entrega, por encargo, observaciones verificadas con ticket fiscal y foto, desde pocos dólares por observación. A diferencia de las olas de auditoría de campo (bemyeye, desde €10.000 por ola) y de los reportes de los propios preventistas, el marketplace permite encargar lotes chicos con reglas de aceptación y niveles de verificación declarados antes de pagar, reembolsa el resultado no entregado, y lo puede comprar directamente el agente de pricing del cliente vía API, MCP y x402.
 
-**Es una hipótesis conjunta, no una lista de diferenciales disponibles.**
+**Neumeier (unicidad; solo uso interno, no usar "el único" en público antes del piloto):**
+> El marketplace es el único servicio de relevamiento de precio pagado que permite encargar, desde pocos dólares por observación y con reglas de aceptación públicas, observaciones verificadas del canal tradicional argentino, compradas por una persona o por su agente.
 
-| Componente | Estado propio | Qué lo convertiría en ventaja y no en paridad |
-|---|---|---|
-| Competencia entre proveedores | Diseño | Mejora neta frente al mejor proveedor fijo comparable, después de todos los fees; no basta mostrar dos cotizaciones |
-| Confirmación verificable | Declaración simulada prevista | Evidencia relevante para el beneficiario y reglas aceptadas por proveedores; una firma válida no basta para demostrar cobro |
-| Recuperación ante fallos | Diseño con bloqueantes | Una mejora demostrable respecto de alternativas, plazos entendibles y responsables/fondos identificados; sin ocultar casos no recuperables |
-| Varios corredores | Ambición, primero sin implementar | Demanda real que ahorre al integrador trabajo recurrente; no contar países sin el rail/perfil necesario |
-| Datos y distribución | Inexistentes hoy | Integraciones utilizadas y aprendizaje de ejecución que mejore resultados; podrían ser copiables o poco valiosos |
+**Escalera mental (Ries/Trout):** "Precio neto real del canal tradicional, por encargo."
 
-La arquitectura sola es replicable. El posible foso sería una combinación adquirida de oferta operable, demanda distribuida y ejecución confiable. **Hoy no hay foso probado.** Si la wallet prefiere Yodl o un proveedor directo con igual resultado y menor costo, esa es una refutación comercial válida; «integrar o asociarse» sigue siendo alternativa a construir una red propia, sin decidirla ahora.
+**Regla de vocabulario:** "precio pagado" va en la etiqueta de categoría y en el texto técnico; "precio neto" va en titulares y copy de venta (igual que en [messaging-implications.md](../agent-data-marketplace/positioning/messaging-implications.md)).
 
-## 4. Modelo de ingresos preliminar
+**Resultado de las pruebas:**
+- Iteración 1, agéntica pura ("el único marketplace donde agentes compran y encargan datos físicos verificados vía x402"): **falla** las tres pruebas. Vangrid y RentAHuman ya ocupan ese mecanismo y ese peldaño, y "agentes de IA" no es un cliente con presupuesto medido.
+- Iteración 2, la de arriba: Onliness **pasa con condiciones** (la combinación no aparece en el mercado, pero describe capacidades no construidas); Moore **pasa con condiciones** (cliente objetivo [Assumption]); escalera **pasa** (peldaño disponible, vocabulario del sector).
 
-**Propuesta para investigar:** comisión transparente por pago efectivamente completado, con reparto negociado al integrador. Puede incorporarse al precio total visible, sin comisión oculta ni doble conteo del spread del proveedor. No se fija tarifa ni mecanismo contractual/onchain en esta etapa.
+**Frase comercial del producto** (para el equipo y el ecosistema; ver [13 — Resumen para el equipo](./13-resumen-para-el-equipo.md)): «La infraestructura para que agentes de IA compren información verificable del mundo real, directamente de una red de colaboradores».
 
-- **Proveedor:** cobra su cotización, que debe cubrir pago local, liquidez/reposición, operación y riesgo. Ese spread no es ingreso de Tuki.
-- **Tuki:** retiene una parte de la comisión de red después del reparto de distribución; paga sus costos variables y fijos. No llamar «neto» a un fee antes de esos descuentos.
-- **Integrador:** podría participar del fee por aportar demanda. Existe precedente comercial: Yodl documenta una comisión configurable con 30% para Yodl y fee de protocolo de 0,10% hoy exonerado; no extrapolar esos términos a Tuki. ([Yodl: precios](https://docs.yodl.me/pricing))
-- **No contar al inicio:** rendimiento de fondos ajenos, venta de prioridad que contradiga la mejor ejecución, token o subsidios como ingresos orgánicos. Un fee de integración/SaaS solo tendría sentido si un comprador lo acepta; no hay evidencia aún.
+## Decisión de categoría
 
-### Modelo de contribución: todos los números siguientes son supuestos
+| Candidata | Tipo | A favor | En contra |
+|---|---|---|---|
+| **A. Marketplace de datos del mundo real para agentes de IA** | Nueva | Es la definición del usuario; único marco donde x402/MCP es ventaja; encaja con el ecosistema Celo y el hackathon | Sin compradores medidos; ancla precios en centavos; el mecanismo ya existe (Vangrid); crear categoría es caro |
+| **B. Inteligencia de precio pagado para el canal tradicional** | Subcategoría de price intelligence | Hace obvio el precio pagado; posiciona como complemento de Scanntech | Sin calificar choca con SEPA gratis; brecha lista vs. pagado no medida; esconde Modo B si no se agrega el formato encargo |
+| **C. Relevamiento de campo bajo demanda** (retail execution) | Existente | Presupuesto de trade existente; Modo B se entiende solo; ancla alta (€10.000 por ola) | El comprador espera reconocimiento de imágenes y KPI que no tenemos; esconde el precio pagado |
 
-Sea `V` el nominal equivalente en USD de cada pago local, `t` la comisión bruta de red, `d` la fracción de esa comisión para distribución, `c` el costo variable medio soportado por Tuki y `F` sus costos fijos mensuales.
+**Decisión recomendada [Opinion; confianza Media]:**
+- **Definición de producto y visión:** A, sin cambios. Se usa con el equipo, el ecosistema, el hackathon y los registries de agentes.
+- **Categoría de entrada al mercado:** B con el formato de compra de C: *relevamientos bajo demanda de precio pagado y disponibilidad en el canal tradicional*. "Bajo demanda" es Modo B expresado en el formato que el comprador ya compra.
+- **Descriptor de distribución:** "comprable y encargable por tu agente vía API, MCP y x402".
+- **Reevaluar A como categoría de venta** cuando haya compras recurrentes de agentes externos (ver criterio K7).
 
-```text
-Ingreso bruto de red por pago = V × t
-Ingreso de Tuki tras distribución = V × t × (1 − d)
-Contribución por pago m = V × t × (1 − d) − c
-Pagos de equilibrio N = techo(F / m), solo si m > 0
-Volumen de equilibrio = N × V
-```
+Análisis completo en [market-category-analysis.md](../agent-data-marketplace/positioning/market-category-analysis.md).
 
-Ejemplo puramente ilustrativo: `V = US$30`, `d = 40%`, `c = US$0,03` y `F = US$6.000/mes`. Los tres centavos son una hipótesis agregada de relay, soporte y pérdidas ordinarias; no una medición ni una garantía financiada. La comisión se suma al precio del proveedor y puede volvernos no competitivos.
+## Economía por observación (ilustrativa, sin validar)
 
-| Comisión bruta de red `t` | Bruto por pago | Tras distribución | Contribución `m` | Pagos/mes de equilibrio | Volumen/mes aproximado |
+Todos los números son [Estimate] o [Assumption]. El comprador paga por **resultados entregables** (agregados que cumplen sus criterios y los umbrales de privacidad), no por observaciones sueltas; la observación aceptada es la unidad de costo interno. Reglas en [16 — Seguridad, verificación y pagos](./16-modelo-seguridad-verificacion-pagos.md).
+
+**Caso base (intake):**
+
+| Concepto | US$ por observación aceptada |
+|---|---|
+| Ingreso del comprador | 1,50 |
+| Recompensa al contribuyente (pago único al aceptar) | 0,75 (50%) |
+| Procesamiento (extracción, verificación, almacenamiento) | 0,35 |
+| **Margen de contribución** | **0,40 (~27%)** |
+
+**Precio diferenciado por tipo de observación [Assumption]** (pricing-landscape recomienda no usar un precio único):
+
+| Tipo | Precio | Recompensa | Procesamiento | Margen | Referencia de mercado |
 |---|---|---|---|---|---|
-| 0,30% | US$0,090 | US$0,054 | US$0,024 | 250.000 | US$7,50 M |
-| 0,50% | US$0,150 | US$0,090 | US$0,060 | 100.000 | US$3,00 M |
-| 0,80% | US$0,240 | US$0,144 | US$0,114 | 52.632 | US$1,58 M |
+| Ticket que la persona ya tiene | 1,50 | 0,25-0,75 | 0,35 | 0,40-0,90 | Receipt Hog paga ~US$0,01 por ticket [Data] |
+| Visita encargada con desplazamiento (Modo B) | 5,00-10,00 | 3,00-6,00 | 0,50 | 1,50-3,50 | Field Agent US$2-12 por tarea (EE.UU., sin fecha); Vangrid paga 80% del bounty [Data] |
 
-**Sensibilidad:** en el escenario de 0,50%, si `c` sube a US$0,06, hacen falta 200.000 pagos y US$6 M mensuales; con `F = US$15.000` y `c = US$0,03`, 250.000 pagos y US$7,5 M. Con ticket de US$10, los mismos `t`, `d` y `c = US$0,03` dejan contribución cero: ningún volumen cubre costos fijos.
+**Lote de ejemplo:** 200 tickets a US$1,50 = US$300 de ingreso; US$150 de recompensas; US$70 de procesamiento; **US$80 de margen** [Estimate].
 
-Estos cálculos **no demuestran cuánto volumen conseguiremos ni cuánto acepta pagar el mercado**. Faltan presupuesto, precios B2B, adquisición de usuarios, onboarding/KYC, costos por incidente y exposición al riesgo. Los gastos de adquisición deben incluirse como costo variable/amortizado o fijo según corresponda, sin contarlos dos veces. Reservas, colateral y capital de trabajo son además necesidades de caja; pérdida esperada baja no financia una pérdida extrema ni un reembolso exigible.
+**Reserva por encargos incompletos.** Si un encargo no alcanza el umbral mínimo, el comprador recupera el dinero del resultado no entregado (salvo que haya aceptado pagar un resultado parcial), y las recompensas ya válidas se pagan igual: la plataforma asume ese riesgo. Ejemplo: de 10 lotes como el anterior, uno se corta al 60%: se pierden US$90 de recompensas y US$42 de procesamiento sin ingreso. Margen total: 9 × 80 − 132 = **US$588 sobre US$2.700 de ingreso (~22%)** [Estimate]. Con dos lotes fallidos de 10, el margen cae a ~16%.
 
-El número de proveedores necesario se determina por ofertas válidas, disponibilidad y demanda simultánea, no por un umbral mágico. La expansión internacional puede aportar volumen, pero también costos y riesgos nuevos. No concluir rentabilidad global ni inviabilidad de un nicho a partir de estos escenarios.
+**Reventa en Modo A.** Una observación se recompensa una sola vez al aceptarse; cada venta adicional del mismo agregado tiene costo marginal cercano a cero, siempre que la licencia de reutilización lo permita (doc 16). Ahí está la palanca de margen; las regalías a contribuyentes quedan como opción futura [Opinion].
 
-## 5. Las tres hipótesis que validar antes de invertir más desarrollo
+**Costos no incluidos [DATA GAP]:** costo del facilitador x402 en mainnet para pagos de ~US$0,75 (la demo usa el facilitador de testnet de Celo Sepolia con créditos gratuitos), costo de enviar recompensas en stablecoins, revisión manual, soporte y antifraude.
 
-**Umbrales propuestos para discusión, no requisitos aprobados ni actividades ya realizadas.** Se pueden investigar sin pagos reales ni prueba con comercios. Esta síntesis no envía mensajes, publica encuestas ni contacta terceros; esas acciones necesitan su autorización específica.
+## Costo de adquisición de contribuyentes (hipótesis)
 
-### H1 — Existe oferta dispuesta a operar bajo reglas aceptables
+No hay ningún dato de costo de adquisición de contribuyentes en Argentina. Toda la tabla es [Assumption]; los canales vienen de [`raw/gtm-analysis.md`](../agent-data-marketplace/raw/gtm-analysis.md).
 
-**Hipótesis:** al menos dos proveedores independientes con acceso efectivo al corredor pueden cotizar y aceptar explícitamente cómo comprometen, pagan, prueban y cobran.
+| Canal | Evidencia del canal | CAC hipotético por contribuyente activo | Riesgo |
+|---|---|---|---|
+| Equipo y círculo cercano (tickets del equipo para la demo) | — | ~US$0 en efectivo | No escala; sesgo de muestra |
+| Comunidades cripto y de stablecoins (Ripio, Lemon, MiniPay) | Ya tienen wallet y entienden recompensas en USDC [Assumption, gtm-analysis] | US$1-3 (bono de primera observación) | Contribuyentes mercenarios (patrón de puntos pre-token de Vangrid) |
+| Ecosistema Celo (talleres con Ripio, grants, hackathons) | Talleres "Stable Agents: LatAm", 2026-10-17 [Data] | US$0-2 (subsidiado por grants) | Audiencia de desarrolladores, no de compradores en almacenes |
+| Prensa y redes ("la IA te paga") | Cobertura previa de RentAHuman en Forbes Argentina e iProfesional [Data] | Cercano a 0 si hay cobertura | Volumen sin calidad; no hay demanda que lo retenga |
+| Referidos | — | US$0,50-1 por referido activo | Fraude de cuentas múltiples |
+| Cashback y fintech (Mercado Pago, MODO, billeteras) | Mayor volumen potencial [Opinion, gtm-analysis] | Desconocido | Negociación lenta |
+| Reclutamiento local para visitas de Modo B | Existen avisos pagos de relevadores en el interior (Catamarca, Malargüe) [Data, snippet] | US$3-10 | Compite con agencias por la misma mano de obra |
+| Publicidad paga | Sin uso observado en la categoría [DATA GAP] | Desconocido | Canal no probado |
 
-**Evidencia propuesta:** después de autorizar contacto, obtener de cinco candidatos pertinentes una respuesta escrita sobre rail/cobertura, elegibilidad, precio, mínimos, evidencia, plazos, prefondos y riesgo de pagar sin capturar. Pedir dos expresiones no vinculantes de interés con condiciones concretas; «nos interesa» sin condiciones no cuenta. No equiparar interés con contrato ni operación habilitada.
+**Regla de recupero [Estimate]:** con el margen del caso base (US$0,40 por ticket), un CAC de US$2 se recupera con 5 observaciones aceptadas por contribuyente; uno de US$5, con 13. La retención depende de que haya encargos financiados y aceptación justa: no reclutar sin demanda [Opinion, review-mining].
 
-**Pasa provisionalmente si:** dos aceptan avanzar con el mismo caso de pago y con una asignación de riesgos explícita compatible con el diseño, sin esconder excepciones. **Se refuta comercialmente** si todos los que responden exigen condiciones incompatibles. Si no responden suficientes candidatos o no acreditan capacidad, queda inconclusa; no se sustituye evidencia por simulación. Cualquier cambio necesario a las reglas vuelve al fundador antes de modificar arquitectura.
+## Compradores potenciales, por prioridad
 
-### H2 — La red mejora el resultado y deja contribución positiva
+| # | Comprador | Por qué | Rol | Confianza |
+|---|---|---|---|---|
+| 1 | Gerente comercial o de trade de marca regional de consumo masivo, o su distribuidor, con venta en canal tradicional | Dolor máximo (canal tradicional + interior + precio neto); alternativas caras o ausentes; decide sin licitación | Primer comprador que paga | Baja [Assumption] |
+| 2 | Consultoras de inflación y precios (EcoGo, LCG, Analytica, Econviews) | Dolor documentado en sus propias palabras (sesgo por promociones, solo online, solo AMBA) | Design partner; ticket bajo | Media en el dolor, Baja en el pago |
+| 3 | Agencias de trade e investigación | Subcontratan relevamientos en el interior para clientes CPG | Comprador de encargos | Baja |
+| 4 | Software de trade y sell-out (GU Trade, Tracksmart, Nextbyn Consolido) | Sus clientes ya pagan por visibilidad del canal indirecto | Integrador (B2B2Agent) | Baja |
+| 5 | Equipos con agentes internos de pricing o RGM | El agente necesita datos del canal que no ve | Canal agéntico realista | Baja |
+| 6 | Agentes autónomos en la web abierta (Bazaar, registries MCP) | Costo de listarse casi nulo | Canal secundario; sin ingreso esperado | Muy baja [Data: US$5.000-11.000 por mes globales] |
 
-**Hipótesis:** con cotizaciones realmente comparables, el ruteo aporta una mejora que supera su costo frente al mejor proveedor fijo disponible y a la alternativa integrable, sin trasladar riesgo oculto al usuario o proveedor.
+**No son el primer cliente:** multinacionales (ya tienen NielsenIQ o Scanntech y licitan) y software de pricing global (busca cobertura amplia).
 
-**Evidencia propuesta:** con acceso autorizado a cotizaciones no ejecutadas, comparar durante diez días y tres tamaños de pago (equivalentes a US$10, US$30 y US$100), a las mismas horas, rail y perfil. Registrar ofertas inválidas, límites, costo total, vencimiento y proveedor ganador. Elegir el proveedor fijo con la primera mitad de la muestra y evaluar contra él en la segunda, sin optimizar retrospectivamente el benchmark. No usar solo APIs minoristas de venta de cripto.
+## Criterios explícitos de abandono
 
-**Pasa provisionalmente si:** en la muestra de evaluación hay al menos dos ofertas ejecutables por condiciones documentadas en 80% de solicitudes elegibles; el ahorro mediano neto es al menos 0,30% frente al benchmark fijo y la contribución de Tuki es positiva con costos y reparto explícitos. Son umbrales de investigación propuestos, no una promesa de precio. **Se refuta** si el ahorro desaparece al incluir fees/costos, solo depende de subsidios o las ofertas no se solapan. Cotizaciones favorables no prueban éxito, latencia ni recuperación reales: eso sigue pendiente antes de producción.
+Umbrales propuestos por este análisis; el equipo debe ratificarlos antes de empezar el piloto. Cumplir un criterio de abandono significa detener la inversión en esa línea, no "seguir intentando".
 
-### H3 — Una distribución concreta prefiere esta propuesta a las existentes
+Los criterios de compradores son etapas sucesivas, no contradictorias: día 7 de la demo, 2 compradores interesados y 1 que acepta pagar un lote ([14](./14-primeros-7-dias.md)); go/no-go del piloto, 2-3 compromisos escritos ([03](./03-prd-mvp.md)); K1, al menos 2 pilotos pagados al 2027-01-31.
 
-**Hipótesis:** wallets con demanda pertinente y usuarios de ese segmento perciben una mejora suficiente para cambiar su conducta, no solo para elogiar una demo.
+K2 y el spike S3 ([15](./15-stack-tecnologico.md)) miden cosas distintas: **S3 es la puerta técnica antes del piloto** (100 tickets reales: ≥ 95 % de totales y ≥ 90 % de ítems correctos, 0 ítems inventados no detectados); **K2 es el criterio de abandono después de dos iteraciones** sobre una muestra mayor del piloto.
 
-**Evidencia propuesta:** tras autorizar investigación con terceros, contrastar el concepto con cinco equipos de wallets/aplicaciones y diez usuarios del segmento. Mostrar alternativas reales, requisitos y limitaciones con igual claridad; usar prototipo no transaccional. Pedir al integrador un caso de uso, responsable, rango de volumen respaldado por su actividad y próximo paso definido; al usuario, completar y comparar el flujo, no solo registrarse en una lista.
+| ID | Criterio | Umbral propuesto | Qué se abandona |
+|---|---|---|---|
+| K1 | Compradores que pagan | Menos de **2 compradores con un piloto pagado en dinero** (no canje ni visibilidad) al **2027-01-31** | El wedge de comprador humano; sin otro comprador identificado, el proyecto |
+| K2 | Calidad de extracción | Precisión **menor a 90% en los campos obligatorios** (comercio, fecha, total conciliado con el QR, producto y precio unitario) sobre al menos 200 tickets reales, después de dos iteraciones | Tickets como primer tipo de observación |
+| K3 | Margen de contribución | **Margen negativo por lote entregable**, incluida la reserva de encargos incompletos, al precio que aceptan los compradores del piloto | El modelo económico; revisar precio o abandonar |
+| K4 | Premisa del precio pagado | En una muestra de 200-500 tickets, la mediana de la diferencia entre precio pagado y precio de lista de SEPA del mismo día es **menor a 5%** en los productos objetivo | El marco "precio pagado"; queda solo disponibilidad |
+| K5 | Cumplimiento de encargos (Modo B) | Menos de **70% de los encargos del piloto** alcanzan el umbral mínimo antes del vencimiento | Modo B en esa geografía |
+| K6 | Oferta de contribuyentes | Sin **30 contribuyentes activos** en la primera geografía en 4 semanas con CAC de hasta US$3 | El canal de adquisición o la geografía |
+| K7 | Canal agéntico abierto | **Cero compras de agentes externos** en 90 días desde el listado en registries | No se abandona el producto: el canal pasa a mantenimiento, sin inversión adicional |
 
-**Pasa provisionalmente si:** dos integradores dejan por escrito un interés condicionado de evaluación con responsable y un problema que su proveedor actual no resuelve, y seis de diez usuarios prefieren el flujo para una necesidad propia con motivo concreto distinto de un descuento subsidiado. El interés y las preferencias no son pagos ni volumen comprometido. **Se refuta** si los integradores eligen Yodl/proveedor directo o no identifican demanda, o si los usuarios no ven mejora al conocer los límites. Sin acceso suficiente, queda inconclusa.
+## Brechas de datos
 
-**Decisión posterior:** si H1–H3 producen evidencia favorable, presentar los resultados y recién entonces decidir la próxima inversión. Si alguna falla o es inconclusa, no reemplazarla por más desarrollo. Incluso con las tres favorables, los bloqueantes técnicos, las garantías financiadas y la revisión de elegibilidad siguen impidiendo aprobar producción o «liquidación garantizada».
+- **Voz del comprador:** ninguna cita directa de marca, distribuidor, agencia o consultora. Cerrar con al menos 5 entrevistas durante la semana de la demo ([14 — Primeros 7 días](./14-primeros-7-dias.md)) y 8-10 en total antes del piloto.
+- **Custodia en Vangrid:** contrato de escrow o wallet operadora, sin documentación primaria.
+- **Brecha lista vs. pagado:** no cuantificada. Es la premisa del marco (K4).
+- **Cobertura del canal tradicional** de Scanntech y NielsenIQ en 2026: no publicada.
+- **Disposición a pagar** por observación o por lote: ninguna fuente.
+- **CAC de contribuyentes:** sin datos; toda la tabla es hipótesis.
+- **Atributos del equipo fundador:** no aportados.
+- **Competidores no verificados:** Halo (existencia), Pogo (no investigado), Scentia y Worldpanel (no reverificados).
+- **Costo del facilitador x402 en mainnet** y del envío de recompensas.
+- **Investigación profunda** sobre demanda agéntica y verificación: en curso al sintetizar; el archivo todavía no está publicado.
+
+## Entregables de posicionamiento
+
+- [Documento de posicionamiento (Dunford 5+1)](../agent-data-marketplace/positioning/positioning-doc.md)
+- [Declaraciones de posicionamiento](../agent-data-marketplace/positioning/positioning-statement.md)
+- [Mapa de alternativas competitivas](../agent-data-marketplace/positioning/competitive-alternatives.md)
+- [Análisis de categoría de mercado](../agent-data-marketplace/positioning/market-category-analysis.md)
+- [Implicancias de mensaje](../agent-data-marketplace/positioning/messaging-implications.md)
+- Investigación de competidores: [informe](../agent-data-marketplace/competitors-report.md), [matriz](../agent-data-marketplace/competitive-matrix.md), [panorama de precios](../agent-data-marketplace/pricing-landscape.md), [battle cards](../agent-data-marketplace/battle-cards/), [verificación](../agent-data-marketplace/verification-report.md)
+- Producto y diseño: [03 — PRD del MVP](./03-prd-mvp.md), [04 — Arquitectura técnica](./04-arquitectura-tecnica.md), [16 — Seguridad, verificación y pagos](./16-modelo-seguridad-verificacion-pagos.md)
+
+## Red Flags
+- **Demanda no validada en ningún lado:** ni humana (cero entrevistas) ni agéntica (US$5.000-11.000 por mes globales).
+- **Liderar con el mecanismo sería falso por omisión:** Vangrid ya lo opera.
+- **La premisa central (brecha lista vs. pagado) no está medida.**
+
+## Yellow Flags
+- El vocabulario del producto (agentes, x402, stablecoins) no coincide con el del comprador; usarlo en la primera conversación con una marca juega en contra.
+- Caída del consumo masivo en 2026 (-5,1% interanual en marzo; NOA "en plena crisis") presiona los presupuestos de investigación.
+- Scanntech (Serie F de US$180M, 2026-10) puede cerrar el hueco del canal tradicional.
+- El margen del caso base (~27%) es delgado: dos encargos fallidos de cada diez lo bajan a ~16%.
+
+## Sources
+- [`agent-data-marketplace/positioning/raw/alternative-mapping.md`](../agent-data-marketplace/positioning/raw/alternative-mapping.md), [`agent-data-marketplace/positioning/raw/market-categories.md`](../agent-data-marketplace/positioning/raw/market-categories.md)
+- TRM Labs, "Who's actually paying" (2026-09-09): https://www.trmlabs.com/trm-tech-blog/whos-actually-paying-measuring-ai-agent-payments-onchain
+- Scanntech, presentación El Foro 2024 (datos a febrero de 2024): https://cas.com.ar/wp-content/uploads/2024/04/PRESENTACION_SCANNTECH.pdf
+- iProfesional, "un producto puede tener más de 5 precios" (2026-06-08): https://www.iprofesional.com/economia/456617-argentinos-sin-valores-de-referencia-un-producto-puede-tener-mas-de-5-precios-diferentes
+- bemyeye, precios: https://content.bemyeye.com/pricing/
+- Vangrid: https://crypto.news/vangrid-usdc-smartphone-scans-3d-models/
+- RentAHuman: https://the-decoder.com/a-new-platform-lets-ai-agents-pay-humans-to-do-the-real-world-work-they-cant/
+- Visa/Artemis vía Forkast: https://forkast.news/visa-artemis-the-0-14-reality-of-agent-commerce/

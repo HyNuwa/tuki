@@ -1,72 +1,66 @@
-# 13 — Resumen ejecutivo para presentar al equipo
+# 13 — Resumen para el equipo
 
-**Estado: propuesta de startup para validar, no compañía operativa. Actualizado: 11 de noviembre de 2026.**
+**Estado: propuesta de startup para validar, no compañía operativa. Actualizado: 12 de noviembre de 2026.** Sin código, sin usuarios reales y sin dinero real. **La arquitectura no está aprobada para fondos reales.**
 
-**Cambio de dirección:** la versión anterior proponía una app que integraba un único PSP, sin escrow. La dirección actual es una **red RFQ de payment solvers** con un escrow onchain que bloquea el USDC hasta que el pago se liquida o se devuelve. **La arquitectura no está aprobada para fondos reales.** «Liquidación garantizada» no es una promesa ni una categoría adoptada: no hay confirmación bancaria probada, garantías financiadas ni proveedores reales que acepten las reglas ([doc 17](17-posicionamiento.md)).
+**Cambio de dirección:** la propuesta anterior (pagar QR argentinos con USDC mediante una red RFQ de payment solvers) quedó archivada en el tag `archive/qr-usdc-rfq`. La dirección actual es un marketplace de datos del mundo real para agentes de IA.
 
-## La idea en 30 segundos
+**«La infraestructura para que agentes de IA compren información verificable del mundo real, directamente de una red de colaboradores».**
 
-Una persona con USDC escanea el QR de un comercio argentino. Varios **payment solvers** (proveedores que pagan pesos) cotizan el pago. El USDC del pagador queda bloqueado en un escrow, el solver elegido paga ARS al comercio y cobra el USDC cuando presenta un comprobante firmado. Si nadie toma el pago, el USDC vuelve enseguida. Si algo queda incierto, el pagador tiene un plazo máximo después del cual recupera sus fondos sin depender de nosotros.
+> **Marketplace de datos del mundo real para agentes de IA.** Los agentes pueden descubrir, comprar y encargar información verificable mediante x402. Las personas aportan observaciones del mundo físico, como tickets de compra, reciben recompensas y mantienen protegidos sus datos personales.
 
-Lo que buscamos diferenciar no es el riel ni la wallet. La hipótesis es que proveedores que compiten de verdad por cada pago, con reglas comprobables de ejecución y recuperación ante fallos, le den a una wallet un mejor resultado neto que integrar un proveedor directo o Yodl. Hoy es una hipótesis, no un foso ([doc 17](17-posicionamiento.md), §3).
+## La idea en una página
+
+- **Problema:** los datos del comercio físico (precio efectivamente pagado después de promociones bancarias y de billetera, disponibilidad real, canal tradicional) son difíciles de obtener programáticamente. SEPA publica precios de lista gratis; lo que paga la gente y lo que hay en la góndola no está en una API.
+- **Solución:** agentes que compran o encargan información mediante x402. **Modo A:** comprar un agregado que ya existe. **Modo B:** encargar observaciones nuevas con un presupuesto. Modo B es el diferencial central; Modo A demuestra que se puede vender datos de inmediato.
+- **Oferta inicial:** tickets de compra y observaciones comerciales verificadas, aportadas por personas que dan su consentimiento y reciben recompensas. Los tickets son el primer tipo de observación, no toda la identidad del producto.
+- **Demanda:** empresas, investigadores y aplicaciones con agentes. La investigación sugiere empezar por un comprador humano (marca regional o distribuidor con venta en canal tradicional; consultoras de inflación como design partners) que usa agentes como canal.
+- **Modelo de ingresos:** pago por consulta y comisión por encargos.
+- **Diferenciación:** recolección bajo demanda, calidad verificable y acceso automatizado.
+- **Riesgo principal:** demostrar compradores recurrentes.
+
+No afirmamos ser los primeros ni que exista demanda validada para nuestra implementación.
+
+**Tres conceptos que no se mezclan:** datos aportados (`Contribution` → `Observation`), productos de datos (`DataProduct`) y encargos (`Task`). Detalle en [04 — Arquitectura](04-arquitectura-tecnica.md).
 
 ## Tres cosas distintas
 
 | | Qué es | Estado |
 |---|---|---|
-| **Demo de hackathon** | Dos solvers y un PSP simulados, escrow de prueba en testnet, pago fiat simulado | Es lo que vamos a construir primero |
-| **Protocolo RFQ objetivo** | Solvers licenciados, registro y revocación, garantías, evidencia más fuerte | Diseño en los docs 04 y 16 |
-| **Piloto real** | Pagos reales en un segmento pequeño | Condicionado a proveedores, cumplimiento, pruebas y garantías. Nada de eso está resuelto |
-
-## Primer mercado
-
-- Destino: Argentina.
-- Usuario inicial: viajero internacional o freelance con USDC en una wallet propia.
-- Primer formato: QR interoperable argentino.
-- Activo y red: USDC en Base. Otros activos y redes entran después, mediante adaptadores, si hay demanda.
-- Es un mercado de entrada para validar. La ambición es expandir por corredores de pago.
+| **Demo de hackathon** | Modo A y Modo B en Celo Sepolia con USDC de testnet, tickets del equipo, cliente automático sin LLM, tesoro de tareas con custodia temporal | Es lo que vamos a construir primero |
+| **Protocolo objetivo** | Presupuestos sin custodia propia, verificación por capas, umbrales de privacidad, distribución por registries x402 y MCP | Diseño en los docs 04 y 16 |
+| **Piloto real** | Una zona chica, compradores y contribuyentes reales, fondos reales con topes | Condicionado a compradores comprometidos, revisión legal y de seguridad. Nada de eso está resuelto |
 
 ## Lo que NO vamos a construir aún
 
-- No procesamos ARS nosotros ni captamos depósitos. No custodiamos fondos.
-- No construimos un escrow propio: probamos uno existente (`AuthCaptureEscrow`) en un spike, sin aprobarlo para producción.
-- No desplegamos contratos con fondos reales.
-- No sumamos integraciones Web3 para premios, salvo que resuelvan una necesidad identificada o un track específico.
-- No prometemos KYC cero, anonimato, instantaneidad garantizada ni que el comercio cobró: el comprobante es una declaración firmada del proveedor.
-
-## Qué probará la demo
-
-1. El flujo completo: Payment Intent → RFQ con dos solvers simulados → autorización USDC → ejecución fiat simulada → comprobante verificable → liquidación.
-2. El reembolso rápido cuando ningún solver toma el pago.
-3. El cambio al solver de respaldo sin pedir otra firma.
-4. **El caso más importante:** el solver pagó y la confirmación se perdió. No hay reembolso automático ni doble pago.
-5. Que el pagador recupera sus fondos sin nuestro backend.
-
-La demo no prueba que un PSP real acepte el modelo, ni que haya demanda.
+- Un escrow nuevo ni `auth-capture`: queda como experimento separado. x402 `exact` no es un escrow.
+- World ID ni prueba de humano.
+- Integración con MiniPay.
+- Varias redes: solo Celo Sepolia en la demo.
+- zkTLS.
+- Reparto de ingresos (regalías) a contribuyentes por ventas posteriores: en la demo la recompensa es un pago único al aceptar la observación.
+- Un sistema avanzado de recompensas.
+- Nada con fondos reales ni contribuyentes externos.
 
 ## Riesgos centrales
 
-- **Ningún PSP confirmó que acepte el modelo.** El solver se compromete antes de pagar, adelanta los pesos y asume la pérdida si no logra probar el pago a tiempo. Sin un proveedor que lo acepte, no hay piloto.
-- **La ventaja es copiable.** Yodl, P2P.me o un PSP como Manteca pueden agregar una garantía parecida. Las reglas de recuperación ante fallos son, como mucho, una cuña, no un foso.
-- **Los reembolsos después de liquidar necesitan financiación.** No hay garantía automática sin fondos o sin responsabilidad contractual (doc 16, §9).
-- **No tenemos prueba de acreditación.** Solo la declaración firmada de quien pagó (doc 16, §7).
+- **Demanda de agentes.** Es el riesgo número uno. RentAHuman tenía más de 81.000 humanos registrados frente a 82 agentes activos (febrero de 2026); el volumen x402 genuinamente agéntico se estima en US$5.000–11.000 por mes en 2026 (TRM Labs). Sin compradores que repitan, no hay negocio.
+- **Vangrid ya opera el mismo mecanismo.** Bounties físicos pagados por agentes vía x402 (seed de US$9M, desde US$50 por bounty, sin operación en LatAm). El mecanismo no diferencia; lo que puede diferenciar es la vertical (precio pagado, canal tradicional) y la geografía.
+- **Verificación y fraude residual.** El QR fiscal prueba que existe un comprobante con ese total, no que los ítems estén bien leídos ni que el ticket sea propio. Un fraude descubierto después de pagar la recompensa es pérdida de la plataforma.
+- **Custodia en la demo.** El presupuesto de los encargos queda en un tesoro nuestro en testnet. Con fondos reales eso requiere revisión legal y topes ([ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md)).
+- **Ley 25.326.** Los tickets pueden contener datos personales. Hace falta consentimiento informado, finalidad, registro de la base y revisión de cómo afecta a los comercios antes de cualquier piloto.
 
 ## Modelo de ingresos
 
-Sin validar. La propuesta es una comisión transparente por pago completado, compartida con la wallet o el integrador que aporta la demanda. Con supuestos ilustrativos, el volumen de equilibrio va de US$1,6M a US$7,5M por mes según la comisión ([doc 17](17-posicionamiento.md), §4). El ejemplo de la versión anterior (reparto de fee con un único PSP) ya no aplica.
+Sin validar. **Pago por consulta** (Modo A, por x402) y **comisión por encargos** (Modo B, sobre el presupuesto entregado). El comprador paga por resultados entregables, no por observaciones sueltas; si un encargo no alcanza el umbral mínimo, recupera el dinero del resultado no entregado salvo que haya aceptado un resultado parcial. Ejemplo ilustrativo por observación: el comprador paga US$1,50, el contribuyente recibe US$0,75 y el procesamiento cuesta US$0,35. La investigación de precios menciona, como opción **no adoptada**, una suscripción liviana para el comprador humano regional ([pricing-landscape](../agent-data-marketplace/pricing-landscape.md)); el modelo propuesto sigue siendo pago por consulta y comisión por encargos.
 
 ## Camino
 
-1. **Hackathon:** spike del escrow y demo con actores simulados.
-2. **Después de la hackathon:** conversaciones con proveedores, revisión de cumplimiento normativo, elección de la garantía y revisión de seguridad.
-3. **Go/no-go del piloto real:** solo si se cumplen las condiciones del PRD.
-
-## La visión futura
-
-Una capa de liquidación entre cripto y pagos locales: multiactivo y multired mediante adaptadores, con solvers que compiten y responden con una garantía, y expansión por corredores (por ejemplo, Pix). Es visión, no lo que entregamos hoy. Los beneficios con comercios adheridos quedan fuera de esta etapa.
+1. **Hackathon:** demo de Modo A y Modo B en testnet ([doc 14](14-primeros-7-dias.md)). En paralelo, desde el día 1, entrevistas con compradores concretos para saber qué información pagarían.
+2. **Después de la hackathon:** primer lote pagado por un comprador concreto, revisión legal (Ley 25.326, custodia, impuestos) y revisión de seguridad.
+3. **Go/no-go del piloto real:** solo si se cumplen las condiciones del [PRD](03-prd-mvp.md).
 
 ## La decisión que necesitamos tomar
 
-**¿Existe al menos un proveedor dispuesto a operar como solver bajo estas reglas, y un grupo de usuarios para el que la garantía haga una diferencia real?** Si no, hay que cambiar el modelo o el segmento antes de escribir infraestructura financiera para producción.
+**¿Hay compradores concretos que paguen más de una vez por información que hoy no consiguen, a un precio que cubra recompensa, verificación y reserva?** Si no, hay que cambiar el segmento o el tipo de dato antes de invertir más en infraestructura.
 
-Ver [03 — PRD](03-prd-mvp.md), [04 — Arquitectura](04-arquitectura-tecnica.md), [15 — Stack](15-stack-tecnologico.md), [16 — Seguridad y liquidación](16-modelo-seguridad-liquidacion.md) y [14 — Primeros siete días](14-primeros-7-dias.md).
+Posicionamiento y competencia: [17 — Posicionamiento](17-posicionamiento.md). Ver también [03 — PRD](03-prd-mvp.md), [04 — Arquitectura](04-arquitectura-tecnica.md), [15 — Stack](15-stack-tecnologico.md), [16 — Seguridad, verificación y pagos](16-modelo-seguridad-verificacion-pagos.md) y [14 — Primeros siete días](14-primeros-7-dias.md).
