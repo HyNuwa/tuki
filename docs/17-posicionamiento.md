@@ -1,7 +1,7 @@
 # Posicionamiento: marketplace de datos del mundo real para agentes de IA
 
 **Fecha:** 2026-11-12. **Estado:** síntesis estratégica para validar. No hay producto, compradores, contribuyentes ni dinero real. No es una decisión de inversión ni una aprobación para operar con fondos reales.
-**Base:** investigación de competidores y de posicionamiento en [`agent-data-marketplace/`](../agent-data-marketplace/) (nivel Light) y revisión del usuario del 2026-11-12. La investigación profunda sobre demanda agéntica y verificación (`agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md`) estaba en curso y no se usó.
+**Base:** investigación de competidores y de posicionamiento en [`agent-data-marketplace/`](../agent-data-marketplace/) (nivel Light) y revisión del usuario del 2026-11-12. La [investigación profunda sobre demanda agéntica y verificación](../agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md) (2026-11-13) se integró después: suma Loopuman, Execution Market y WURK a los competidores de tareas físicas y debilita el atributo 3.
 
 **Etiquetas:** [Data] dato con fuente · [Estimate] cálculo con supuestos · [Assumption] supuesto sin verificar · [Opinion] juicio analítico.
 
@@ -53,6 +53,9 @@ La revisión del usuario propone tres grupos. Se agregan los dos grupos más cer
 | | Sella (selltoagent.dev) | Marketplace de servicios para agentes, créditos ante fallas | Perfilado [Data] | Idem |
 | **Tareas físicas para agentes** (los más cercanos) | Vangrid | Bounties físicos vía x402 con atestación EAS (la prensa describe pago por x402 con escrow liberado on-chain al aceptar la entrega y reembolso total al cancelar o vencer; no se verificó con documentación primaria si los fondos quedan en un contrato de escrow o en una wallet operadora custodial); desde US$50; sin LatAm; seed de US$9M autodeclarado | Perfilado [Data, prensa Tier 2; custodia confianza Media] | Vertical de comercio, US$1-50 por observación, Argentina. **El mecanismo no diferencia** |
 | | RentAHuman | Agentes contratan humanos por hora vía MCP; 787k perfiles (2026-11, contador del sitio); 81.000 humanos frente a 82 agentes activos (2026-02) | Perfilado [Data, Tier 3] | Dato estructurado y verificado, no horas de trabajo |
+| | Loopuman | Agentes encargan presencia física o datos vía API/MCP, revisión del solicitante, pago **en Celo**; 20 % de comisión y retiro mínimo de US$1 (2026-11-12); primer encargo creado por agente declarado el 2026-10-09 | Deep research [Data, autodeclarado] | Vertical de comercio con precio pagado, reglas de aceptación y umbrales de privacidad; Loopuman es horizontal y la revisión la hace el solicitante |
+| | Execution Market | MCP/REST/A2A; evidencia tipada (foto geolocalizada, recibo), escrow EVM al asignar, pago USDC; prueba E2E propia en Base (2026-02-13) | Deep research [Data, sin clientes independientes] | Producto de datos agregado y entregable, no tarea suelta |
+| | WURK | Microtrabajos x402/USDC en Solana y Base con API/MCP; un caso documentado de tarea física (volantes, 2026-07-10); presets desde US$0,02 por posición premiada | Deep research [Data, del proveedor] | Observación verificada con nivel declarado, no premio de microtarea |
 | **Auditoría de campo** (los más cercanos en Modo B) | Premise | Microtareas de campo; 6M de contribuyentes declarados; en contracción | Perfilado [Data] | Encargo programático chico, aceptación pública, precio pagado |
 | | bemyeye | Auditorías de tienda por ola, desde €10.000 | Perfilado [Data] | Lote de 200 observaciones: US$300 (tickets) a US$1.000-2.000 (visitas encargadas) [Estimate; tabla de precios por tipo]; calidad comparable no probada |
 
@@ -64,9 +67,9 @@ La revisión del usuario propone tres grupos. Se agregan los dos grupos más cer
 |---|---|---|
 | 1 | Precio efectivamente pagado, incluida la promoción bancaria o de billetera visible en el ticket, con el total conciliado contra el QR fiscal | Sí, en AR [Data/Assumption]. Los reintegros acreditados después no figuran en el ticket |
 | 2 | Cobertura bajo demanda del canal tradicional (almacenes, kioscos); NOA como primera geografía, no como diferencial | Hipótesis: el canal tradicional de Scanntech no está publicado |
-| 3 | Encargos programáticos chicos, US$1-50 por observación | Sí: hueco entre x402 sub-dólar y el mínimo de US$50 de Vangrid [Data] |
+| 3 | Encargos programáticos chicos, US$1-50 por observación | **Parcial**: Vangrid arranca en US$50, pero Loopuman (Celo, retiro desde US$1) y WURK ya cubren microtareas chicas de forma horizontal. Lo que queda es el formato de lote de observaciones de comercio con criterios de entrega [Data, deep research 2026-11-13] |
 | 4 | Reglas de aceptación públicas y niveles de verificación declarados L0-L3 ([ADR 0002](./adr/0002-verificacion-de-observaciones.md)) | Sí frente a paneles y field audit: el rechazo opaco es el primer motivo de abandono de contribuyentes [Data] |
-| 5 | Compra y encargo nativos para agentes (x402, MCP) | **No**: Vangrid, RentAHuman, Apify, Massive y Sella ya lo tienen |
+| 5 | Compra y encargo nativos para agentes (x402, MCP) | **No**: Vangrid, RentAHuman, Loopuman, Execution Market, WURK, Apify, Massive y Sella ya lo tienen |
 
 Atributos que solo conoce el equipo fundador (experiencia, relaciones, acceso a datos): **no se aportaron [DATA GAP].**
 

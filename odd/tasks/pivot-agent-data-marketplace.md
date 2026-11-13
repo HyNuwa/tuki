@@ -20,7 +20,7 @@ Branch: `HyNuwa/pivot-agent-data-marketplace` · Delivery: ask-on-risk · Test r
 | T0 | S1 | inline | done | commit 242f367, tag `archive/qr-usdc-rfq` |
 | T1 | S3 | delegated (parallel with T2; disjoint surface `agent-data-marketplace/` deliverables) | done; verification 1 critical + 9 warnings, fix batch running | V1 report |
 | T2 | S5 | delegated (parallel with T1; disjoint surface `docs/04`, `docs/15`, `docs/16`) | done (structural readback) | docs 04, 15, 16 new |
-| T3 | S2 | Codex worker (Orca) | in progress | |
+| T3 | S2 | Codex worker (Orca) | done 2026-11-13 (98 URLs); integrated into doc 17, competitors-report, README | deep-research/demanda-agentica-y-verificacion.md |
 | T4 | S4 | positioning research delegated (A1, B1 parallel), synthesis inline → docs/17 | in progress | |
 | T6 | S7 (17) | delegated W1 (parallel) | done; Onliness passes with conditions, strength Moderate | docs/17 + positioning/*.md |
 | T7 | S7 (04, 15, 16, ADRs) | delegated W2 (parallel) | done (structural readback) | refund policy §5, reserve §4.3, spike S0 |

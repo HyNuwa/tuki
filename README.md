@@ -24,7 +24,7 @@ Commissioning new data (Mode B) is the core differentiator; buying existing data
 | [ADR 0002](docs/adr/0002-verificacion-de-observaciones.md) | Pending proposal: observation verification and what is sold as "verified" |
 | [14 — First 7 days](docs/14-primeros-7-dias.md) | Day-by-day demo plan, parallel buyer validation, and the day-7 go/no-go decision |
 
-Research behind these docs lives in [`agent-data-marketplace/`](agent-data-marketplace/): [competitors report](agent-data-marketplace/competitors-report.md), [competitive matrix](agent-data-marketplace/competitive-matrix.md), [pricing landscape](agent-data-marketplace/pricing-landscape.md), [battle cards](agent-data-marketplace/battle-cards/) and [positioning research](agent-data-marketplace/positioning/).
+Research behind these docs lives in [`agent-data-marketplace/`](agent-data-marketplace/): [competitors report](agent-data-marketplace/competitors-report.md), [competitive matrix](agent-data-marketplace/competitive-matrix.md), [pricing landscape](agent-data-marketplace/pricing-landscape.md), [battle cards](agent-data-marketplace/battle-cards/), [positioning research](agent-data-marketplace/positioning/) and [deep research on agent demand and verification](agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md).
 
 ## Previous directions
 
