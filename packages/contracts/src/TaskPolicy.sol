@@ -100,6 +100,7 @@ contract TaskPolicy is ITaskPolicy, VerifierQuorum {
         bytes[] calldata signatures
     ) external {
         Task storage task = _task(taskId, pi, Status.Open);
+        if (block.timestamp > task.deliveryLimit) revert LateDelivery(uint48(block.timestamp), task.deliveryLimit);
         if (rec.taskId != taskId) revert TaskIdMismatch(taskId, rec.taskId);
         _useDecision(
             keccak256(
@@ -213,6 +214,22 @@ contract TaskPolicy is ITaskPolicy, VerifierQuorum {
         if (amount != 0) escrow.capture(pi, amount, fee, feeReceiver);
         if (amount != pi.maxAmount) escrow.void(pi);
         vault.onCapture(taskId, amount - fee);
+        vault.release(taskId);
+    }
+
+    /// @notice The platform returns the whole authorization to the payer at any time before capture.
+    function voidTask(bytes32 taskId, IAuthCaptureEscrow.PaymentInfo calldata pi) external {
+        if (msg.sender != platform) revert NotPlatform(msg.sender);
+        Task storage task = tasks[taskId];
+        if (task.status != Status.Open && task.status != Status.Delivered) {
+            revert InvalidStatus(taskId, task.status);
+        }
+        if (escrow.getHash(pi) != task.paymentInfoHash) revert PaymentInfoMismatch(taskId);
+
+        task.status = Status.Voided;
+        emit TaskVoided(taskId);
+
+        escrow.void(pi);
         vault.release(taskId);
     }
 

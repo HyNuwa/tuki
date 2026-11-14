@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-14 · feat(contracts): reject late deliveries and add platform void
+- **Qué hice:** `registerDelivery` revierte `LateDelivery` después de `deadline + maxDeliveryDelay`. `voidTask` (solo la plataforma, en cualquier momento antes de la captura) devuelve toda la autorización al pagador y libera el lock. Tests de M1-AC10.
+- **Archivos clave:** `packages/contracts/src/TaskPolicy.sol`, `packages/contracts/test/AC10_LateDeliveryAndVoid.t.sol`.
+- **Próximo paso:** M1-AC11 a AC13: `publishRoot` y `claim` en `RewardVault`.
+
 ## 2026-11-14 · feat(contracts): gate capture on dispute window and amount bounds
 - **Qué hice:** `capture` ahora exige `block.timestamp >= disputeDeadline`, ninguna disputa abierta sin resolver y un monto menor o igual al entregable (o al `captureAmount` resuelto) y a `maxAmount`; captura cero y captura total no rompen contra el escrow. Agregué `openDispute` (solo el pagador, solo dentro de la ventana), `resolveDispute` (2-de-2, hasta `resolutionDeadline`, ligada al motivo de la disputa) y `releaseAfterExpiry` (cualquiera, cuando la autorización venció y el escrow quedó vacío). Tests de M1-AC4, AC5 (con fuzz: lo capturado nunca supera `maxAmount`), AC8 y AC9, incluido el `reclaim` del pagador directo en el escrow sin ninguna clave de Tuki después de `openTask`.
 - **Archivos clave:** `packages/contracts/src/TaskPolicy.sol`, `packages/contracts/test/AC4_DisputesAndCaptureBounds.t.sol`, `packages/contracts/test/utils/TukiFixture.sol`.
