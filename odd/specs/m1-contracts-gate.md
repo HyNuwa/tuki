@@ -22,7 +22,7 @@ In scope: `packages/contracts` (Foundry project), its unit, fuzz, invariant and 
 | Collector calls `USDC.receiveWithAuthorization(from = payer, to = collector, value = maxAmount, validAfter = 0, validBefore = preApprovalExpiry, nonce = payer-agnostic PaymentInfo hash, signature = ERC-6492-unwrapped collectorData)` and returns `maxAmount − amount` to the payer | [Verified] on `main` source | `src/collectors/ERC3009PaymentCollector.sol` |
 | Payment hash: `keccak256(abi.encode(chainid, escrow, keccak256(abi.encode(PAYMENT_INFO_TYPEHASH, paymentInfo))))`; `salt` is not validated, only hashed | [Verified] on `main` source | `src/AuthCaptureEscrow.sol` |
 | `preApprovalExpiry` value for Tasks | **[Pending]** | Not set by the parent timeline. W1 records the escrow's ordering rule between `preApprovalExpiry`, `authorizationExpiry` and `refundExpiry` and the team picks the value; it bounds how long the agent's ERC-3009 signature can be submitted. |
-| Gas per `publishRoot` and the real leaf limit | **[Pending]** | Measured in M1-AC14. 256 is the starting limit (Q13.4), not a guaranteed capacity. |
+| Gas per `publishRoot` and the real leaf limit | [Verified] 2026-11-14 | Measured in M1-AC14, results in §9: 256 leaves fit, the limit stays 256 (Q13.4). |
 
 ## 3. Interfaces
 
@@ -177,8 +177,17 @@ odd/specs/m1-contracts-gate.md
   - `reclaim` reverts `BeforeAuthorizationExpiry` until `authorizationExpiry`, reverts `InvalidSender` for the operator, and pays the payer from `authorizationExpiry` on; `capture` reverts `AfterAuthorizationExpiry` from that same second.
   - Expiry ordering rule (W1, for the `preApprovalExpiry` [Pending] in §2): `block.timestamp < preApprovalExpiry ≤ authorizationExpiry ≤ refundExpiry`, otherwise `AfterPreApprovalExpiry` or `InvalidExpiries`; equality is accepted. The value for Tasks is still the team's choice.
   - Not covered by AC0 (EOA operator here): a contract operator and ERC-3009 relayed through `TaskPolicy`, the two "Blocked when" conditions; M1-AC1 covers them.
-- Gas table: [Pending]
-- `maxLeavesPerRoot`: [Pending]
+- Gas table: **[Verified] 2026-11-14**, `test/AC14_Gas.t.sol` on the fork (block 58767000). Each row is one call with the vault and USDC accounts cooled first (cold storage access, as in a real transaction). Transaction gas = 21000 + calldata gas + execution gas; the Base L1 data fee is not included, so calldata bytes are listed. Steady state: one earlier epoch exists; each epoch splits its total among 4 Task allocations. "With contribution leaves" publishes as many PoC leaf hashes as reward leaves (the M5 shape).
+
+  | Leaves | `publishRoot` tx gas | calldata bytes | `publishRoot` tx gas with contribution leaves | calldata bytes | `claim` tx gas | proof length |
+  |---|---|---|---|---|---|---|
+  | 16 | 213442 | 1604 | 265015 | 2116 | 132592 | 4 |
+  | 64 | 304767 | 3140 | 447872 | 5188 | 135130 | 6 |
+  | 128 | 426368 | 5188 | 691496 | 9284 | 136389 | 7 |
+  | 256 | 669691 | 9284 | 1178770 | 17476 | 137658 | 8 |
+
+  Headroom above the limit, with contribution leaves: 512 leaves 2155996 gas, 1024 leaves 4122052 gas. The Base Sepolia block gas limit read on 2026-11-14 is 120000000, so a 256-leaf root with contribution leaves uses about 1 % of a block. `forge test --gas-report` medians (execution gas, warm storage): `openTask` 344887, `registerDelivery` 84644, `capture` up to 260838, `voidTask` up to 163901. Deployed size: `TaskPolicy` 14017 bytes, `RewardVault` 9662 bytes.
+- `maxLeavesPerRoot`: **256** [Verified] 2026-11-14. The largest measured size fits with a wide margin, so the Q13.4 starting limit stands; gas is not the binding constraint up to 1024 leaves. The tests fail if a 256-leaf root with contribution leaves reaches 2000000 gas [Design, regression guard].
 - Base Sepolia deployment addresses and INT-02-contracts tx hashes: [Pending]
 - Gate verdict (viable / blocked + reason): [Pending]
 
