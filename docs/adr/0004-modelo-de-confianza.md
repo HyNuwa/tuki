@@ -1,6 +1,6 @@
 # ADR 0004 — Modelo de confianza: qué puede decidir la plataforma sola
 
-**Estado:** propuesta, pendiente de ratificación del equipo. No cambia el P0 hasta ratificarse.
+**Estado:** aceptada para la demo en testnet (ratificada el 2026-11-14). No aprobada para fondos reales: el contrato de política y la reserva requieren revisión de seguridad y auditoría antes de mainnet.
 **Fecha:** 2026-11-14
 **Relacionado:** [ADR 0001](0001-red-y-custodia-de-presupuestos.md) (custodia), [ADR 0002](0002-verificacion-de-observaciones.md) (verificación), [ADR 0003](0003-red-de-pagos-base.md) (Base), [doc 16](../16-modelo-seguridad-verificacion-pagos.md) (§4 fondos, §4.3 reserva, §7 privacidad).
 

@@ -67,6 +67,8 @@ La demo no prueba que existan compradores dispuestos a pagar, ni que la verifica
 | P0-09 | Cancelaciones           | El presupuesto no utilizado se devuelve según las reglas acordadas  |
 | P0-10 | Privacidad              | No se entregan imágenes originales ni datos personales al comprador |
 
+> **ADR 0004 ratificado (2026-11-14):** P0-04 (financiar encargos) y P0-09 (cancelaciones) pasan del tesoro de tareas custodial a `AuthCaptureEscrow` con un contrato de política como operador (captura solo con decisión firmada por M de N verificadores; el agente recupera el sobrante con `reclaim`). Las precisiones de abajo que mencionan el tesoro de tareas quedan reemplazadas por la spec del MVP. Ver [ADR 0004](adr/0004-modelo-de-confianza.md).
+
 **Precisiones de implementación para la demo** (no modifican los criterios anteriores):
 
 - **P0-01:** cada `DataProduct` expone cobertura (geografía, comercios, categorías), antigüedad o frescura, origen, nivel de verificación mínimo (L0–L3), cantidad de observaciones y de contribuyentes, licencia de uso y precio. La consulta de cobertura es gratuita.
