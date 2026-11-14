@@ -1,6 +1,6 @@
 # Informe del spike S0: x402 `exact` de punta a punta en Celo Sepolia
 
-**Fecha:** 2026-11-13 · **Rama:** `HyNuwa/spike-s0-x402-celo-sepolia` · **Estado:** **abierto**: código y pruebas listos; **todavía no se ejecutó ningún pago real en testnet**.
+**Fecha:** 2026-11-13 · **Rama:** `HyNuwa/spike-s0-x402-celo-sepolia` · **Estado:** **viabilidad confirmada externamente; liquidación E2E propia pendiente** (criterio de cierre replanteado el 2026-11-13, §11). Código y pruebas listos; **todavía no se ejecutó ningún pago real propio en testnet**.
 
 **Objetivo:** demostrar que un agente puede descubrir y comprar datos mediante x402 en Celo Sepolia, a través del facilitator hospedado de testnet.
 
@@ -12,8 +12,9 @@
 | ¿El flujo 402 → firma → verify → settle → entrega funciona? | **Sí con facilitator simulado** en las pruebas. **Contra el facilitator real llegó hasta `/verify`**, que rechazó por saldo cero (lo esperado, §5) |
 | ¿Hay protección contra dobles cobros? | **Sí**, con un guard propio: el SDK no deduplica (§4.3) |
 | ¿Transacciones verificables? | **Ninguna todavía** |
-| Bloqueo | Dos pasos que solo puede hacer una persona: crear la `X402_API_KEY` y fondear la wallet compradora (§6) |
-| Decisión propuesta | **Avanzar con este stack.** S0 queda abierto hasta registrar una transacción real |
+| ¿La viabilidad está confirmada? | **Sí, externamente:** la documentación oficial de Celo y el ejemplo oficial mantenido `celo-org/x402-celo-example` usan el mismo flujo, red, token y facilitator (§11) |
+| Pendiente | Una liquidación E2E propia, como **prueba de integración INT-01 antes del despliegue**; ya no bloquea el desarrollo (§11.4) |
+| Decisión | **Avanzar con este stack sin esperar la liquidación propia** |
 
 ## 2. Entorno y versiones
 
@@ -102,11 +103,12 @@ Ninguna todavía. Cuando se ejecute, registrar: hash, bloque, pagador, `payTo`, 
 
 ## 9. Decisión
 
-**Avanzar, sin corregir el stack.** La compatibilidad está probada contra los servicios reales, el flujo completo funciona con pruebas deterministas y el facilitator real acepta el formato hasta verify.
+**Avanzar, sin corregir el stack y sin bloquear el desarrollo.** La compatibilidad está probada contra los servicios reales, el flujo completo funciona con pruebas deterministas, el facilitator real acepta el formato hasta verify y la liquidación está demostrada externamente por el ejemplo oficial (§11).
 
-Condiciones para cerrar el S0:
-1. Una transacción real registrada en el §8.
-2. Que el guard de idempotencia pase a almacenamiento persistente antes del MVP.
+Pendientes (ninguno bloquea el desarrollo):
+1. **Prueba de integración antes del despliegue (INT-01):** una transacción real propia registrada en el §8 (§11.4).
+2. El guard de idempotencia pasa a almacenamiento persistente en el MVP.
+3. Evaluar la conciliación on-chain del ejemplo oficial para settles inciertos (§11.1).
 
 ## 10. Reproducción
 
@@ -121,3 +123,51 @@ npm run wallet:new       # wallet compradora de testnet -> .env (solo imprime la
 npm run server
 npm run agent            # en otra terminal
 ```
+
+## 11. Criterio de cierre replanteado (2026-11-13)
+
+La viabilidad técnica de x402 `exact` con USDC en Celo Sepolia ya está demostrada por Celo: [documentación oficial](https://docs.celo.org/build-on-celo/build-with-ai/x402) y ejemplo oficial [`celo-org/x402-celo-example`](https://github.com/celo-org/x402-celo-example) (último commit `f3a128b`, 2026-10-13, revisado el 2026-11-13). Repetir el experimento no reduce una incertidumbre técnica relevante. **Nota:** el repositorio del ejemplo no publica un hash de transacción; la evidencia es que se trata del ejemplo oficial y mantenido, con la misma configuración que usamos.
+
+### 11.1 Comparación con el ejemplo oficial
+
+| Aspecto | Ejemplo oficial | Nuestro spike | Diferencia |
+|---|---|---|---|
+| Paquetes | `@x402/*` 2.27.0, TS 5, vitest 3 | `@x402/*` 2.31.0, TS 7, vitest 5 | Versión más nueva; misma API |
+| Red, token, facilitator | `eip155:11142220`, USDC `0x01C5…C44E`, `https://api.x402.sepolia.celo.org` | Idénticos | Ninguna |
+| Precio | Objeto explícito `amount: "10000"`, `extra: { name: "USDC", version: "2" }` | Idéntico | Ninguna |
+| `X-API-Key` | En `supported`, `verify` y `settle` | Igual | Ninguna |
+| Servidor | Hono + `paymentMiddleware(routes, server)` | Igual | Ninguna |
+| Comprador | `@x402/fetch` + `ExactEvmScheme(account)` | Igual, más `spendControls` y elección por catálogo | Agregamos tope de gasto y descubrimiento |
+| Descubrimiento | No tiene | `GET /v1/products` gratis con `DataProduct` | Propio |
+| Idempotencia HTTP | No tiene | `SettlementGuard` (nonce EIP-3009; pagador + `payment-identifier`) | Propio |
+| Settle con resultado incierto | Variante A2A: busca on-chain el evento `AuthorizationUsed` (bloque no anterior a la cotización, últimos 5.000 bloques); si está, cuenta como pagado | Rechaza el reintento | **El ejemplo resuelve la incertidumbre; nosotros solo evitamos el doble cobro.** Candidato para el MVP |
+| Trabajo pago | A2A: se ejecuta **solo después** del settle | `@x402/hono` ejecuta el handler antes del settle (§7) | El handler del MVP no puede tener efectos irreversibles antes del cobro |
+| Créditos del facilitator | README: `/settle` devuelve `402` sin créditos y `429` por límite del plan gratuito | No documentado | Costo y límites del facilitator [Pendiente] |
+
+### 11.2 Qué está demostrado y qué no
+
+| Afirmación | Evidencia | Estado |
+|---|---|---|
+| SDK, red, token y facilitator compatibles | `check:compat` contra servicios reales (§3) | **Demostrado por nosotros** |
+| El pago que firmamos tiene el formato correcto | `/verify` real respondió `insufficient_funds`, no un error de formato (§5) | **Demostrado por nosotros** |
+| 402 → firma → verify → settle → entrega | 34 pruebas con facilitator simulado (§4.2) | **Demostrado localmente** |
+| Sin doble cobro en reintentos, replays y concurrencia | `idempotency.test.ts` | **Demostrado localmente** |
+| La liquidación on-chain funciona con este facilitator | Documentación y ejemplo oficiales | **Confirmado externamente** |
+| Nuestro servidor liquida de verdad y el guard procesa la respuesta real de `/settle` (campo `transaction`) | — | **Sin verificar**: INT-01 |
+| Límites, créditos y costo del facilitator con nuestra clave | README del ejemplo (402/429) | **Sin verificar** |
+
+### 11.3 Descubrimiento separado del pago
+
+El descubrimiento no depende de x402 y se diseña como módulo propio:
+
+- **Descubrimiento (gratis):** catálogo de `DataProduct`, `GET /v1/products` y la tool MCP `list_products`. No conoce el riel de pago; publica el precio como dato del contrato.
+- **Pago (`PaymentRail`, doc 04):** x402 `exact` hoy. Toma el precio del catálogo y protege solo las rutas de entrega.
+- En el spike ya están separados en código (`src/catalog.ts` frente a `src/seller.ts`). En el MVP, el catálogo se construye y se prueba sin facilitator.
+
+### 11.4 Avanzar sin la liquidación propia
+
+**Conclusión: sí se puede avanzar.** Lo que queda es incertidumbre de integración (credenciales, créditos y la forma real de la respuesta de `/settle`), no de viabilidad. Se cubre con una prueba de integración antes del despliegue:
+
+- **INT-01:** con `X402_API_KEY` real y la wallet compradora fondeada, `npm run server` + `npm run agent` liquidan una compra, el hash se registra en el §8 y un reintento con el mismo `payment-identifier` no cobra dos veces. **Bloquea el despliegue, no el desarrollo.**
+
+**Sobre "S1":** en el doc 15, S1 es el spike de `auth-capture` en **Base Sepolia**. No depende de la liquidación en Celo, así que no se bloquea, pero está fuera del P0, que usa `exact`. Si "S1" se refiere al siguiente paso del MVP (días 1 a 3 del doc 14: contratos, catálogo e ingesta), tampoco depende de esta liquidación.
