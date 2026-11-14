@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-14 · feat(contracts): require 2-of-2 verifier decisions in TaskPolicy
+- **Qué hice:** agregué `VerifierQuorum`: decisiones EIP-712 bajo el dominio "Tuki Protocol" v1 firmadas por los dos verificadores inmutables, con nonce de un solo uso por contrato y `expiresAt`. `registerDelivery` y `capture` ahora exigen el 2-de-2, el `taskId` firmado, el estado correcto y el mismo `PaymentInfo` de la apertura. Tests de M1-AC3 (cero, una, tres firmas, firmante duplicado o ajeno, firma mal formada), AC6 (nonce repetido, decisión vencida, otra Task, otro chain id, otro contrato) y AC7 (la plataforma no puede capturar ni directo en el escrow ni por `TaskPolicy` sin firmas).
+- **Archivos clave:** `packages/contracts/src/VerifierQuorum.sol`, `packages/contracts/src/interfaces/IVerifierQuorum.sol`, `packages/contracts/src/TaskPolicy.sol`, `packages/contracts/test/AC3_VerifierSignatures.t.sol`, `packages/contracts/test/TaskPolicy_Lifecycle.t.sol`.
+- **Próximo paso:** M1-AC4, AC5, AC8 y AC9: ventana de disputa, disputas, topes de monto y `reclaim`.
+
 ## 2026-11-14 · feat(contracts): open tasks and capture through TaskPolicy
 - **Qué hice:** primera versión de `TaskPolicy` y `RewardVault` contra el escrow real. `openTask` valida el `PaymentInfo` (operador, receptor, token, 3000 bps, fee receiver, salt, expiries), autoriza el presupuesto con la firma ERC-3009 del agente y bloquea la reserva; si la reserva libre no alcanza revierte todo y no queda autorización (M1-AC2). Camino feliz de entrega y captura (M1-AC1): el vault recibe el neto, el fee receiver el 30 %, el pagador el resto y el lock sin usar vuelve a la reserva libre. Las dos condiciones de bloqueo del gate quedan descartadas: el escrow acepta un operador contrato y el ERC-3009 se puede relayar por `TaskPolicy`. Ojo: `registerDelivery` y `capture` todavía no verifican firmas ni ventanas; eso entra en los commits siguientes.
 - **Archivos clave:** `packages/contracts/src/TaskPolicy.sol`, `packages/contracts/src/RewardVault.sol`, `packages/contracts/src/interfaces/`, `packages/contracts/test/AC1_HappyPath.t.sol`, `packages/contracts/test/AC2_OpenTaskGuards.t.sol`, `packages/contracts/test/RewardVault_Reserve.t.sol`, `packages/contracts/test/utils/TukiFixture.sol`.

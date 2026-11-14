@@ -5,16 +5,23 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IAuthCaptureEscrow} from "./interfaces/IAuthCaptureEscrow.sol";
 import {ITaskPolicy} from "./interfaces/ITaskPolicy.sol";
 import {RewardVault} from "./RewardVault.sol";
+import {VerifierQuorum} from "./VerifierQuorum.sol";
 
 /// @title TaskPolicy
 /// @notice Operator of `AuthCaptureEscrow` for Tuki Tasks (spec M1 section 3.4). Non-upgradeable.
-contract TaskPolicy is ITaskPolicy {
+contract TaskPolicy is ITaskPolicy, VerifierQuorum {
     uint16 public constant FEE_BPS = 3000;
     uint16 internal constant BPS_DENOMINATOR = 10_000;
 
     bytes32 public constant TASK_TERMS_TYPEHASH = keccak256(
         "TaskTerms(uint48 deadline,uint32 maxDeliveryDelay,uint32 disputeWindow,uint32 resolutionWindow,uint32 operationalMargin,uint32 maxRewardedObservations,uint120 rewardPerObservation,uint120 pricePerObservation,uint16 maxPerContributor,uint32 minQuorum,bool partialAccepted)"
     );
+
+    bytes32 public constant DELIVERY_RECORD_TYPEHASH = keccak256(
+        "DeliveryRecord(bytes32 taskId,bytes32 resultHash,bytes32 evidenceRoot,uint120 deliverableAmount,uint256 nonce,uint48 expiresAt)"
+    );
+    bytes32 public constant CAPTURE_DECISION_TYPEHASH =
+        keccak256("CaptureDecision(bytes32 taskId,uint120 amount,uint256 nonce,uint48 expiresAt)");
 
     IAuthCaptureEscrow public immutable escrow;
     address public immutable erc3009Collector;
@@ -32,8 +39,8 @@ contract TaskPolicy is ITaskPolicy {
         RewardVault vault_,
         address feeReceiver_,
         address platform_,
-        address[2] memory
-    ) {
+        address[2] memory verifiers
+    ) VerifierQuorum(verifiers) {
         escrow = escrow_;
         erc3009Collector = erc3009Collector_;
         usdc = usdc_;
@@ -84,11 +91,29 @@ contract TaskPolicy is ITaskPolicy {
 
     function registerDelivery(
         bytes32 taskId,
-        IAuthCaptureEscrow.PaymentInfo calldata,
+        IAuthCaptureEscrow.PaymentInfo calldata pi,
         DeliveryRecord calldata rec,
-        bytes[] calldata
+        bytes[] calldata signatures
     ) external {
-        Task storage task = tasks[taskId];
+        Task storage task = _task(taskId, pi, Status.Open);
+        if (rec.taskId != taskId) revert TaskIdMismatch(taskId, rec.taskId);
+        _useDecision(
+            keccak256(
+                abi.encode(
+                    DELIVERY_RECORD_TYPEHASH,
+                    rec.taskId,
+                    rec.resultHash,
+                    rec.evidenceRoot,
+                    rec.deliverableAmount,
+                    rec.nonce,
+                    rec.expiresAt
+                )
+            ),
+            rec.nonce,
+            rec.expiresAt,
+            signatures
+        );
+
         uint48 disputeDeadline = uint48(block.timestamp) + task.disputeWindow;
         task.status = Status.Delivered;
         task.deliveredAt = uint48(block.timestamp);
@@ -101,9 +126,17 @@ contract TaskPolicy is ITaskPolicy {
         bytes32 taskId,
         IAuthCaptureEscrow.PaymentInfo calldata pi,
         CaptureDecision calldata dec,
-        bytes[] calldata
+        bytes[] calldata signatures
     ) external {
-        Task storage task = tasks[taskId];
+        Task storage task = _task(taskId, pi, Status.Delivered);
+        if (dec.taskId != taskId) revert TaskIdMismatch(taskId, dec.taskId);
+        _useDecision(
+            keccak256(abi.encode(CAPTURE_DECISION_TYPEHASH, dec.taskId, dec.amount, dec.nonce, dec.expiresAt)),
+            dec.nonce,
+            dec.expiresAt,
+            signatures
+        );
+
         uint256 amount = dec.amount;
         uint256 fee = amount * FEE_BPS / BPS_DENOMINATOR;
         task.status = Status.Captured;
@@ -113,5 +146,16 @@ contract TaskPolicy is ITaskPolicy {
         escrow.void(pi);
         vault.onCapture(taskId, amount - fee);
         vault.release(taskId);
+    }
+
+    /// @dev Loads a Task, requiring `status` and the `PaymentInfo` stored at open.
+    function _task(bytes32 taskId, IAuthCaptureEscrow.PaymentInfo calldata pi, Status status)
+        internal
+        view
+        returns (Task storage task)
+    {
+        task = tasks[taskId];
+        if (task.status != status) revert InvalidStatus(taskId, task.status);
+        if (escrow.getHash(pi) != task.paymentInfoHash) revert PaymentInfoMismatch(taskId);
     }
 }

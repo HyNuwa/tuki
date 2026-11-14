@@ -36,7 +36,8 @@ abstract contract TukiFixture is BaseSepoliaFork {
     TaskPolicy internal policy;
 
     address internal deployer = makeAddr("tuki-deployer");
-    address internal platform = makeAddr("tuki-platform");
+    address internal platform;
+    uint256 internal platformKey;
     address internal feeReceiver = makeAddr("tuki-fee-receiver");
     address internal relayer = makeAddr("tuki-relayer");
     address internal stranger = makeAddr("tuki-stranger");
@@ -57,6 +58,7 @@ abstract contract TukiFixture is BaseSepoliaFork {
         (verifierA, verifierAKey) = makeAddrAndKey("tuki-verifier-a");
         (verifierB, verifierBKey) = makeAddrAndKey("tuki-verifier-b");
         (intruder, intruderKey) = makeAddrAndKey("tuki-intruder");
+        (platform, platformKey) = makeAddrAndKey("tuki-platform");
 
         vm.startPrank(deployer);
         vault = new RewardVault(USDC, [verifierA, verifierB], MAX_LEAVES_PER_ROOT);
@@ -247,5 +249,34 @@ abstract contract TukiFixture is BaseSepoliaFork {
     function _registerDelivery(IAuthCaptureEscrow.PaymentInfo memory pi, uint120 deliverableAmount) internal {
         ITaskPolicy.DeliveryRecord memory rec = _deliveryRecord(TASK_ID, deliverableAmount);
         policy.registerDelivery(TASK_ID, pi, rec, _bothVerifiers(_policyDigest(_hash(rec))));
+    }
+
+    /// @dev Default Task opened and delivered with 8 USDC deliverable; the dispute window is still open.
+    function _deliveredTask() internal returns (IAuthCaptureEscrow.PaymentInfo memory pi) {
+        (pi,) = _openDefaultTask();
+        _registerDelivery(pi, 8_000_000);
+    }
+
+    /// @dev Same as `_deliveredTask`, warped to `disputeDeadline`, the first second capture is allowed.
+    function _capturableTask() internal returns (IAuthCaptureEscrow.PaymentInfo memory pi) {
+        pi = _deliveredTask();
+        vm.warp(policy.getTask(TASK_ID).disputeDeadline);
+    }
+
+    function _recover(bytes32 digest, bytes memory signature) internal pure returns (address) {
+        bytes32 r;
+        bytes32 s;
+        assembly ("memory-safe") {
+            r := mload(add(signature, 32))
+            s := mload(add(signature, 64))
+        }
+        return ecrecover(digest, uint8(signature[64]), r, s);
+    }
+
+    function _assertNotCaptured(IAuthCaptureEscrow.PaymentInfo memory pi) internal view {
+        assertEq(_capturable(pi), BUDGET, "escrow still holds the budget");
+        assertEq(uint8(policy.getTask(TASK_ID).status), uint8(ITaskPolicy.Status.Delivered), "task still delivered");
+        assertEq(vault.locked(TASK_ID), LOCK, "lock untouched");
+        assertEq(vault.freeReserve(), RESERVE - LOCK, "free reserve untouched");
     }
 }
