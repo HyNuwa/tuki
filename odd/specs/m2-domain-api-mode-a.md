@@ -9,6 +9,7 @@ Monorepo skeleton; `packages/domain` (pure types and rules); `apps/api` Hono app
 ## 2. Monorepo skeleton
 
 - pnpm workspace with `apps/api`, `apps/contributor-web`, `apps/verifier`, `packages/contracts` (from M1, untouched), `packages/domain`, `packages/demo-client`. Only `apps/api` and `packages/domain` get code in M2a; the others get a `package.json` placeholder.
+- Root `package.json` has `"prepare": "git config core.hooksPath .githooks"` so `pnpm install` turns on the team hooks (docs/tareas/README.md, Onboarding).
 - TypeScript strict, vitest, pinned exact versions; `@x402/*` 2.31.0 and Hono as in the spike; Drizzle + PostgreSQL 16; Testcontainers for tests (Q10). No other technologies.
 
 ## 3. Ports (adapters faked in Seam 1)
