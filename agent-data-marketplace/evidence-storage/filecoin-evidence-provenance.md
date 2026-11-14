@@ -29,6 +29,16 @@ Motivos:
 - Se pueden **agrupar** muchos tickets por pieza sin romper el borrado individual. Por ejemplo, una pieza por agregado cerrado, con claves por ticket.
 - El spike S8 (§11) da resultados reproducibles en la red de prueba Calibration.
 
+**Actualización (2026-11-13): Lighthouse como segunda vía.** El equipo propone probar Filecoin también mediante Lighthouse. Lo verificado en su documentación ([llms-full.txt](https://lighthouse.storage/llms-full.txt), consultado el 2026-11-13):
+
+- **Costo:** suscripción mensual (gratis hasta 5 GB en Filecoin; US$12 por mes hasta 500 GB; US$49 por mes hasta 2,5 TB). Los planes de pago único "permanentes" están retirados. Con precio plano, el costo por pieza del §5 deja de dominar: 100.000 tickets de 300 KB (~30 GB) entran en el plan de US$12 por mes [Verificado en fuente; el cálculo es Inferencia]. **Esto corrige la conclusión de costo del punto 4 para Lighthouse, no para Synapse.**
+- **Cifrado:** Kavach cifra en el cliente antes de subir y divide la clave con criptografía umbral BLS; el acceso se puede revocar [Afirmación del proveedor].
+- **Privacidad:** "Anyone holding a CID can retrieve the file" y Kavach mantiene los datos "gateway retrievable": el texto cifrado es descargable por quien tenga el CID [Verificado en fuente].
+- **Borrado:** "deletion is supported through the SDK and dashboard", pero "Content already propagated across public IPFS cannot be recalled from third-party nodes that have cached it". No dice si se eliminan las copias en Filecoin [Verificado en fuente; borrado en Filecoin Pendiente].
+- **No documentado:** uso de PDP, agregación de archivos chicos, país de almacenamiento.
+
+**Lectura:** Lighthouse simplifica la integración y el costo, pero no resuelve la condición principal: privacidad y borrado verificables. La decisión para tickets sigue en NO-GO; se prueban **Synapse y Lighthouse** en el spike S8, con R2 como base de comparación.
+
 **Uso que sí tiene sentido evaluar:** publicar en Filecoin los **resultados agregados ya vendidos** (sin datos personales, con k ≥ 5 y m ≥ 3) o las raíces de compromiso. Ahí la persistencia pública es una ventaja y no hay datos personales en juego [Inferencia].
 
 ---
@@ -307,6 +317,16 @@ Ejemplo, 100.000 tickets de 1 MB = 10^11 bytes = 0,0909 TiB:
 
 ## 11. Propuesta de spike S8
 
+**Vías a comparar (las tres con los mismos 50 tickets sintéticos y el mismo recibo de procedencia):**
+
+| Vía | Qué aporta | Qué medir en particular |
+|---|---|---|
+| A. Synapse SDK (Filecoin Onchain Cloud, PDP) | Pruebas de posesión verificables on-chain; mayor control | Metadata on-chain, costo por pieza, borrado con `deletePiece` |
+| B. Lighthouse (SDK + Kavach) | Integración más simple, precio plano, cifrado y revocación de acceso | Si el CID cifrado es descargable por un gateway público; si el borrado elimina las copias en Filecoin y en IPFS; qué prueba de conservación ofrece al auditor (PDP u otra) |
+| C. Cloudflare R2 (base) | Almacenamiento privado convencional, borrado inmediato | Costo y latencia de referencia; el recibo de procedencia funciona igual |
+
+**Criterio de adopción:** A o B se adoptan solo si muestran una ventaja real sobre C en integridad, auditoría o conservación, a un costo razonable, **y** cumplen la condición de privacidad y borrado verificables. Usar blockchain no es por sí solo una justificación.
+
 **Pregunta:** ¿podemos guardar evidencia cifrada sintética en FOC (red de prueba Calibration) sin que aparezca en la cadena ningún dato vinculable a un ticket, salvo el PieceCID y el tamaño del texto cifrado? ¿Podemos además emitir y verificar un recibo de procedencia (`evidenceRoot`) independiente del almacenamiento?
 
 **Condiciones:**
@@ -325,6 +345,7 @@ Ejemplo, 100.000 tickets de 1 MB = 10^11 bytes = 0,0909 TiB:
 4. Medir la latencia de alta y de descarga (directa y con CDN, p50 y p95) sobre 50 descargas.
 5. Llamar a `deletePiece` y medir cuándo dejan de responder los proveedores y si el texto cifrado sigue disponible por otra vía después de 24 h y de 7 días.
 6. Comparar los costos reales de `getUploadCosts()` con los de §5.
+6b. Repetir los pasos 1-6 con Lighthouse (vía B): subir con Kavach, descargar el CID desde un gateway público sin credenciales, revocar el acceso, borrar y volver a consultar el CID a las 24 h y a los 7 días desde gateways de terceros.
 7. Con los mismos 50 tickets, construir `evidenceRoot`, firmar el recibo, generar el log y una prueba de inclusión, y verificarla con un script independiente. Repetirlo con R2 como almacenamiento para mostrar que el recibo no depende de Filecoin.
 
 **Éxito:**
@@ -340,7 +361,7 @@ Ejemplo, 100.000 tickets de 1 MB = 10^11 bytes = 0,0909 TiB:
 - Los costos superan en más de 2 veces los de §5.
 - La operación requiere intervención manual de un proveedor.
 
-**Duración:** 2 a 3 días de una persona, más 7 días de espera pasiva para observar el borrado.
+**Duración:** 3 a 4 días de una persona (las dos vías), más 7 días de espera pasiva para observar el borrado.
 
 **Entregable:** `spikes/s8-filecoin-evidence/REPORT.md` con mediciones, capturas de la cadena y una actualización del veredicto de este informe.
 
