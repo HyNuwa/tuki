@@ -1,0 +1,28 @@
+#!/bin/sh
+# Enforces English Conventional Commits. Rules: AGENTS.md "Team workflow".
+
+subject=$(head -n 1 "$1")
+
+# Let git's own merge/revert/fixup messages through.
+case "$subject" in
+  Merge*|Revert*|fixup!*|squash!*) exit 0 ;;
+esac
+
+if ! echo "$subject" | grep -Eq '^(feat|fix|docs|refactor|test|chore|style|perf|build|ci)(\([a-z0-9._/-]+\))?!?: .+'; then
+  echo "Tuki: commit message must be an English Conventional Commit, e.g." >&2
+  echo "         feat(contracts): add TaskPolicy capture guard" >&2
+  echo "         Scopes: contracts, api, web, verifier, domain, demo, specs, docs, repo." >&2
+  echo "         got: $subject" >&2
+  exit 1
+fi
+
+if [ ${#subject} -gt 72 ]; then
+  echo "Tuki: keep the subject line under 72 characters (it has ${#subject})." >&2
+  exit 1
+fi
+
+# Non-ASCII is a cheap proxy for "not Spanish"; it won't catch Spanish without accents.
+if LC_ALL=C grep -q '[^ -~]' "$1"; then
+  echo "Tuki: commit message contains non-ASCII characters (accents, n tilde, inverted marks). Write it in English." >&2
+  exit 1
+fi

@@ -2,6 +2,7 @@ node_modules/
 dist/
 .env
 *.log
-contracts/artifacts/
 coverage/
 .DS_Store
+.claude/skills/
+.atl/.skill-registry.cache.json

@@ -1,96 +1,44 @@
-# Recompensas verificables NOA
+# Tuki
 
-*(nombre provisional)*
+*(provisional name)*
 
-Las **marcas regionales pagan solo por compradores nuevos verificados** de sus productos en almacenes del NOA. El almacenero no cambia su forma de cobrar y el comprador recibe un reembolso en pesos. El presupuesto de cada campaña puede quedar comprometido en un **escrow on-chain en Celo** que despliega y fondea la propia marca.
+A real-world data marketplace for AI agents. Agents can discover, buy and commission verifiable information through x402: either buy an existing aggregate (for example, actual prices paid for milk in a region) or fund a task that produces new verified observations that do not exist yet (for example, 20 new observations of promotions in corner stores over one week). People contribute observations of the physical world, starting with purchase receipts, receive rewards, and keep their personal data protected: buyers only receive aggregates, never images or personal data.
 
-> Estado: **base de desarrollo**. El dominio, el contrato y la API en memoria tienen tests. La PWA, la persistencia en Postgres y la integración con un proveedor de pagos están pendientes. No hay usuarios reales ni plata real.
+Commissioning new data (Mode B) is the core differentiator; buying existing data (Mode A) shows that data can be sold right away.
 
-## Cómo funciona
+> Status: **proposal under validation** (updated 2026-11-13; payment network switched from Celo to Base, see ADR 0003). No product code yet, no real users, no real money. **The architecture is not approved for real funds**, and the ADRs are pending proposals. Demand from buyers, human or agent, is not validated.
+>
+> Three scopes, kept separate: the **hackathon demo** (both modes on Base Sepolia with testnet USDC, team receipts and a simple automatic client), the **target protocol** (design in docs 04 and 16), and a **real pilot** that depends on committed buyers, legal review and security review — none of which are in place.
 
-```
-Marca ──crea campaña (SKU, comercios, presupuesto, % de recompensa)──► Plataforma
-  │                                                                      │
-  └─(opcional) despliega y fondea CampaignEscrow en Celo                 │
-                                                                         ▼
-Almacenero ──entrega código de un solo uso junto con el producto──► Comprador
-                                                                         │
-Comprador ──código + comprobante de pago QR + CVU (web móvil)──► Plataforma
-                                                                         │
-           reglas: campaña viva, SKU, 1 por CVU, techo por sell-in, duplicados
-                                                                         │
-                     aprobado ─► reserva en el ledger ─► orden de pago (PSP de la marca)
-                                                    └──► o atestación EIP-712 ─► escrow paga
-```
+## Docs
 
-Por qué el diseño es así (precio en % del SKU, verificación anclada en el comercio, escrow no custodial): [`docs/04-decisiones-de-diseno.md`](docs/04-decisiones-de-diseno.md).
-
-## Estructura
-
-```
-packages/domain   Reglas de negocio puras (TypeScript) + tests
-                  pricing · campañas · estados del reclamo · verificación y antifraude · ledger
-packages/db       Migración SQL de Postgres (constraints únicos, ledger de solo inserción)
-apps/api          API Fastify en memoria con los endpoints del doc 02 §11 + tests de punta a punta
-apps/web          PWA (pendiente; ver su README)
-contracts         CampaignEscrow.sol + token de prueba, compilado con solc-js y testeado en EVM local
-docs/             Propuesta, especificación del MVP, análisis competitivo, decisiones e investigación
-```
-
-## Uso
-
-Requiere Node ≥ 20.
-
-```bash
-npm install
-npm test                     # dominio + API + contratos (sin red)
-npm run typecheck
-
-cp .env.example .env         # completar BUYER_KEY_SALT
-BUYER_KEY_SALT=una-sal-larga-de-prueba npm run dev -w apps/api
-```
-
-- Contratos: `npm run compile -w contracts` deja ABI y bytecode en `contracts/artifacts/`.
-- SQL: `psql "$DATABASE_URL" -f packages/db/migrations/0001_init.sql`
-
-### Ejemplo con la API
-
-```bash
-H='-H content-type:application/json -H x-role:operator -H x-actor-id:op-1'
-curl -s $H localhost:3000/v1/merchants -d '{"name":"Almacén Don Pepe","cuit":"20-11111111-1","phone":"+5493880000000","address":"Belgrano 100"}'
-# → aprobar comercio, registrar sell-in, crear y activar campaña, emitir código, POST /v1/claims …
-```
-
-El flujo completo está en `apps/api/test/api.test.ts`.
-
-## Qué cubren los tests
-
-| Prueba de aceptación (doc 02 §13) | Dónde |
+| Doc | What it covers |
 |---|---|
-| Campaña sin presupuesto confirmado no se activa | `domain/test/campaign-claim.test.ts` |
-| Mismo ticket dos veces se bloquea | `domain/test/verification-ledger.test.ts` |
-| Producto o comercio ajeno no es elegible | ídem |
-| Compras cerca del tope no superan el presupuesto | ídem (ledger) |
-| Webhook de pago duplicado = una sola acreditación | ídem + `api.test.ts` |
-| Payout fallido queda reintentable | `api.test.ts` |
-| La marca solo ve reportes agregados y propios | `api.test.ts` |
-| Reversa = asiento compensatorio | `verification-ledger.test.ts` |
-| Operador bloquea reclamo → no sale el pago | `campaign-claim.test.ts` + `api.test.ts` |
-| **Nuevo:** 1 reembolso por comprador; techo por sell-in contra colusión | `api.test.ts` |
-| **Nuevo:** escrow paga solo con firma válida, una vez, con tope; la marca pausa y recupera el remanente; acepta el sufijo ERC-8021 | `contracts/test/escrow.test.ts` |
+| [13 — Team summary](docs/13-resumen-para-el-equipo.md) | The idea on one page, the three scopes, what we will not build yet, central risks, revenue model, path |
+| [03 — MVP PRD](docs/03-prd-mvp.md) | Buyer and contributor, both modes, P0 requirements, user stories, error scenarios, UX flow, success metrics, conditions for a real pilot |
+| [04 — Technical architecture](docs/04-arquitectura-tecnica.md) | Components, data model, agent-readable data contract, task and observation state machines |
+| [15 — Stack decisions](docs/15-stack-tecnologico.md) | Per-component stack choices, hackathon scope, testnet facilitator, yes/no spikes |
+| [16 — Security, verification and payments model](docs/16-modelo-seguridad-verificacion-pagos.md) | Layered verification, fraud and dedupe, funds flow, refunds for incomplete tasks, privacy, invariants |
+| [17 — Positioning](docs/17-posicionamiento.md) | Market for agent data, competitor groups, per-observation economics, potential buyers, kill criteria |
+| [ADR 0001](docs/adr/0001-red-y-custodia-de-presupuestos.md) | Pending proposal: custody of task budgets (its network decision is superseded by ADR 0003) |
+| [ADR 0002](docs/adr/0002-verificacion-de-observaciones.md) | Pending proposal: observation verification and what is sold as "verified" |
+| [ADR 0003](docs/adr/0003-red-de-pagos-base.md) | Payment network for the MVP: Base Sepolia for the demo, Base for a pilot; one active network behind `PaymentRail` |
+| [14 — Milestone plan](docs/14-primeros-7-dias.md) | Risk-ordered milestones (no dates), parallel buyer validation, and the go/no-go decision; the normative spec is `odd/specs/mvp-p0.md` |
 
-## Pendiente (en orden)
+Research behind these docs lives in [`agent-data-marketplace/`](agent-data-marketplace/): [competitors report](agent-data-marketplace/competitors-report.md), [competitive matrix](agent-data-marketplace/competitive-matrix.md), [pricing landscape](agent-data-marketplace/pricing-landscape.md), [battle cards](agent-data-marketplace/battle-cards/), [positioning research](agent-data-marketplace/positioning/) , [deep research on agent demand and verification](agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md) and [lessons from the Halo x402 analysis](agent-data-marketplace/lecciones-halo-x402.md).
 
-1. **Validación comercial antes de construir más** (doc 01 §9): entrevistar marcas y distribuidores de Jujuy y hacer un piloto concierge con una planilla.
-2. Persistencia en Postgres usando `packages/db`, con transacciones y bloqueo en las reservas.
-3. Autenticación real (hoy los roles se leen de headers: **solo para desarrollo**).
-4. Integración con un PSP (pago del reembolso desde la cuenta de la marca) y verificación de firma de webhooks.
-5. PWA (`apps/web`).
-6. Despliegue de `CampaignEscrow` en Celo reutilizando la tubería con tag ERC-8021 y gas en stablecoin del repo `vaquita`; firmante de atestaciones en el backend.
-7. Revisión legal: bases y condiciones, AAIP, INPROJUY, encuadre PSAV del firmante.
+## Previous directions
 
-## Notas
+Earlier directions are preserved at git tags:
 
-- Los tests de contratos usan `ganache` como EVM en memoria. Es una dependencia **solo de desarrollo** con avisos de `npm audit` en dependencias transitivas; no se usa en producción. Se puede migrar a Foundry o Anvil cuando estén disponibles en el entorno.
-- Montos siempre en **centavos enteros**; en pantalla, con `formatARS`.
-- Ningún dato personal va on-chain ni a los reportes de marca.
+- **QR-USDC RFQ payments** (pay Argentine merchant QR codes with USDC through an RFQ network of payment solvers and an onchain escrow), tag `archive/qr-usdc-rfq`:
+
+  ```sh
+  git checkout archive/qr-usdc-rfq
+  ```
+
+- **Recompensas verificables NOA** (brand-funded first-purchase rewards in NOA corner stores, Celo escrow), tag `archive/noa-rewards`:
+
+  ```sh
+  git checkout archive/noa-rewards
+  ```
