@@ -71,7 +71,11 @@ W1 absorbe el spike S1 del doc 15.
 
 ## Pendiente
 
-- Elegir M y N, quién opera los verificadores en la demo y cómo se pagan.
-- Diseño de disputas: plazo, quién puede abrirlas, qué evidencia ve el verificador sin exponer datos personales.
-- Diseño del contrato de reserva y del reclamo de recompensas atestadas.
-- EAS en Base frente a firmas EIP-712 verificadas en el contrato de política.
+Resuelto el 2026-11-14 en la spec [`odd/specs/mvp-p0.md`](../../odd/specs/mvp-p0.md) (grilling Q1–Q13):
+
+- M y N: 2 de 2, dos personas del equipo con claves separadas, independencia limitada (Q9).
+- Disputas: solo el `payer`, en `TaskPolicy`, dentro de 48 h desde la entrega; resolución 2 de 2 en 24 h; sin resolución, `reclaim`. **Sin `refund` después de la captura en el MVP**: la fila "Reembolsar tras disputa" de la matriz queda reemplazada por "la captura espera a la ventana de disputa" (Q8, Q13).
+- Reserva y reclamos: `RewardVault` con reserva bloqueada al abrir cada encargo, raíces por época de 2 h y reclamo con prueba Merkle sin la API (Q5–Q7).
+- Firmas EIP-712 verificadas en los contratos, dominio "Tuki Protocol" versión 1 (Q4). EAS queda fuera del P0.
+
+Sigue pendiente: cómo se pagan los verificadores y la verificación por terceros que no sean de Tuki.

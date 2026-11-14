@@ -57,7 +57,7 @@ Sin validar. **Pago por consulta** (Modo A, por x402) y **comisión por encargos
 
 ## Camino
 
-1. **Hackathon:** demo de Modo A y Modo B en testnet ([doc 14](14-primeros-7-dias.md)). En paralelo, desde el día 1, entrevistas con compradores concretos para saber qué información pagarían.
+1. **Hackathon:** demo de Modo A y Modo B en testnet ([doc 14](14-primeros-7-dias.md), hitos ordenados por riesgo). En paralelo, desde el primer hito, entrevistas con compradores concretos para saber qué información pagarían.
 2. **Después de la hackathon:** primer lote pagado por un comprador concreto, revisión legal (Ley 25.326, custodia, impuestos) y revisión de seguridad.
 3. **Go/no-go del piloto real:** solo si se cumplen las condiciones del [PRD](03-prd-mvp.md).
 
@@ -65,4 +65,4 @@ Sin validar. **Pago por consulta** (Modo A, por x402) y **comisión por encargos
 
 **¿Hay compradores concretos que paguen más de una vez por información que hoy no consiguen, a un precio que cubra recompensa, verificación y reserva?** Si no, hay que cambiar el segmento o el tipo de dato antes de invertir más en infraestructura.
 
-Posicionamiento y competencia: [17 — Posicionamiento](17-posicionamiento.md). Ver también [03 — PRD](03-prd-mvp.md), [04 — Arquitectura](04-arquitectura-tecnica.md), [15 — Stack](15-stack-tecnologico.md), [16 — Seguridad, verificación y pagos](16-modelo-seguridad-verificacion-pagos.md) y [14 — Primeros siete días](14-primeros-7-dias.md).
+Posicionamiento y competencia: [17 — Posicionamiento](17-posicionamiento.md). Ver también [03 — PRD](03-prd-mvp.md), [04 — Arquitectura](04-arquitectura-tecnica.md), [15 — Stack](15-stack-tecnologico.md), [16 — Seguridad, verificación y pagos](16-modelo-seguridad-verificacion-pagos.md) y [14 — Plan por hitos](14-primeros-7-dias.md).

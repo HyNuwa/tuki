@@ -1,10 +1,10 @@
 # 16 — Modelo de seguridad, verificación y pagos
 
-**Estado:** borrador de diseño (2026-11-12). **La arquitectura no está aprobada para fondos reales.** Nada de este documento está probado en código. No mover fondos reales de agentes ni pagar a contribuyentes reales hasta cerrar los pendientes de la sección 10.
+**Estado:** borrador de diseño (2026-11-12), actualizado el 2026-11-14 con el [ADR 0004](adr/0004-modelo-de-confianza.md) (confianza minimizada) y las decisiones Q1–Q13 de la spec [`odd/specs/mvp-p0.md`](../odd/specs/mvp-p0.md), que manda ante cualquier diferencia. **La arquitectura no está aprobada para fondos reales.** Nada de este documento está probado en código. No mover fondos reales de agentes ni pagar a contribuyentes reales hasta cerrar los pendientes de la sección 10.
 
-**Documentos relacionados:** [04 — Arquitectura técnica](04-arquitectura-tecnica.md), [15 — Decisiones del stack](15-stack-tecnologico.md), [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md), [ADR 0002](adr/0002-verificacion-de-observaciones.md).
+**Documentos relacionados:** [04 — Arquitectura técnica](04-arquitectura-tecnica.md), [15 — Decisiones del stack](15-stack-tecnologico.md), [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md), [ADR 0002](adr/0002-verificacion-de-observaciones.md), [ADR 0003](adr/0003-red-de-pagos-base.md), [ADR 0004](adr/0004-modelo-de-confianza.md).
 
-**Reglas económicas:** todas las reglas de cobro, reembolso y recompensa de este documento son **propuestas sin validar**. Los montos son ilustrativos.
+**Reglas económicas:** las reglas de cobro, recompensa y reserva son **valores de testnet [Diseño]** (spec, Q5), no validados comercialmente.
 
 **Etiquetas de evidencia:**
 - **[Verificado en fuente]**: comprobado en documentación oficial, código o consulta a la cadena (enlace incluido).
@@ -20,8 +20,8 @@
 |---|---|---|---|
 | Qué es | Prueba de los dos modos y de sus fallas | El diseño al que apuntamos | Operación con dinero real, **condicionada** |
 | Contribuyentes | El equipo, con tickets propios | Personas que consienten, con prueba de humano | Una zona chica, con topes por persona |
-| Presupuesto de tareas | `exact` hacia un tesoro en testnet + ledger interno [Simulado], con custodia. **`exact` no es un escrow** | `auth-capture` en `AuthCaptureEscrow`, como experimento separado (spike S1/S2 del doc 15) | Escrow si el spike lo aprueba; si no, tesoro con topes y revisión legal |
-| Verificación | QR fiscal + extracción + revisión manual | Capas L1–L3 (§2) | Las capas que el piloto pueda operar de verdad |
+| Presupuesto de tareas | `AuthCaptureEscrow` con `TaskPolicy` como operador y `RewardVault` como receptor ([ADR 0004](adr/0004-modelo-de-confianza.md)); gate W1/W2 antes de los contratos definitivos | Igual, con verificadores que no sean solo de Tuki | Escrow + política solo después de revisión de seguridad y auditoría |
+| Verificación | QR fiscal + extracción + revisión manual + firmas 2 de 2 de dos personas del equipo (independencia limitada) | Capas L1–L3 (§2) y verificadores independientes | Las capas que el piloto pueda operar de verdad |
 | Fondos | USDC de testnet | — | Reales, con topes |
 | Condiciones | Ninguna externa | — | Revisión legal, consentimiento, registro de la base, spikes aprobados |
 
@@ -29,10 +29,10 @@
 
 | ID | Propiedad | Quién la hace cumplir | Condiciones |
 |---|---|---|---|
-| P1 | **El agente nunca paga más que su presupuesto** | `auth-capture`: el monto capturado está acotado por el máximo firmado por el cliente [Verificado en fuente] | Objetivo. En la demo lo hace cumplir nuestro ledger |
-| P2 | **El agente paga solo resultados entregables** (§5.1) y recupera el dinero de lo no entregado, salvo que haya aceptado antes un resultado parcial | Task engine + reembolso (`void` en el objetivo) | Criterios y política de encargo incompleto publicados en la cotización |
-| P3 | **Recuperación sin depender de nosotros** | `reclaim` del cliente tras `captureDeadline` [Verificado en fuente: spec `auth-capture`] | Solo con escrow; en la demo depende de que devolvamos el sobrante |
-| P4 | **El contribuyente cobra toda observación aceptada**, aunque el resultado no llegue a entregarse | Ledger + payout idempotente + reserva de garantía de la plataforma (§4.3) | Que la observación no se revoque antes del pago (§3) |
+| P1 | **El agente nunca paga más que su presupuesto** | `auth-capture`: el monto capturado está acotado por el máximo firmado por el cliente [Verificado en fuente] | También en la demo |
+| P2 | **El agente paga solo resultados entregables** (§5.1) y recupera el dinero de lo no entregado, salvo que haya aceptado antes un resultado parcial | `TaskPolicy`: captura solo con decisión 2 de 2, después de `disputeDeadline` y sin disputa abierta; el resto con `void` | Criterios y política de encargo incompleto publicados en la cotización |
+| P3 | **Recuperación sin depender de nosotros** | `reclaim` del pagador tras `authorizationExpiry` [Verificado en fuente: código de `AuthCaptureEscrow` v1.1] | También en la demo |
+| P4 | **El contribuyente cobra toda observación aceptada**, aunque el resultado no llegue a entregarse | Reserva bloqueada en `RewardVault` al abrir el encargo + raíz por época firmada 2 de 2 + reclamo con prueba Merkle (§4.3) | Garantizada solo desde que la raíz está registrada onchain (Q6); la observación no se revoca después |
 | P5 | **El agente nunca recibe datos personales ni imágenes** | Aggregation & privacy | Umbrales de §7 |
 | P6 | **Un comprobante fiscal = una observación** en todo el sistema | Restricción única en PostgreSQL | El ticket tiene QR fiscal legible |
 | P7 | **Un pago liquidado sin resultado no se pierde ni se cobra dos veces** | Idempotencia con `payment-identifier` + crédito o reembolso (§5.3) | El cliente reenvía el mismo identificador |
@@ -43,19 +43,20 @@
 - **Que el contribuyente compró en persona.** Una prueba de humano (MeID, World ID u otra) prueba, como mucho, persona única, no compra ni presencia en el comercio. **Una prueba de vida tampoco garantiza unicidad.**
 - **Representatividad estadística.** Los contribuyentes se autoseleccionan; el agregado describe las observaciones, no a la población.
 - **Reembolso después de pagar una recompensa.** Las transferencias de stablecoins son irreversibles; una observación fraudulenta descubierta después del pago es pérdida de la plataforma.
-- **Custodia cero en la demo.** El tesoro de tareas de la demo retiene fondos del agente [Simulado].
+- **Verificadores independientes en la demo.** Son dos personas del equipo con claves separadas: independencia limitada (Q9) [Simulado].
+- **Que el agente pague un resultado ya recibido.** Recibe el resultado durante la ventana de disputa y puede recuperar su presupuesto con `reclaim` si no hay captura antes de `authorizationExpiry`. Riesgo aceptado para testnet (Q8).
 
 ### 1.4 Riesgos y quién los asume
 
 | ID | Riesgo | Quién lo asume | Mitigación | Estado |
 |---|---|---|---|---|
-| R1 | Observación fraudulenta aceptada y pagada (ticket ajeno, imagen editada, compra inventada) | **Plataforma** paga la recompensa; **agente** recibe un dato contaminado | Capas de §2, consenso entre contribuyentes, topes por persona, revocación antes del pago, reembolso del agente con fondos de la plataforma | [Diseño] |
+| R1 | Observación fraudulenta aceptada y pagada (ticket ajeno, imagen editada, compra inventada) | **Plataforma** paga la recompensa; **agente** recibe un dato contaminado | Capas de §2, consenso entre contribuyentes, topes por persona, revocación antes de comprometer la raíz, disputa del agente que bloquea la captura | [Diseño] |
 | R2 | Granja de cuentas (sybil) que llena una tarea | **Plataforma** y **agente** | Prueba de humano, `maxPerContributor`, mínimo de contribuyentes distintos | Spike S7 (MeID); S5 (World ID) como alternativa |
 | R3 | Extracción errónea del LLM (precio inventado) | **Agente** | Controles determinísticos (suma = total = QR), confianza calibrada, revisión manual | Spike S3 |
 | R4 | Reidentificación del contribuyente o del comercio por consultas finas | **Contribuyente**, **comercio**; legal: **plataforma** | Umbrales k, supresión, sin observaciones crudas (§7) | [Diseño] |
-| R5 | Tesoro de tareas comprometido (demo y piloto sin escrow) | **Agentes** con presupuesto abierto | Safe multifirma, topes por tarea y totales, escrow como objetivo | [Diseño] |
+| R5 | Bug en `TaskPolicy` o `RewardVault` (código propio que mueve fondos) | **Agentes** con presupuesto abierto y **contribuyentes** con recompensas comprometidas | Pruebas unitarias, fuzzing, invariantes y fork en Foundry; sin upgrades; solo testnet hasta revisión de seguridad y auditoría | [Diseño] |
 | R6 | Bug en `AuthCaptureEscrow` (desplegado en Base) | Agente o plataforma | Código de terceros con auditorías publicadas; spike; sin fondos reales hasta revisarlo | [Pendiente] |
-| R7 | Payout duplicado o perdido | **Plataforma** (duplicado), **contribuyente** (perdido) | Idempotencia por `observationId`, conciliación antes de reintentar | [Diseño] |
+| R7 | Reclamo duplicado o recompensa que no se puede reclamar | **Plataforma** (duplicado), **contribuyente** (perdida) | Cada hoja se reclama una sola vez en el contrato; respaldo cifrado local de la hoja con recuperación exportable (Q7); si el contribuyente pierde el respaldo y Tuki desaparece, no puede reclamar (riesgo residual) | [Diseño] |
 | R8 | El emisor pausa USDC/USDT o bloquea una dirección | Quien tenga fondos en tránsito | Ninguna; riesgo del emisor | [Pendiente] |
 | R9 | Regulación: retener fondos de agentes y pagar a terceros puede requerir licencia; recompensas con efecto impositivo | **Plataforma** | Escrow no custodial, topes, revisión legal antes del piloto | [Pendiente] |
 | R10 | El comercio objeta que se publiquen sus precios | **Plataforma** | Solo agregados por zona; política de exclusión; revisión legal (la Ley 25.326 también alcanza a personas de existencia ideal) | [Pendiente] |
@@ -101,7 +102,8 @@
 | Cuenta nueva que entra directo a encargos pagos | Una o dos tareas de calificación sin pago antes de habilitar recompensas |
 | Cuentas simultáneas en el mismo comercio (colusión) | Regla "no groups": se bloquean envíos simultáneos de varias cuentas en el mismo comercio y ventana |
 | Foto de una pantalla o de un ticket impreso | Detección de pantalla o papel reimpreso (moiré, bordes, reflejos) → revisión |
-| Metadatos sensibles en la imagen (EXIF, ubicación exacta) | Redacción en el cliente antes de subir |
+| Metadatos sensibles en la imagen (EXIF, ubicación exacta) | El servidor procesa el EXIF en memoria, conserva solo `hasCameraExif`, `softwareTagPresent` y `captureTimeConsistent`, y borra los metadatos de toda imagen persistida, incluido el original cifrado. El GPS nunca se guarda. La falta de EXIF no causa rechazo automático (Q11) |
+| Datos personales visibles en el ticket (nombre, DNI o CUIT del comprador, dígitos de tarjeta) | Redacción selectiva en servidor antes de persistir la copia de revisión; preprocesamiento antes de enviar la imagen a un LLM externo cuando sea posible; revisión manual interna ante incertidumbre. No se difuminan franjas completas: podrían borrar datos fiscales necesarios para L1 (Q11) |
 | Falta de stock inventada | Foto de góndola completa obligatoria al reportar producto faltante |
 
 **Reputación:** nunca se basa en feedback onchain crudo (por ejemplo, ERC-8004). Exige prueba de humano único y se pondera por liquidaciones verificadas. El caso Sentinel8004 (cuentas títere que inflaron reputaciones en el registro) es [Pendiente: fuente externa no verificada].
@@ -110,7 +112,7 @@ Umbrales de `pHash`, ventanas y topes se calibran con datos reales [Pendiente]; 
 
 ## 4. Flujo de fondos
 
-**Ejemplo ilustrativo** (intake, sin validar): el agente paga US$1,50 por observación incluida en un resultado entregado; US$0,75 van al contribuyente; US$0,35 cubren procesamiento; el resto cubre fee del facilitator, reserva de garantía y margen.
+**Valores de testnet [Diseño]** (spec, Q5; unidades atómicas de USDC, sin decimales flotantes, gas aparte): el agente paga 1,00 USDC por observación incluida en un resultado entregado; la captura toma un fee de 30 % (3000 bps) hacia la plataforma y 0,70 entran a `RewardVault`, que ya pagó 0,50 de recompensa con la reserva bloqueada y suma 0,20 a la reserva. El modo A cobra 0,01 USDC por consulta. Reserva inicial: 20 USDC fondeados por el equipo.
 
 ### 4.0 Dos mecanismos distintos: cobro x402 y recompensa en stablecoins
 
@@ -118,57 +120,48 @@ No son el mismo riel ni comparten cuentas del ledger.
 
 | | Cobro x402 (entrada) | Recompensa en stablecoins (salida) |
 |---|---|---|
-| Dirección | Agente → plataforma | Plataforma → contribuyente |
-| Mecanismo | x402 `exact`: el agente firma (EIP-3009), el facilitator verifica y liquida | Transferencia en lote desde un Safe o una hot wallet (Disperse/MultiSend; Safe en Base [Inferencia], Disperse en Base [Pendiente]); **no** usa x402 ni facilitator |
-| Disparador | Una consulta paga (modo A) o la financiación de un encargo (modo B) | Una observación `accepted` |
-| Reversibilidad | Liquidado = irreversible; la corrección es un reembolso o crédito nuestro | Irreversible; sin clawback |
-| Cuentas del ledger | `agent.paid`, `task.held`, `task.charged`, `agent.credit` | `contributor.owed`, `contributor.paid`, `reserve.used` |
+| Dirección | Agente → plataforma (modo A) o agente → escrow (modo B) | `RewardVault` → contribuyente |
+| Mecanismo | Modo A: x402 `exact` (EIP-3009), el facilitator verifica y liquida. Modo B: autorización ERC-3009 hacia `AuthCaptureEscrow`, enviada por `TaskPolicy.openTask`; **no** usa facilitator | Reclamo con prueba Merkle contra una raíz por época firmada 2 de 2; paga siempre al `recipient` de la hoja; el relayer de la plataforma puede pagar el gas o el contribuyente reclama solo |
+| Disparador | Una consulta paga (modo A) o la apertura de un encargo (modo B) | Una observación `accepted` incluida en una raíz publicada (épocas de 2 h) |
+| Reversibilidad | Liquidado = irreversible; la corrección es un crédito nuestro (modo A) o `void`/`reclaim` antes de la captura (modo B) | Irreversible; sin clawback |
+| Cuentas del ledger (proyección) | `agent.paid`, `task.held`, `task.charged`, `task.voided`, `agent.credit` | `reward.pending`, `reward.committed`, `reward.claimed`, `reserve.free`, `reserve.locked` |
 
 Una recompensa nunca depende de que el cobro x402 de ese mismo encargo se haya completado: se financia según §4.3.
 
-### 4.1 Demo: tesoro de tareas [Simulado]
+### 4.1 Demo: tesoro de tareas — reemplazado
 
-**x402 `exact` no es un escrow.** En la demo, el presupuesto entra por `exact` a un tesoro nuestro y el ledger interno lo reserva para la tarea. Es custodial.
+El tesoro custodial de la versión anterior (presupuesto por `exact` hacia un Safe y ledger interno) **queda reemplazado** por el escrow con política del §4.2 ([ADR 0004](adr/0004-modelo-de-confianza.md), ratificado el 2026-11-14). `exact` sigue siendo solo el riel del modo A: no es un escrow.
 
-```text
-Agente ──x402 exact (presupuesto B)──► Tesoro de tareas (Safe, testnet)      ledger: task.held = B
-  por cada observación accepted:   contributor.owed += recompensa ; task.rewardsAccrued += recompensa
-                                   (todavía no se cobra nada al agente)
-  resultado deliverable entregado: task.charged = precio × observaciones incluidas (≤ B) ; platform.fee += resto
-  lote periódico:                  Tesoro ──Disperse/MultiSend──► contribuyentes
-  cierre de la tarea:              Tesoro ──transferencia──► Agente (B − task.charged)
-  sin resultado entregable:        task.charged = 0 ; reserve.used += task.rewardsAccrued
-```
+### 4.2 Demo y objetivo: escrow con `TaskPolicy` y `RewardVault`
 
-- Es **custodia temporal**: el agente confía en que devolvamos el sobrante. Aceptable en testnet; con fondos reales exige revisión legal (R9) y topes.
-- Referencia de mercado: en Vangrid, la prensa describe pago por x402 con escrow liberado on-chain al aceptar la entrega y reembolso total al cancelar o vencer; no se verificó con documentación primaria si los fondos quedan en un contrato de escrow o en una wallet operadora custodial [Pendiente; confianza Media; ver [perfiles de competidores](../agent-data-marketplace/raw/competitor-profiles.md)].
-
-### 4.2 Objetivo: escrow con `auth-capture` (experimento separado)
-
-Queda fuera del hackathon y como spike hasta demostrar que el flujo funciona (doc 15, S1). Con Base como red principal ([ADR 0003](adr/0003-red-de-pagos-base.md)), el escrow ya desplegado se usa directamente y el despliegue en Celo (S2) deja de ser necesario.
+`AuthCaptureEscrow` v1.1 ya está desplegado en Base Sepolia (`0xf96815976523E00e65Be8f34cA5e64b4f41EB19c`) [Verificado en fuente]. `authorize`, `capture`, `void`, `refund` y `charge` exigen `msg.sender == operator`, y el operador puede ser un contrato [Verificado en fuente: código del contrato]. La dirección del colector ERC-3009 en Base Sepolia y los parámetros exactos del fee se confirman en W1 [Pendiente].
 
 ```text
-Agente ──firma authorize (máx. = B, captureDeadline, refundDeadline)──► AuthCaptureEscrow
-  al entregar un resultado deliverable:
-      operador ──capture(monto, feeAmount, feeReceiver)──► receiver (tesoro de recompensas)
-                                                           feeReceiver (plataforma)
-  criterios cumplidos o tarea vencida:  operador ──void──► Agente (resto)
-  si el operador desaparece:            Agente ──reclaim (tras captureDeadline)──► Agente
+Agente ──firma ERC-3009 (máx. = B)──► TaskPolicy.openTask ──authorize──► AuthCaptureEscrow
+                                       └─ RewardVault.lock(maxRewardedObservations × recompensa)  (si no alcanza, no abre)
+  cada época de 2 h:      2 de 2 verificadores firman la raíz ──publishRoot (cualquiera)──► RewardVault
+                          contribuyente ──claim(hoja, prueba)──► RewardVault ──► recipient
+  entrega del resultado:  registerDelivery (2 de 2) ── inicia disputeDeadline = entrega + 48 h
+  disputa (solo payer):   openDispute antes de disputeDeadline ── resolveDispute (2 de 2) antes de +24 h
+  tras disputeDeadline:   capture (2 de 2, sin disputa abierta) ──► RewardVault (neto) + feeReceiver (fee)
+                          void del resto; libera la reserva bloqueada no usada
+  si Tuki desaparece:     Agente ──reclaim (tras authorizationExpiry)──► Agente
 ```
 
-[Verificado en fuente]: operaciones, topes y `reclaim` en la [spec `auth-capture`](https://github.com/x402-foundation/x402/blob/main/specs/schemes/auth-capture/scheme_auth_capture.md); el escrow v1.1 está desplegado en Base y no en Celo (consulta `eth_getCode`, 2026-11-12).
-
-- **Límite del diseño:** `receiver` es una sola dirección por pago. Las recompensas pasan por un tesoro nuestro antes de llegar a cada contribuyente (custodia en tránsito, por horas). Un contrato distribuidor como `receiver` lo evitaría, pero es código propio [Pendiente].
-- `captureDeadline` tiene que ser posterior al `deadline` de la tarea más el tiempo de revisión; si no, el agente puede hacer `reclaim` de un resultado entregado sin pagarlo (riesgo para la plataforma, que ya debe esas recompensas).
-- Capturar al entregar y no por observación reduce gas y llamadas; el ledger mantiene la granularidad.
+- **Plazos [Diseño]:** `authorizationExpiry = deadline + maxDeliveryDelay (24 h) + 48 h + 24 h + margen operativo (24 h)`; `refundExpiry = authorizationExpiry`. Una entrega posterior a `deadline + maxDeliveryDelay` se rechaza. Todos los valores se fijan en la cotización y no cambian unilateralmente.
+- **Sin `refund` después de la captura en el MVP.** Así se evita que el reembolso tome liquidez del operador (`TaskPolicy`), que no la tiene.
+- **Riesgo aceptado (Q8):** el agente obtiene el resultado durante la ventana de disputa y puede recuperar todo con `reclaim` si la captura no llega antes de `authorizationExpiry`.
+- Capturar por resultado y no por observación reduce gas y llamadas; el ledger mantiene la granularidad.
 
 ### 4.3 Garantía de recompensas y reserva
 
-- **Regla [Diseño]:** toda observación `accepted` y no `revoked` se paga, aunque el encargo termine sin resultado entregable o el agente cancele. El riesgo lo asume la plataforma.
-- **Provisión:** la plataforma mantiene una reserva de garantía (`reserve`) separada del presupuesto de los agentes. Cada cotización destina una parte del precio a la reserva, y el saldo de la reserva debe cubrir, como mínimo, las recompensas devengadas de todos los encargos abiertos que todavía no tienen resultado entregable. **Decisión para la demo:** porcentaje provisional para testnet; el porcentaje y el saldo mínimo definitivos se fijan después con escenarios de pérdidas [Pendiente].
-- **Cotización prudente:** `POST /v1/tasks/quote` rechaza o advierte encargos cuya probabilidad de alcanzar el umbral sea baja (zona sin contribuyentes, ventana corta). Menos encargos fallidos implica menos uso de la reserva.
-- **Recuperación parcial (opción futura, no en la demo) [Diseño]:** las observaciones aceptadas de un encargo de Modo B no terminado podrían pasar al pool del modo A y sus ventas reponer la reserva. Queda condicionada a definir licencias: hoy choca con la decisión de no revender datos encargados (§7.2).
-- **Tope:** si la reserva no cubre el mínimo, el task engine deja de abrir encargos nuevos (estado `paused`) hasta reponerla.
+- **Regla [Diseño]:** toda observación `accepted` y no `revoked` se paga, aunque el encargo termine sin resultado entregable o el agente cancele.
+- **Cuándo queda garantizada (Q6):** solo cuando su raíz, firmada por los dos verificadores, está registrada onchain con fondos bloqueados y la hoja es reclamable. Estados: `verified_pending_commitment → committed_claimable → claimed`.
+- **Provisión onchain:** la reserva vive en `RewardVault`, separada de los presupuestos de los agentes. Al abrir un encargo, `TaskPolicy` bloquea `maxRewardedObservations × recompensa` de la reserva libre; si no alcanza, el encargo no abre. Cada captura repone la reserva. Los reclamos no dependen de ningún servidor de Tuki.
+- **Sin quórum a tiempo:** la reserva sigue bloqueada, se alerta a los operadores y se pausa la apertura de encargos; no se rechaza nada automáticamente.
+- **Apelaciones:** mientras un contribuyente apela un rechazo (48 h desde la notificación), la cobertura de su observación sigue bloqueada.
+- **Cotización prudente:** `POST /v1/tasks/quote` rechaza o advierte encargos con baja probabilidad de alcanzar el umbral o sin reserva libre suficiente.
+- **Recuperación parcial (opción futura, no en la demo) [Diseño]:** las observaciones aceptadas de un encargo no terminado podrían pasar al pool del modo A; queda condicionada a definir licencias (§7.2).
 
 ## 5. Unidad entregable, encargos incompletos y reembolsos
 
@@ -189,11 +182,11 @@ Al cotizar, el agente elige una de dos opciones, que quedan firmadas en la cotiz
 - **`partialAccepted: false` (por defecto):** si al vencer no hay resultado entregable completo, el agente recupera el 100 % de lo no entregado.
 - **`partialAccepted: true` con `minPartialObservations`:** el agente acepta de antemano pagar un resultado parcial, siempre que ese parcial también cumpla los umbrales de privacidad. Paga solo las observaciones incluidas.
 
-**Quórum mínimo y objetivo [Diseño]:** la cotización fija `minQuorum` (mínimo de privacidad y estadístico, nunca menor que k y m) y `targetQuorum` (cantidad objetivo). La captura proporcional entre `minQuorum` y `targetQuorum` solo ocurre si el agente aceptó antes el parcial (`partialAccepted: true`); si no, reembolso del 100 %. `refundDeadline` es un campo obligatorio de la especificación, fijado antes de aceptar presupuestos (valor pendiente).
+**Quórum mínimo y objetivo [Diseño]:** la cotización fija `minQuorum` (mínimo de privacidad y estadístico, nunca menor que k y m) y `targetQuorum` (cantidad objetivo). La captura proporcional entre `minQuorum` y `targetQuorum` solo ocurre si el agente aceptó antes el parcial (`partialAccepted: true`); si no, el agente recupera el 100 % con `void` o `reclaim`. Los plazos (`deadline`, entrega máxima, `disputeDeadline`, resolución, `authorizationExpiry`, `refundExpiry`) se fijan en la cotización antes de autorizar el presupuesto (§4.2).
 
 | Caso | Agente paga | Agente recupera | Contribuyentes |
 |---|---|---|---|
-| Criterios cumplidos antes del vencimiento | Observaciones incluidas en el resultado entregado (hasta el tope) | Sobrante (transferencia; `void` en el objetivo) | Cobran todas las aceptadas |
+| Criterios cumplidos antes del vencimiento | Observaciones incluidas en el resultado entregado (hasta el tope) | Sobrante (`void`) | Cobran todas las aceptadas |
 | Vence sin criterios, `partialAccepted: true` y el parcial es entregable | Las incluidas en el parcial | Sobrante | Cobran todas las aceptadas |
 | Vence sin criterios y `partialAccepted: false` | Nada | 100 % | Cobran todas las aceptadas, con cargo a la reserva (§4.3) |
 | El parcial no alcanza los umbrales de privacidad (k, m) | Nada; no recibe precios ni conteos que permitan inferirlos | 100 % | Cobran, con cargo a la reserva |
@@ -209,8 +202,8 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 |---|---|---|
 | Modo A: el handler no puede armar el agregado (`insufficient_coverage`, error interno) **antes** del settle | El middleware no liquida | Sin cobro (I8) [Pendiente: confirmar orden verify → handler → settle en `@x402/hono`] |
 | Modo A: settle hecho, la respuesta se pierde (timeout, corte de red) | El agente no recibió el resultado | El agente reintenta con el mismo `payment-identifier`; el servidor devuelve el resultado guardado sin volver a cobrar |
-| Modo A: settle hecho y el resultado falla después (bug, almacenamiento caído) | Pago liquidado sin entrega | El ledger crea `agent.credit` por el monto, utilizable en la próxima consulta, o reembolso por transferencia desde el tesoro si el agente lo pide; plazo máximo a definir [Pendiente] |
-| Modo B: encargo financiado y la plataforma no puede operarlo (pipeline caído, zona sin cobertura descubierta después) | Presupuesto retenido sin trabajo posible | Cancelación por la plataforma y reembolso del 100 % menos lo ya entregado |
+| Modo A: settle hecho y el resultado falla después (bug, almacenamiento caído) | Pago liquidado sin entrega | El ledger crea `agent.credit` por el monto, utilizable en la próxima consulta, o reembolso por transferencia desde la cuenta de la plataforma si el agente lo pide; plazo máximo a definir [Pendiente] |
+| Modo B: encargo financiado y la plataforma no puede operarlo (pipeline caído, zona sin cobertura descubierta después) | Presupuesto autorizado sin trabajo posible | `void` por la plataforma (100 % al agente) o `reclaim` del agente tras `authorizationExpiry`; las recompensas ya comprometidas salen de la reserva |
 | Pago duplicado (mismo `payment-identifier` liquidado dos veces o dos pagos para el mismo encargo) | Cobro de más | Reembolso del duplicado; la conciliación compara pagos liquidados contra `payment-identifier` |
 
 - La extensión `payment-identifier` **no** figura en `GET /supported` del facilitator de testnet de Base [Verificado en fuente: `https://x402.org/facilitator/supported`, 2026-11-13] (sí figuraba en el de Celo Sepolia, donde se validó S0). La protección contra cobro doble no depende del facilitator: cada pago guarda su identificador (clave idempotente) con restricción única en nuestro servidor. Soporte en el facilitator de CDP para mainnet [Pendiente].
@@ -218,11 +211,11 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 
 ## 6. Disputas
 
-- **Agente contra resultado** (dato erróneo): ventana de disputa hasta `refundDeadline`. En la demo, `refundDeadline = deadline + 72 h` (48 h de apelación + 24 h de margen operativo), informado antes de financiar y sin cambios unilaterales; es una regla de testnet, no una garantía on-chain. Si la revisión confirma error, se reembolsan las observaciones afectadas con fondos de la plataforma: transferencia desde el tesoro en la demo, `refund` en el objetivo (el colector de reembolsos del escrow toma liquidez del operador [Verificado en fuente: spec EVM]).
-- **Contribuyente contra rechazo:** pide revisión manual una vez, dentro de una ventana de apelación acotada (por ejemplo, 48 h) [Diseño]; la decisión del revisor queda registrada con motivo.
+- **Agente contra resultado (onchain):** solo el `payer` abre la disputa, directamente en `TaskPolicy` y sin pasar por la API de Tuki, antes de `disputeDeadline` (48 h desde la entrega efectiva del resultado, registrada onchain). Una disputa abierta bloquea la captura. Los dos verificadores la resuelven con una decisión firmada dentro de las 24 h siguientes a `disputeDeadline`; la decisión fija el monto capturable (puede ser cero). Si no se resuelve a tiempo, no hay captura y el agente recupera los fondos con `reclaim` [Diseño, Q8 y Q13].
+- **Contribuyente contra rechazo (offchain):** apela dentro de las 48 h desde la notificación del rechazo; la decisión del revisor queda registrada con motivo. La apelación no mueve fondos del escrow; la cobertura de la reserva se mantiene mientras está pendiente [Diseño].
 - **Protección laboral [Diseño]:** sin horarios obligatorios ni exclusividad; motivos de rechazo transparentes y comunicados al contribuyente; sin desactivaciones de cuenta sin revisión. Referencia: caso Roamler en Alemania (demandas por relación laboral encubierta) [Pendiente: fuente externa no verificada].
-- **Contribuyente revocado tras pago:** no hay clawback; se bloquea la cuenta y se registra la pérdida.
-- Toda disputa se resuelve offchain; onchain solo queda el `refund` cuando corresponde.
+- **Contribuyente revocado tras comprometer la raíz:** no hay clawback; se bloquea la cuenta y se registra la pérdida.
+- **Retención de evidencias:** las imágenes se conservan solo hasta cerrar disputas y apelaciones, con acceso restringido y borrado programado (§7).
 
 ## 7. Privacidad y control de reidentificación
 
@@ -231,22 +224,22 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 | Control | Regla | Estado |
 |---|---|---|
 | Consentimiento | Texto versionado por finalidad (venta de agregados a terceros) y por alcance de licencia (§7.2); registro de versión y fecha por contribución; retiro en cualquier momento (§7.1) | [Diseño] |
-| Minimización en ingesta | Se descartan `tipoDocRec` y `nroDocRec` del QR; se enmascaran en la imagen datos del comprador y de tarjeta antes de que la vea un revisor | [Diseño] |
-| Retención | Imágenes borradas a los N días de aceptadas o rechazadas (N por definir); se conservan la observación normalizada y los hashes | [Pendiente] |
+| Minimización en ingesta | Se descartan `tipoDocRec` y `nroDocRec` del QR. **Redacción en servidor antes de persistir la copia de revisión** (§3, Q11). Revisores y verificadores ven solo la copia redactada; el original sin redacción visual queda cifrado, sin EXIF, solo para auditorías autorizadas, con acceso registrado y retención limitada. Los tickets que no se pueden redactar de forma confiable no pasan automáticamente a revisión externa. Se evalúa explícitamente la retención de imágenes del proveedor del LLM | [Diseño] |
+| Retención | Imágenes (copia de revisión y original cifrado, en R2) conservadas hasta el último cierre entre encargo, apelaciones y disputas, más 7 días [Diseño], con borrado programado; se conservan la observación normalizada y los hashes. Plazos definitivos sujetos a obligaciones legales, incluidos backups y logs | [Pendiente: revisión legal] |
 | Separación | La identidad del contribuyente (wallet, `ProviderSubject` del proveedor de identidad) vive en una tabla separada de las observaciones; el agregado nunca la toca | [Diseño] |
 | Biometría | Nunca guardamos imágenes faciales ni plantillas: el flujo facial corre en el widget del proveedor y solo conservamos `ProviderSubject`, estado y fechas. Datos biométricos son sensibles: antes de usar un proveedor hace falta un DPA, conocer el país de almacenamiento y la retención (MeID: plantilla cifrada en servidores de zkMe, "mientras sea necesaria", borrado a pedido en 30 días; país no informado) | [Spike / Pendiente: S7 + revisión legal] |
 | Umbral k | Un agregado se publica solo con ≥ k contribuyentes y ≥ m comercios distintos. **Demo:** k = 5 y m = 3 como valores experimentales; se prueban en privacidad y viabilidad antes de vender resultados | [Diseño] |
 | Supresión de comercio único | Si una zona tiene un solo comercio de un tipo, no se publica precio por comercio | [Diseño] |
 | Granularidad | Tiempo redondeado a día o semana; ubicación a localidad o celda | [Diseño] |
 | Ataque de diferencia | Celdas fijas, presupuesto de consultas y chequeo de solapamiento (§7.3); privacidad diferencial como experimento | [Diseño] |
-| Nada onchain | Ni imágenes, ni hashes de imágenes, ni direcciones de contribuyentes junto a datos de compra | [Diseño] |
+| Nada onchain | Ni imágenes, ni hashes de imágenes, ni direcciones de contribuyentes junto a datos de compra. Onchain solo van ids opacos, raíces, hashes de hojas con sal secreta y firmas (Q2, Q7) | [Diseño] |
 | Registro de la base | Inscripción ante la autoridad de aplicación si corresponde | [Pendiente] |
-| Procedencia de evidencias | Cada observación aceptada genera una hoja con sal `H(sal ‖ evidenceDigest ‖ observationId ‖ nivel ‖ extractionHash)`; cada agregado publica un `evidenceRoot` (Merkle) en un recibo firmado dentro de un log append-only; opcionalmente se ancla la cabeza del log en la red de pagos activa (Base). El comprador ve solo el recibo; un auditor autorizado verifica una muestra con acceso temporal y registrado | [Spike / Pendiente]: S8 |
-| Filecoin para evidencias | **NO-GO para imágenes de tickets:** el PieceCID, el tamaño y la wallet que paga quedan públicos por ticket (contradice "Nada onchain"), el texto cifrado puede ser recuperable públicamente, el control de acceso figura como "Coming soon" y no está documentado el borrado físico. Solo se evalúa para agregados ya vendidos o raíces de compromisos | [Spike / Pendiente]: S8; ver [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md) |
+| Procedencia de evidencias | Cada observación aceptada genera una hoja con sal `H(sal ‖ evidenceDigest ‖ observationId ‖ nivel ‖ extractionHash)`; cada agregado publica un `evidenceRoot` (Merkle) en un recibo firmado dentro de un log append-only; el `evidenceRoot` y el `resultHash` se anclan en Base con el registro de entrega de `TaskPolicy`. El comprador ve solo el recibo y las firmas; un auditor autorizado verifica una muestra con acceso temporal y registrado | [Diseño]: W3 en el P0 (formatos congelados en el hito 2, integración en el hito 5) |
+| Filecoin para evidencias | **NO-GO para imágenes de tickets:** el PieceCID, el tamaño y la wallet que paga quedan públicos por ticket (contradice "Nada onchain"), el texto cifrado puede ser recuperable públicamente, el control de acceso figura como "Coming soon" y no está documentado el borrado físico. Solo se evalúa para agregados ya vendidos o raíces de compromisos. **Lighthouse + Filecoin para datasets cifrados del modo B: integración condicionada a las cinco pruebas de S8** (CID de un dataset sintético cifrado; prueba PDP real ligada a ese dataset; descifrado solo por un agente autorizado en Base Sepolia; recuperación con Tuki apagado; coincidencia con el hash y el compromiso del resultado). Si PDP no se verifica con Lighthouse, se prueba Synapse antes de abandonar Filecoin. Fuera del P0 | [Spike / Pendiente]: S8; ver [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md) |
 
 **Filecoin prueba conservación e integridad de datos, no que una compra haya sucedido ni que el ticket pertenezca al colaborador.** Tampoco garantiza recuperación ni disponibilidad.
 
-**Observación:** los pagos de recompensa son públicos en la cadena. Una dirección que recibe una recompensa por cada ticket revela frecuencia de compra. Pagar en lotes periódicos y no por observación reduce esa señal.
+**Observación:** los pagos de recompensa son públicos en la cadena. Una dirección que recibe una recompensa por cada ticket revela frecuencia de compra. Comprometer recompensas en épocas de 2 h y no por observación reduce esa señal, sin eliminarla.
 
 ### 7.1 Retiro del consentimiento
 
@@ -284,44 +277,48 @@ Un agente (o varios coordinados) puede pedir dos agregados casi iguales y restar
 | I1 | La suma cobrada (`task.charged`) de una tarea nunca supera su presupuesto. |
 | I2 | Al agente solo se le cobra un resultado `deliverable`, y cada observación incluida se cobra una sola vez por resultado; un encargo sin resultado entregable cobra 0, salvo `partialAccepted: true` con un parcial entregable. |
 | I3 | Una clave fiscal `(cuit, ptoVta, tipoCmp, nroCmp)` aparece en a lo sumo una observación aceptada. |
-| I4 | Toda observación `accepted` y no `revoked` genera exactamente un payout, aunque la tarea se cancele, venza o no entregue resultado; si no hubo cobro, el ledger lo imputa a la reserva. |
-| I5 | Un payout en estado `unknown` no se reintenta sin conciliar antes contra la cadena. |
+| I4 | Toda observación `accepted` y no `revoked` genera exactamente una hoja de recompensa, reclamable una sola vez, aunque la tarea se cancele, venza o no entregue resultado; la cubre la reserva bloqueada al abrir el encargo. |
+| I5 | Una transacción en estado `unknown` no se reintenta sin conciliar antes contra la cadena. |
 | I6 | El agente nunca recibe imágenes, observaciones individuales ni identificadores de contribuyentes. |
 | I7 | Un agregado que no cumple los umbrales de §7 se marca `suppressed`, no expone precios y no se cobra. |
 | I8 | En modo A no se liquida el pago si la respuesta es `insufficient_coverage` o error (el handler responde antes del settle) [Pendiente: confirmar orden verify → handler → settle en el middleware]. |
 | I9 | Ningún dato personal ni imagen se escribe onchain ni en logs. |
-| I10 | El ledger de doble entrada cuadra por tarea: presupuesto = cobrado + reembolsado + saldo retenido; y por contribuyente: devengado = pagado + pendiente. |
+| I10 | El ledger de doble entrada cuadra por tarea: presupuesto = capturado + liberado (`void` o `reclaim`) + retenido; por contribuyente: devengado = reclamado + comprometido sin reclamar + pendiente de raíz; y en `RewardVault`: saldo USDC = reserva libre + reserva bloqueada + comprometido sin reclamar. |
 | I11 | Un `payment-identifier` liquidado produce a lo sumo un resultado cobrado; un reintento con el mismo identificador devuelve el mismo resultado sin cobrar de nuevo. |
 | I12 | Todo pago liquidado sin resultado entregado genera un crédito o un reembolso en el ledger. |
 | I13 | Solo observaciones `aggregation_eligible` (aceptadas, licencia válida, consentimiento vigente y nivel de verificación igual o mayor que el exigido) entran en un agregado nuevo. |
 | I14 | Las cuentas de cobro x402 y de recompensas son distintas; ningún asiento mueve saldo entre ellas sin pasar por `platform` o `reserve`. |
+| I15 | Ninguna captura ocurre antes de `disputeDeadline`, con una disputa sin resolver o sin la firma de los dos verificadores. |
+| I16 | Ninguna raíz de recompensas se registra sin las dos firmas; cada época tiene una sola raíz inmutable. |
+| I17 | Ningún encargo abre sin reserva libre suficiente para `maxRewardedObservations × recompensa`. |
 
 ## 9. Roles y claves
 
 | Rol | Clave | Puede | No puede |
 |---|---|---|---|
-| Agente | Su wallet | Firmar pagos y `authorize`; `reclaim` tras `captureDeadline` | — |
-| Operador de escrow | Cuenta que el facilitator usa como `captureAuthorizer` | `capture`, `void`, `refund` dentro del máximo firmado | Capturar más que el máximo; mover fondos de otra tarea |
-| Tesoro de tareas (demo) / tesoro de recompensas | Safe multifirma (2 de 3) | Pagar lotes y reembolsos | — (riesgo R5 si se comprometen las firmas) |
-| Hot wallet de payouts | EOA con saldo limitado, recargada desde el Safe | Enviar lotes pequeños | Superar su saldo |
-| Facilitator x402 | Sin clave en testnet (`https://x402.org/facilitator`); API key ID y secret de CDP en mainnet (solo servidor) | Verificar y liquidar pagos | Custodiar fondos (`exact`) |
-| Revisor | Cuenta interna con 2FA | Ver imágenes enmascaradas, aceptar o rechazar | Descargar imágenes en masa; ver identidad del contribuyente |
-| Contribuyente | Wallet embebida o propia | Enviar, retirar consentimiento, cobrar | — |
+| Agente | Su wallet (EOA, ERC-1271 o ERC-6492) | Firmar pagos, la autorización ERC-3009 y las solicitudes EIP-712 (Q2); abrir disputas; `reclaim` tras `authorizationExpiry` | — |
+| `TaskPolicy` (operador del escrow) | Contrato sin upgrades; conjunto de verificadores fijo al desplegar | `authorize`, `capture` con 2 de 2 tras la ventana, `void` | Capturar sin las dos firmas, durante la ventana o con disputa abierta; capturar más que el máximo firmado; `refund` en el MVP |
+| `RewardVault` (receptor) | Contrato sin upgrades | Bloquear y liberar reserva por encargo (solo a pedido de `TaskPolicy`); aceptar raíces 2 de 2; pagar reclamos al `recipient` | Pagar una hoja dos veces; aceptar una raíz con una sola firma |
+| Verificador (2 en la demo) | Clave propia de cada persona del equipo, en su propio proceso y entorno | Firmar raíces, registros de entrega, decisiones de captura y resoluciones de disputa | Decidir solo; la API nunca tiene su clave |
+| Relayer de la plataforma | EOA con saldo de gas limitado | Enviar `openTask`, `publishRoot` y `claim` | Cambiar destinatarios o montos (todo va firmado) |
+| Facilitator x402 | Sin clave en testnet (`https://x402.org/facilitator`); API key ID y secret de CDP en mainnet (solo servidor) | Verificar y liquidar pagos del modo A | Custodiar fondos (`exact`) |
+| Revisor | Cuenta interna con 2FA | Ver la copia redactada, aceptar o rechazar | Ver el original sin redactar (solo auditoría autorizada y registrada); ver identidad del contribuyente |
+| Contribuyente | Wallet propia con SIWE en la demo; wallet embebida en un piloto | Enviar, apelar, retirar consentimiento, reclamar | — |
 
 Las claves de API, del facilitator y de los revisores nunca llegan al navegador ni a la app.
 
 ## 10. Pendientes antes de manejar fondos reales
 
 1. Revisión legal: consentimiento y finalidad (Ley 25.326), registro de la base, alcance sobre comercios, custodia de fondos de agentes, tratamiento impositivo de recompensas.
-2. Spike S1 (escrow en Base) aprobado, o decisión explícita de operar con tesoro custodial, topes y respaldo legal.
+2. Gate W1/W2 aprobado (hito 1 de la spec) y revisión de seguridad y auditoría de `TaskPolicy` y `RewardVault`; verificadores que no sean solo personas de Tuki.
 3. Spike S3 (extracción) con métricas sobre tickets reales argentinos.
 4. Spike S4 (constatación ARCA) para habilitar L2.
 5. Spike S7 (MeID) o S5 (World ID) aprobado con `uniquenessVerified` real entre cuentas y wallets, o alternativa anti-sybil aceptada.
 6. Umbrales de privacidad (k, m, granularidad) definidos y probados con ataques de diferencia (§7.3).
-7. Conciliación de payouts e invariantes I1–I14 con tests automáticos.
+7. Conciliación de la proyección contra la cadena e invariantes I1–I17 con tests automáticos.
 8. Revisión de seguridad de la integración con `AuthCaptureEscrow` en Base (despliegue de terceros, sin auditoría propia).
-9. Plazos de producción: `deadline`, `captureDeadline`, `refundDeadline`, retención de imágenes.
-10. Topes: presupuesto máximo por tarea, recompensa máxima por contribuyente y por día, saldo máximo de la hot wallet.
+9. Plazos de producción: `deadline`, entrega máxima, `disputeDeadline`, resolución, `authorizationExpiry`, `refundExpiry`, retención de imágenes.
+10. Topes: presupuesto máximo por tarea, recompensa máxima por contribuyente y por día, saldo de gas del relayer, hojas por raíz según el gas medido.
 11. Reserva de garantía de recompensas dimensionada y fondeada (§4.3).
 12. Camino de crédito y reembolso para pagos sin entrega probado de punta a punta (§5.3).
 13. Términos de licencia para contribuyentes y compradores, y efecto del retiro del consentimiento, revisados legalmente (§7.1, §7.2).

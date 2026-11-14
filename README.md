@@ -23,7 +23,7 @@ Commissioning new data (Mode B) is the core differentiator; buying existing data
 | [ADR 0001](docs/adr/0001-red-y-custodia-de-presupuestos.md) | Pending proposal: custody of task budgets (its network decision is superseded by ADR 0003) |
 | [ADR 0002](docs/adr/0002-verificacion-de-observaciones.md) | Pending proposal: observation verification and what is sold as "verified" |
 | [ADR 0003](docs/adr/0003-red-de-pagos-base.md) | Payment network for the MVP: Base Sepolia for the demo, Base for a pilot; one active network behind `PaymentRail` |
-| [14 — First 7 days](docs/14-primeros-7-dias.md) | Day-by-day demo plan, parallel buyer validation, and the day-7 go/no-go decision |
+| [14 — Milestone plan](docs/14-primeros-7-dias.md) | Risk-ordered milestones (no dates), parallel buyer validation, and the go/no-go decision; the normative spec is `odd/specs/mvp-p0.md` |
 
 Research behind these docs lives in [`agent-data-marketplace/`](agent-data-marketplace/): [competitors report](agent-data-marketplace/competitors-report.md), [competitive matrix](agent-data-marketplace/competitive-matrix.md), [pricing landscape](agent-data-marketplace/pricing-landscape.md), [battle cards](agent-data-marketplace/battle-cards/), [positioning research](agent-data-marketplace/positioning/) , [deep research on agent demand and verification](agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md) and [lessons from the Halo x402 analysis](agent-data-marketplace/lecciones-halo-x402.md).
 

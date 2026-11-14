@@ -172,7 +172,7 @@ No hay ningún dato de costo de adquisición de contribuyentes en Argentina. Tod
 
 Umbrales propuestos por este análisis. **Pendiente (acción del equipo):** ratificar los umbrales propuestos en este documento antes de validar compradores. Cumplir un criterio de abandono significa detener la inversión en esa línea, no "seguir intentando".
 
-Los criterios de compradores son etapas sucesivas, no contradictorias: día 7 de la demo, 2 compradores interesados y 1 que acepta pagar un lote ([14](./14-primeros-7-dias.md)); go/no-go del piloto, 2-3 compromisos escritos ([03](./03-prd-mvp.md)); K1, al menos 2 pilotos pagados al 2027-01-31.
+Los criterios de compradores son etapas sucesivas, no contradictorias: cierre del hito 6 de la demo, 2 compradores interesados y 1 que acepta pagar un lote ([14](./14-primeros-7-dias.md)); go/no-go del piloto, 2-3 compromisos escritos ([03](./03-prd-mvp.md)); K1, al menos 2 pilotos pagados al 2027-01-31.
 
 K2 y el spike S3 ([15](./15-stack-tecnologico.md)) miden cosas distintas: **S3 es la puerta técnica antes del piloto** (100 tickets reales: ≥ 95 % de totales y ≥ 90 % de ítems correctos, 0 ítems inventados no detectados); **K2 es el criterio de abandono después de dos iteraciones** sobre una muestra mayor del piloto.
 
@@ -188,7 +188,7 @@ K2 y el spike S3 ([15](./15-stack-tecnologico.md)) miden cosas distintas: **S3 e
 
 ## Brechas de datos
 
-- **Voz del comprador:** ninguna cita directa de marca, distribuidor, agencia o consultora. Cerrar con al menos 5 entrevistas durante la semana de la demo ([14 — Primeros 7 días](./14-primeros-7-dias.md)) y 8-10 en total antes del piloto.
+- **Voz del comprador:** ninguna cita directa de marca, distribuidor, agencia o consultora. Cerrar con al menos 5 entrevistas durante la construcción de la demo ([14 — Plan por hitos](./14-primeros-7-dias.md)) y 8-10 en total antes del piloto.
 - **Custodia en Vangrid:** contrato de escrow o wallet operadora, sin documentación primaria.
 - **Brecha lista vs. pagado:** no cuantificada. Es la premisa del marco (K4).
 - **Cobertura del canal tradicional** de Scanntech y NielsenIQ en 2026: no publicada.
