@@ -23,6 +23,10 @@ contract TaskPolicy is ITaskPolicy, VerifierQuorum {
     bytes32 public constant CAPTURE_DECISION_TYPEHASH =
         keccak256("CaptureDecision(bytes32 taskId,uint120 amount,uint256 nonce,uint48 expiresAt)");
 
+    bytes32 public constant DISPUTE_RESOLUTION_TYPEHASH = keccak256(
+        "DisputeResolution(bytes32 taskId,bytes32 disputeReasonHash,uint120 captureAmount,uint256 nonce,uint48 expiresAt)"
+    );
+
     IAuthCaptureEscrow public immutable escrow;
     address public immutable erc3009Collector;
     IERC20 public immutable usdc;
@@ -122,6 +126,61 @@ contract TaskPolicy is ITaskPolicy, VerifierQuorum {
         emit DeliveryRegistered(taskId, rec.resultHash, rec.evidenceRoot, rec.deliverableAmount, disputeDeadline);
     }
 
+    /// @notice The payer blocks capture until a 2-of-2 resolution. No Tuki service is involved.
+    function openDispute(bytes32 taskId, bytes32 reasonHash) external {
+        Task storage task = tasks[taskId];
+        if (msg.sender != task.payer) revert NotPayer(msg.sender);
+        if (task.status != Status.Delivered) revert InvalidStatus(taskId, task.status);
+        if (block.timestamp >= task.disputeDeadline) {
+            revert DisputeWindowClosed(uint48(block.timestamp), task.disputeDeadline);
+        }
+        if (task.dispute != Dispute.None) revert DisputeAlreadyOpened(taskId);
+
+        task.dispute = Dispute.Open;
+        task.disputeReasonHash = reasonHash;
+        emit DisputeOpened(taskId, reasonHash);
+    }
+
+    function resolveDispute(
+        bytes32 taskId,
+        IAuthCaptureEscrow.PaymentInfo calldata pi,
+        DisputeResolution calldata res,
+        bytes[] calldata signatures
+    ) external {
+        Task storage task = _task(taskId, pi, Status.Delivered);
+        if (task.dispute != Dispute.Open) revert NoOpenDispute(taskId);
+        uint48 resolutionDeadline = task.disputeDeadline + task.resolutionWindow;
+        if (block.timestamp > resolutionDeadline) {
+            revert ResolutionWindowClosed(uint48(block.timestamp), resolutionDeadline);
+        }
+        if (res.taskId != taskId) revert TaskIdMismatch(taskId, res.taskId);
+        if (res.disputeReasonHash != task.disputeReasonHash) {
+            revert DisputeReasonMismatch(task.disputeReasonHash, res.disputeReasonHash);
+        }
+        if (res.captureAmount > task.deliverableAmount) {
+            revert AmountExceedsLimit(res.captureAmount, task.deliverableAmount);
+        }
+        _useDecision(
+            keccak256(
+                abi.encode(
+                    DISPUTE_RESOLUTION_TYPEHASH,
+                    res.taskId,
+                    res.disputeReasonHash,
+                    res.captureAmount,
+                    res.nonce,
+                    res.expiresAt
+                )
+            ),
+            res.nonce,
+            res.expiresAt,
+            signatures
+        );
+
+        task.dispute = Dispute.Resolved;
+        task.resolvedCaptureAmount = res.captureAmount;
+        emit DisputeResolved(taskId, res.captureAmount);
+    }
+
     function capture(
         bytes32 taskId,
         IAuthCaptureEscrow.PaymentInfo calldata pi,
@@ -137,14 +196,41 @@ contract TaskPolicy is ITaskPolicy, VerifierQuorum {
             signatures
         );
 
+        if (block.timestamp < task.disputeDeadline) {
+            revert DisputeWindowOpen(uint48(block.timestamp), task.disputeDeadline);
+        }
+        if (task.dispute == Dispute.Open) revert DisputeUnresolved(taskId);
+        uint256 limit = task.dispute == Dispute.Resolved ? task.resolvedCaptureAmount : task.deliverableAmount;
+        if (limit > pi.maxAmount) limit = pi.maxAmount;
         uint256 amount = dec.amount;
+        if (amount > limit) revert AmountExceedsLimit(amount, limit);
+
         uint256 fee = amount * FEE_BPS / BPS_DENOMINATOR;
         task.status = Status.Captured;
         emit TaskCaptured(taskId, amount, fee);
 
-        escrow.capture(pi, amount, fee, feeReceiver);
-        escrow.void(pi);
+        // The escrow rejects a zero capture and a void with nothing left.
+        if (amount != 0) escrow.capture(pi, amount, fee, feeReceiver);
+        if (amount != pi.maxAmount) escrow.void(pi);
         vault.onCapture(taskId, amount - fee);
+        vault.release(taskId);
+    }
+
+    /// @notice Returns the reserve lock of a Task whose authorization expired and left the escrow
+    ///         (the payer reclaimed it). `reclaim` itself is called by the payer on the escrow.
+    function releaseAfterExpiry(bytes32 taskId, IAuthCaptureEscrow.PaymentInfo calldata pi) external {
+        Task storage task = tasks[taskId];
+        if (task.status != Status.Open && task.status != Status.Delivered) {
+            revert InvalidStatus(taskId, task.status);
+        }
+        if (escrow.getHash(pi) != task.paymentInfoHash) revert PaymentInfoMismatch(taskId);
+        if (block.timestamp < pi.authorizationExpiry) {
+            revert AuthorizationNotExpired(uint48(block.timestamp), pi.authorizationExpiry);
+        }
+        (, uint120 capturableAmount,) = escrow.paymentState(task.paymentInfoHash);
+        if (capturableAmount != 0) revert AuthorizationStillHeld(capturableAmount);
+
+        task.status = Status.Expired;
         vault.release(taskId);
     }
 

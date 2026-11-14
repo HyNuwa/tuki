@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-14 · feat(contracts): gate capture on dispute window and amount bounds
+- **Qué hice:** `capture` ahora exige `block.timestamp >= disputeDeadline`, ninguna disputa abierta sin resolver y un monto menor o igual al entregable (o al `captureAmount` resuelto) y a `maxAmount`; captura cero y captura total no rompen contra el escrow. Agregué `openDispute` (solo el pagador, solo dentro de la ventana), `resolveDispute` (2-de-2, hasta `resolutionDeadline`, ligada al motivo de la disputa) y `releaseAfterExpiry` (cualquiera, cuando la autorización venció y el escrow quedó vacío). Tests de M1-AC4, AC5 (con fuzz: lo capturado nunca supera `maxAmount`), AC8 y AC9, incluido el `reclaim` del pagador directo en el escrow sin ninguna clave de Tuki después de `openTask`.
+- **Archivos clave:** `packages/contracts/src/TaskPolicy.sol`, `packages/contracts/test/AC4_DisputesAndCaptureBounds.t.sol`, `packages/contracts/test/utils/TukiFixture.sol`.
+- **Próximo paso:** M1-AC10: entrega tardía y `voidTask`.
+
 ## 2026-11-14 · feat(contracts): require 2-of-2 verifier decisions in TaskPolicy
 - **Qué hice:** agregué `VerifierQuorum`: decisiones EIP-712 bajo el dominio "Tuki Protocol" v1 firmadas por los dos verificadores inmutables, con nonce de un solo uso por contrato y `expiresAt`. `registerDelivery` y `capture` ahora exigen el 2-de-2, el `taskId` firmado, el estado correcto y el mismo `PaymentInfo` de la apertura. Tests de M1-AC3 (cero, una, tres firmas, firmante duplicado o ajeno, firma mal formada), AC6 (nonce repetido, decisión vencida, otra Task, otro chain id, otro contrato) y AC7 (la plataforma no puede capturar ni directo en el escrow ni por `TaskPolicy` sin firmas).
 - **Archivos clave:** `packages/contracts/src/VerifierQuorum.sol`, `packages/contracts/src/interfaces/IVerifierQuorum.sol`, `packages/contracts/src/TaskPolicy.sol`, `packages/contracts/test/AC3_VerifierSignatures.t.sol`, `packages/contracts/test/TaskPolicy_Lifecycle.t.sol`.

@@ -246,6 +246,35 @@ abstract contract TukiFixture is BaseSepoliaFork {
         });
     }
 
+    function _disputeResolution(bytes32 taskId, bytes32 reasonHash, uint120 captureAmount)
+        internal
+        returns (ITaskPolicy.DisputeResolution memory)
+    {
+        return ITaskPolicy.DisputeResolution({
+            taskId: taskId,
+            disputeReasonHash: reasonHash,
+            captureAmount: captureAmount,
+            nonce: nextNonce++,
+            expiresAt: uint48(block.timestamp + 1 hours)
+        });
+    }
+
+    function _capture(IAuthCaptureEscrow.PaymentInfo memory pi, uint120 amount) internal {
+        ITaskPolicy.CaptureDecision memory dec = _captureDecision(TASK_ID, amount);
+        vm.prank(relayer);
+        policy.capture(TASK_ID, pi, dec, _bothVerifiers(_policyDigest(_hash(dec))));
+    }
+
+    function _expectCaptureReverts(IAuthCaptureEscrow.PaymentInfo memory pi, uint120 amount, bytes memory revertData)
+        internal
+    {
+        ITaskPolicy.CaptureDecision memory dec = _captureDecision(TASK_ID, amount);
+        bytes[] memory sigs = _bothVerifiers(_policyDigest(_hash(dec)));
+        vm.prank(relayer);
+        vm.expectRevert(revertData);
+        policy.capture(TASK_ID, pi, dec, sigs);
+    }
+
     function _registerDelivery(IAuthCaptureEscrow.PaymentInfo memory pi, uint120 deliverableAmount) internal {
         ITaskPolicy.DeliveryRecord memory rec = _deliveryRecord(TASK_ID, deliverableAmount);
         policy.registerDelivery(TASK_ID, pi, rec, _bothVerifiers(_policyDigest(_hash(rec))));
