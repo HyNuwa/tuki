@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-14 · feat(contracts): publish epoch roots and claim rewards in vault
+- **Qué hice:** `RewardVault.publishRoot`: 2-de-2 sobre `EpochRoot`, reconstruye la raíz Merkle desde los `leafHashes` publicados (pares ordenados, nodo impar promovido), una sola raíz por época, hasta `maxLeavesPerRoot` hojas, debita el lock de cada Task según las asignaciones firmadas y reconstruye la `contributionRoot` cuando viene. `claim`: prueba Merkle contra la raíz guardada, paga solo al `recipient`, una vez por hoja, y una época nunca paga más que su `totalAmount` firmado. Tests de M1-AC11, AC12 (claim armado solo con los logs de `RootPublished` y la preimagen de la hoja, enviado por un tercero) y AC13.
+- **Archivos clave:** `packages/contracts/src/RewardVault.sol`, `packages/contracts/src/lib/MerkleRoot.sol`, `packages/contracts/src/interfaces/IRewardVault.sol`, `packages/contracts/test/AC11_PublishRoot.t.sol`, `packages/contracts/test/AC12_Claim.t.sol`, `packages/contracts/test/utils/VaultFixture.sol`.
+- **Próximo paso:** M1-AC14: gas de `publishRoot` a 16, 64, 128 y 256 hojas y de `claim`.
+
 ## 2026-11-14 · feat(contracts): reject late deliveries and add platform void
 - **Qué hice:** `registerDelivery` revierte `LateDelivery` después de `deadline + maxDeliveryDelay`. `voidTask` (solo la plataforma, en cualquier momento antes de la captura) devuelve toda la autorización al pagador y libera el lock. Tests de M1-AC10.
 - **Archivos clave:** `packages/contracts/src/TaskPolicy.sol`, `packages/contracts/test/AC10_LateDeliveryAndVoid.t.sol`.

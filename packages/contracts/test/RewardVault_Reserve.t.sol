@@ -2,6 +2,7 @@
 pragma solidity 0.8.28;
 
 import {IRewardVault} from "../src/interfaces/IRewardVault.sol";
+import {IVerifierQuorum} from "../src/interfaces/IVerifierQuorum.sol";
 import {RewardVault} from "../src/RewardVault.sol";
 import {TukiFixture} from "./utils/TukiFixture.sol";
 
@@ -100,5 +101,24 @@ contract RewardVault_ReserveTest is TukiFixture {
         vm.prank(deployer);
         vm.expectRevert(abi.encodeWithSelector(IRewardVault.PolicyAlreadySet.selector));
         fresh.setPolicy(stranger);
+    }
+
+    function test_constructor_revertsOnZeroOrDuplicateVerifier() public {
+        vm.expectRevert(abi.encodeWithSelector(IVerifierQuorum.InvalidVerifierSet.selector));
+        new RewardVault(USDC, [verifierA, verifierA], MAX_LEAVES_PER_ROOT);
+        vm.expectRevert(abi.encodeWithSelector(IVerifierQuorum.InvalidVerifierSet.selector));
+        new RewardVault(USDC, [verifierA, address(0)], MAX_LEAVES_PER_ROOT);
+    }
+
+    function test_vault_exposesTheTukiProtocolDomainAndVerifierSet() public view {
+        (, string memory name, string memory version, uint256 chainId, address verifyingContract,,) =
+            vault.eip712Domain();
+        assertEq(name, "Tuki Protocol");
+        assertEq(version, "1");
+        assertEq(chainId, 84532);
+        assertEq(verifyingContract, address(vault));
+        assertEq(vault.verifierOne(), verifierA);
+        assertEq(vault.verifierTwo(), verifierB);
+        assertEq(vault.maxLeavesPerRoot(), 256);
     }
 }
