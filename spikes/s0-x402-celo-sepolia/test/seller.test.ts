@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { decodePaymentRequiredHeader, decodePaymentResponseHeader } from "@x402/core/http";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { createSellerApp } from "../src/seller.ts";
-import { CELO_SEPOLIA } from "../src/network.ts";
+import { BASE_SEPOLIA, CELO_SEPOLIA } from "../src/network.ts";
 import { FakeFacilitatorClient } from "./fake-facilitator.ts";
 import { signPaymentHeader } from "./buyer-helpers.ts";
 
@@ -31,7 +31,7 @@ describe("discovery", () => {
     expect(p.fixture).toBe(true);
     expect(p.price).toEqual({
       amountAtomic: "10000",
-      token: { network: "eip155:11142220", address: "0x01C5C0122039549AD1493B8220cABEdD739BC44E", symbol: "USDC", decimals: 6 },
+      token: { network: "eip155:84532", address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e", symbol: "USDC", decimals: 6 },
       unit: "query",
     });
     expect(Object.keys(p)).toEqual(
@@ -43,7 +43,7 @@ describe("discovery", () => {
 });
 
 describe("paid route", () => {
-  it("without payment answers 402 with decodable exact/USDC/Celo Sepolia requirements", async () => {
+  it("without payment answers 402 with decodable exact/USDC/Base Sepolia requirements (the default network)", async () => {
     const { app, facilitator } = setup();
     const res = await app.request(DATA_URL);
     expect(res.status).toBe(402);
@@ -54,8 +54,8 @@ describe("paid route", () => {
     expect(required.accepts).toHaveLength(1);
     expect(required.accepts[0]).toMatchObject({
       scheme: "exact",
-      network: "eip155:11142220",
-      asset: "0x01C5C0122039549AD1493B8220cABEdD739BC44E",
+      network: "eip155:84532",
+      asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
       amount: "10000",
       payTo: PAY_TO,
       extra: { name: "USDC", version: "2" },
@@ -75,10 +75,29 @@ describe("paid route", () => {
     expect(body).toMatchObject({ dataProductId: "dp_test_fixture_milk_noa", fixture: true });
     const settled = decodePaymentResponseHeader(res.headers.get("payment-response")!);
     expect(settled.success).toBe(true);
-    expect(settled.network).toBe(CELO_SEPOLIA.caip2);
+    expect(settled.network).toBe(BASE_SEPOLIA.caip2);
     expect(settled.transaction).toBe(facilitator.settlements[0]!.transaction);
     expect(facilitator.calls).toMatchObject({ verify: 1, settle: 1 });
     expect(facilitator.settlements).toHaveLength(1);
     expect(facilitator.settlements[0]).toMatchObject({ to: PAY_TO, value: "10000" });
+  });
+});
+
+describe("Celo Sepolia path (X402_NETWORK=celo-sepolia)", () => {
+  it("answers 402 with Celo Sepolia USDC requirements and settles a signed payment once", async () => {
+    const facilitator = new FakeFacilitatorClient(CELO_SEPOLIA);
+    const { app } = createSellerApp({ facilitator, payTo: PAY_TO, network: CELO_SEPOLIA });
+    const unpaid = await app.request(DATA_URL);
+    expect(unpaid.status).toBe(402);
+    expect(decodePaymentRequiredHeader(unpaid.headers.get("payment-required")!).accepts[0]).toMatchObject({
+      network: "eip155:11142220",
+      asset: "0x01C5C0122039549AD1493B8220cABEdD739BC44E",
+      amount: "10000",
+      extra: { name: "USDC", version: "2" },
+    });
+    const paid = await app.request(DATA_URL, { headers: await signPaymentHeader(app, DATA_URL) });
+    expect(paid.status).toBe(200);
+    expect(decodePaymentResponseHeader(paid.headers.get("payment-response")!).network).toBe(CELO_SEPOLIA.caip2);
+    expect(facilitator.settlements).toHaveLength(1);
   });
 });

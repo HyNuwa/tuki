@@ -8,7 +8,7 @@ import { ExactEvmScheme } from "@x402/evm/exact/client";
 import type { SettleResponse } from "@x402/core/types";
 import { isAddressEqual, type Address, type LocalAccount } from "viem";
 import type { DataProduct } from "./catalog.ts";
-import { CELO_SEPOLIA } from "./network.ts";
+import { DEFAULT_NETWORK, type NetworkConfig } from "./network.ts";
 
 /**
  * Client extension that stamps a caller-chosen payment id into the payload's `payment-identifier`
@@ -33,16 +33,19 @@ export type BuyerFetchOptions = {
   fetch?: typeof fetch;
   /** Reuse the same id when retrying one purchase. */
   paymentId?: string;
+  /** Default: Base Sepolia. The client only pays this network's USDC. */
+  network?: NetworkConfig;
 };
 
-/** @x402/fetch wrapper with spend controls capped to one product price, Celo Sepolia USDC only. */
+/** @x402/fetch wrapper with spend controls capped to one product price, the network's USDC only. */
 export function createBuyerFetch(opts: BuyerFetchOptions): typeof fetch {
+  const network = opts.network ?? DEFAULT_NETWORK;
   const client = new x402Client();
   // setSpendControls, not the constructor (the constructor ignores a config object).
   client.setSpendControls({
-    allowedAssets: [{ network: CELO_SEPOLIA.caip2, asset: CELO_SEPOLIA.usdc.address, maxAmountPerPayment: opts.capAtomic }],
+    allowedAssets: [{ network: network.caip2, asset: network.usdc.address, maxAmountPerPayment: opts.capAtomic }],
   });
-  client.register(CELO_SEPOLIA.caip2, new ExactEvmScheme(opts.account, { rpcUrl: CELO_SEPOLIA.rpcUrl }));
+  client.register(network.caip2, new ExactEvmScheme(opts.account, { rpcUrl: network.rpcUrl }));
   client.registerExtension(paymentIdentifierClientExtension(opts.paymentId ?? generatePaymentId()));
   return wrapFetchWithPayment(opts.fetch ?? fetch, client) as typeof fetch;
 }
@@ -52,6 +55,8 @@ export type AgentOptions = {
   account: LocalAccount;
   budgetAtomic: string;
   wantZone: string;
+  /** Default: Base Sepolia. */
+  network?: NetworkConfig;
   fetch?: typeof fetch;
   log: (line: string) => void;
 };
@@ -60,10 +65,10 @@ export type AgentResult =
   | { kind: "skipped"; reason: string }
   | { kind: "paid"; status: number; data: unknown; settlement: SettleResponse | null };
 
-function acceptable(p: DataProduct, budget: bigint, zone: string): boolean {
+function acceptable(p: DataProduct, network: NetworkConfig, budget: bigint, zone: string): boolean {
   return (
-    p.price.token.network === CELO_SEPOLIA.caip2 &&
-    isAddressEqual(p.price.token.address as Address, CELO_SEPOLIA.usdc.address) &&
+    p.price.token.network === network.caip2 &&
+    isAddressEqual(p.price.token.address as Address, network.usdc.address) &&
     BigInt(p.price.amountAtomic) <= budget &&
     p.coverage.zones.includes(zone) &&
     p.counts.observations > 0
@@ -73,18 +78,19 @@ function acceptable(p: DataProduct, budget: bigint, zone: string): boolean {
 /** Simple automatic buyer: discover -> choose -> check price/coverage -> pay -> consume. */
 export async function runAgent(opts: AgentOptions): Promise<AgentResult> {
   const doFetch = opts.fetch ?? fetch;
+  const network = opts.network ?? DEFAULT_NETWORK;
   const log = opts.log;
-  log(`agent ${opts.account.address} budget=${opts.budgetAtomic} atomic USDC zone=${opts.wantZone}`);
+  log(`agent ${opts.account.address} network=${network.label} (${network.caip2}) budget=${opts.budgetAtomic} atomic USDC zone=${opts.wantZone}`);
   const catalogRes = await doFetch(`${opts.baseUrl}/v1/products`);
   const { products } = (await catalogRes.json()) as { products: DataProduct[] };
   log(`catalog: ${products.length} product(s)`);
-  const product = products.find((p) => acceptable(p, BigInt(opts.budgetAtomic), opts.wantZone));
+  const product = products.find((p) => acceptable(p, network, BigInt(opts.budgetAtomic), opts.wantZone));
   if (!product) {
     log("no product within budget and coverage; not paying");
     return { kind: "skipped", reason: "no product within budget and coverage" };
   }
   log(`chosen ${product.dataProductId} price=${product.price.amountAtomic} ${product.price.token.symbol} (fixture=${product.fixture})`);
-  const payFetch = createBuyerFetch({ account: opts.account, capAtomic: product.price.amountAtomic, fetch: doFetch });
+  const payFetch = createBuyerFetch({ account: opts.account, capAtomic: product.price.amountAtomic, fetch: doFetch, network });
   const res = await payFetch(`${opts.baseUrl}/v1/products/${product.dataProductId}/data`);
   const header = res.headers.get("payment-response");
   const settlement = header ? (decodePaymentResponseHeader(header) as SettleResponse) : null;
@@ -98,6 +104,6 @@ export async function runAgent(opts: AgentOptions): Promise<AgentResult> {
   log(`status: ${res.status}`);
   log(`data: ${typeof data === "string" ? data : JSON.stringify(data)}`);
   log(`payment-response: ${settlement ? JSON.stringify(settlement) : "none"}`);
-  if (settlement?.success && settlement.transaction) log(`tx: ${CELO_SEPOLIA.explorerTxUrl}${settlement.transaction}`);
+  if (settlement?.success && settlement.transaction) log(`tx: ${network.explorerTxUrl}${settlement.transaction}`);
   return { kind: "paid", status: res.status, data, settlement };
 }

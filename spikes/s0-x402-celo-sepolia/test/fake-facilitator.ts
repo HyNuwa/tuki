@@ -8,12 +8,15 @@
  *  - checks amount / payTo / asset / network against the requirements,
  *  - simulates the on-chain rule that an EIP-3009 nonce can be used only once.
  * Settlement "transactions" are labelled `fake` and are not on any chain.
+ *
+ * Its `/supported` mirrors the real x402.org facilitator (observed 2026-11-13): it does NOT list
+ * `payment-identifier`, so the idempotency tests prove the seller-side guard does not need it.
  */
 import type { FacilitatorClient } from "@x402/core/server";
 import type { PaymentPayload, PaymentRequirements, SettleResponse, SupportedResponse, VerifyResponse } from "@x402/core/types";
 import { FacilitatorTimeoutError } from "@x402/core/server";
 import { getAddress, isAddressEqual, keccak256, toHex, verifyTypedData, type Address, type Hex } from "viem";
-import { CELO_SEPOLIA } from "../src/network.ts";
+import { BASE_SEPOLIA, type NetworkConfig } from "../src/network.ts";
 
 export type FakeStep = "ok" | "reject" | "throw" | "timeout" | "fail";
 
@@ -33,6 +36,8 @@ const AUTH_TYPES = {
 } as const;
 
 export class FakeFacilitatorClient implements FacilitatorClient {
+  constructor(readonly network: NetworkConfig = BASE_SEPOLIA) {}
+
   readonly calls = { verify: 0, settle: 0, supported: 0 };
   /** Successful fake settlements, in order. Each one is a would-be on-chain transfer. */
   readonly settlements: FakeSettlement[] = [];
@@ -57,8 +62,8 @@ export class FakeFacilitatorClient implements FacilitatorClient {
   async getSupported(): Promise<SupportedResponse> {
     this.calls.supported++;
     return {
-      kinds: [{ x402Version: 2, scheme: "exact", network: CELO_SEPOLIA.caip2 }],
-      extensions: ["payment-identifier"],
+      kinds: [{ x402Version: 2, scheme: "exact", network: this.network.caip2 }],
+      extensions: ["builder-code", "eip2612GasSponsoring", "erc20ApprovalGasSponsoring"],
       signers: {},
     };
   }
@@ -102,8 +107,8 @@ export class FakeFacilitatorClient implements FacilitatorClient {
     const signature = payload.payload["signature"] as Hex | undefined;
     if (!auth || !signature) return { isValid: false, invalidReason: "fake_missing_authorization" };
     if (
-      requirements.network !== CELO_SEPOLIA.caip2 ||
-      !isAddressEqual(requirements.asset as Address, CELO_SEPOLIA.usdc.address) ||
+      requirements.network !== this.network.caip2 ||
+      !isAddressEqual(requirements.asset as Address, this.network.usdc.address) ||
       !isAddressEqual(auth.to, requirements.payTo as Address) ||
       auth.value !== requirements.amount
     ) {
@@ -111,7 +116,7 @@ export class FakeFacilitatorClient implements FacilitatorClient {
     }
     const valid = await verifyTypedData({
       address: getAddress(auth.from),
-      domain: { ...CELO_SEPOLIA.usdc.eip712, chainId: CELO_SEPOLIA.chainId, verifyingContract: CELO_SEPOLIA.usdc.address },
+      domain: { ...this.network.usdc.eip712, chainId: this.network.chainId, verifyingContract: this.network.usdc.address },
       types: AUTH_TYPES,
       primaryType: "TransferWithAuthorization",
       message: {

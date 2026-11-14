@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Spike S0: x402 exact end-to-end on Celo Sepolia through the hosted testnet facilitator.",
+  "description": "Spike S0: x402 exact end-to-end through a hosted testnet facilitator; Base Sepolia by default, Celo Sepolia via X402_NETWORK=celo-sepolia.",
   "engines": {
     "node": ">=22.12"
   },

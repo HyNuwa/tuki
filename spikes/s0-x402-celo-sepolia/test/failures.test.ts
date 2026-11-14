@@ -25,7 +25,7 @@ async function hangingFacilitator(): Promise<string> {
   const server = createServer((req, res) => {
     if (req.url === "/supported") {
       res.setHeader("content-type", "application/json");
-      res.end(JSON.stringify({ kinds: [{ x402Version: 2, scheme: "exact", network: "eip155:11142220" }], extensions: [], signers: {} }));
+      res.end(JSON.stringify({ kinds: [{ x402Version: 2, scheme: "exact", network: "eip155:84532" }], extensions: [], signers: {} }));
     }
     // otherwise never respond
   });
@@ -61,7 +61,7 @@ describe("failure paths deliver no resource", () => {
 
   it("facilitator unreachable (closed port, real HTTP client) -> error status, no data", async () => {
     // Port 9 (discard) on loopback is closed on a normal dev machine: connection refused.
-    const facilitator = createFacilitatorClient({ apiKey: "test-dummy-key", url: "http://127.0.0.1:9", timeoutMs: 2_000 });
+    const facilitator = createFacilitatorClient({ url: "http://127.0.0.1:9", timeoutMs: 2_000 });
     const { app } = createSellerApp({ facilitator, payTo: PAY_TO });
     const res = await app.request(DATA_URL);
     expect(res.status).toBeGreaterThanOrEqual(500);
@@ -70,7 +70,7 @@ describe("failure paths deliver no resource", () => {
 
   it("verify times out (real HTTP client, hanging stub) -> 502, no data", async () => {
     const url = await hangingFacilitator();
-    const facilitator = createFacilitatorClient({ apiKey: "test-dummy-key", url, timeoutMs: 300 });
+    const facilitator = createFacilitatorClient({ url, timeoutMs: 300 });
     const { app } = createSellerApp({ facilitator, payTo: PAY_TO });
     const res = await app.request(DATA_URL, { headers: await signPaymentHeader(app, DATA_URL) });
     expect(res.status).toBe(502);

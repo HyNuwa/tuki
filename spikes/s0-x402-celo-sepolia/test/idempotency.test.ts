@@ -36,6 +36,8 @@ describe("idempotency", () => {
     const { app, facilitator } = setup();
     const account = newTestAccount();
     const paymentId = "pay_same_purchase_0000000001";
+    // Like x402.org, the facilitator does not advertise payment-identifier: dedup is seller-side.
+    expect((await facilitator.getSupported()).extensions).not.toContain("payment-identifier");
     const first = await app.request(DATA_URL, { headers: await signPaymentHeader(app, DATA_URL, { account, paymentId }) });
     const retry = await app.request(DATA_URL, { headers: await signPaymentHeader(app, DATA_URL, { account, paymentId }) });
     expect(first.status).toBe(200);

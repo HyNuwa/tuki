@@ -171,3 +171,55 @@ El descubrimiento no depende de x402 y se diseña como módulo propio:
 - **INT-01:** con `X402_API_KEY` real y la wallet compradora fondeada, `npm run server` + `npm run agent` liquidan una compra, el hash se registra en el §8 y un reintento con el mismo `payment-identifier` no cobra dos veces. **Bloquea el despliegue, no el desarrollo.**
 
 **Sobre "S1":** en el doc 15, S1 es el spike de `auth-capture` en **Base Sepolia**. No depende de la liquidación en Celo, así que no se bloquea, pero está fuera del P0, que usa `exact`. Si "S1" se refiere al siguiente paso del MVP (días 1 a 3 del doc 14: contratos, catálogo e ingesta), tampoco depende de esta liquidación.
+
+## 12. Base Sepolia (2026-11-13)
+
+El MVP pasa de Celo a Base. El S0 en Celo Sepolia sigue siendo una prueba técnica válida (§3 a §11); el mismo endpoint, el mismo guard y el mismo agente ahora corren en **Base Sepolia por defecto**, y Celo Sepolia queda como alternativa. El directorio conserva su nombre.
+
+### 12.1 Qué cambió
+
+- `src/network.ts`: registro de redes `base-sepolia` (por defecto), `celo-sepolia` y `base` (mainnet, solo como referencia: no se puede seleccionar). Cada entrada tiene CAIP-2, USDC con dominio EIP-712 y decimales, RPC, facilitator, explorador y si el facilitator exige clave. `priceFor` arma el objeto de precio explícito `{ amount: "10000", asset, extra: { name, version } }`.
+- `X402_NETWORK` elige la red (vacío → `base-sepolia`). `base` se rechaza por ser mainnet. El valor anterior `testnet` se rechaza con un mensaje que pide reemplazarlo: **el `.env` local todavía tiene `X402_NETWORK=testnet` y hay que cambiarlo** (o dejarlo vacío).
+- `src/config.ts` y `src/facilitator.ts`: `X402_API_KEY` es obligatoria **solo** si el facilitator de la red la exige (Celo). En Base Sepolia se ignora y no se envía `X-API-Key`, aunque se pase una clave. Los mensajes de error siguen sin repetir secretos ni valores desconocidos.
+- `src/check-compat.ts`: corre contra el facilitator real, el RPC y `getDefaultAsset` de la red seleccionada. Si el facilitator no publica `supportedAssets` (x402.org no lo hace), lo informa en vez de fallar o inventarlo.
+- Seller, comprador, agente y catálogo reciben la red; el fixture se cotiza en el USDC de esa red.
+- El facilitator simulado de las pruebas publica las mismas extensiones que x402.org, **sin `payment-identifier`**.
+
+### 12.2 `payment-identifier` sin soporte del facilitator
+
+x402.org no incluye `payment-identifier` en `/supported`. Revisado en el código instalado de `@x402/*` 2.31.0:
+
+- `paymentIdentifierResourceServerExtension` es solo `{ key: "payment-identifier" }`, sin hooks ("No enrichment needed - the declaration is static").
+- La declaración sale de la configuración de la ruta hacia el `402`, y `x402ResourceServer.validateExtensions` compara del lado del servidor lo que el cliente devuelve con lo anunciado.
+- La lista de extensiones del facilitator solo se pasa a `ExactEvmScheme.enhancePaymentRequirements`, que la ignora (`void extensionKeys`), y a `validateFacilitatorSupport`, que `exact` no implementa.
+
+**Conclusión:** la extensión es puramente del servidor de recursos y no depende del facilitator. `SettlementGuard` sigue protegiendo igual, porque deduplica por el nonce EIP-3009 (pagador, nonce) y por pagador + `payment-identifier` en su propio registro. Las pruebas de idempotencia pasan con un facilitator simulado que no anuncia la extensión. En la prueba real (§12.3), x402.org recibió el payload con la extensión y lo evaluó por saldo, sin error de formato.
+
+### 12.3 Salidas reales observadas (sin clave, sin fondos)
+
+`npm run check:compat` con la red por defecto, 2026-11-14T02:51:44Z: **`ok: true`**.
+
+- Facilitator `https://x402.org/facilitator/supported` → `200`, `exact` v2 en `eip155:84532`, `supportedAssets` no publicado, extensiones `builder-code`, `eip2612GasSponsoring` y `erc20ApprovalGasSponsoring`, `paymentIdentifierListed: false`.
+- USDC en `https://sepolia.base.org` (chainId 84532): `0x036CbD53842c5426634e7929541eC2318f3dCF7e`, `decimals() = 6`, `name() = "USDC"`, `symbol() = "USDC"`.
+- `getDefaultAsset("eip155:84532")`: mismo activo, `name: "USDC"`, `version: "2"`, 6 decimales.
+- Con `X402_NETWORK=celo-sepolia`: también `ok: true` (USDC listado, extensiones `eip2612GasSponsoring` y `payment-identifier`).
+
+Servidor real en Base Sepolia (`SELLER_PAY_TO` de prueba, sin clave), arranque: `seller listening on http://localhost:3402 network=Base Sepolia (eip155:84532) facilitator=https://x402.org/facilitator payTo=0x1111111111111111111111111111111111111111 X402_API_KEY=not needed`.
+
+| Paso | Respuesta real |
+|---|---|
+| Request sin pago | `402`; `accepts[0]`: `exact`, `eip155:84532`, `amount: "10000"`, asset `0x036CbD53842c5426634e7929541eC2318f3dCF7e`, `extra: { name: "USDC", version: "2" }`, extensión `payment-identifier` declarada |
+| Saldo de la compradora `0x53DA575E2A375d59fcDad75C0d0e173EbE9508cf` | `0` USDC en Base Sepolia |
+| Agente paga (firma real, wallet sin USDC) | `status: 402`, cuerpo `{"error":"invalid_exact_evm_insufficient_balance"}`, sin `payment-response` |
+
+Se usó la misma clave EVM descartable del §5. **No se ejecutó ninguna transacción.**
+
+### 12.4 Pruebas
+
+`npm test`: **8 archivos, 50 pruebas, todas pasan.** `npm run typecheck`: **sin errores.** RED observado antes de implementar (29 fallidas, 10 pasaban). Nuevas: `network.test.ts` (red por defecto, Celo con clave, rechazo de mainnet, `testnet` y valores desconocidos sin repetirlos, acuerdo con `getDefaultAsset`, objeto de precio). Ampliadas: `config.test.ts` (sin clave en Base, clave obligatoria en Celo), `secrets.test.ts` (no se envía `X-API-Key` a x402.org), `seller.test.ts` (`402` con Base Sepolia y un caso del camino Celo).
+
+### 12.5 Qué falta
+
+- **INT-01 en Base Sepolia** ahora solo necesita fondear la compradora con USDC de Base Sepolia en https://faucet.circle.com/ y completar `SELLER_PAY_TO`. **No hace falta clave.** Después: `npm run server`, `npm run agent`, registrar el hash en el §8 (`https://sepolia.basescan.org/tx/<hash>`) y comprobar que un reintento con el mismo `payment-identifier` no cobra dos veces.
+- Cambiar `X402_NETWORK=testnet` por `base-sepolia` (o dejarlo vacío) en el `.env` local.
+- Base mainnet (piloto): el facilitator de CDP autentica con API key ID y secret de CDP, que el spike no implementa [Pendiente].
