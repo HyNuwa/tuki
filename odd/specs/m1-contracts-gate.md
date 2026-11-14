@@ -147,10 +147,12 @@ packages/contracts/test/**
 packages/contracts/script/**
 packages/contracts/lib/**
 packages/contracts/README.md
+packages/contracts/.gitignore
+.gitmodules
 odd/specs/m1-contracts-gate.md
 ```
 
-`lib/**` holds pinned git submodules only (forge-std, OpenZeppelin, commerce-payments at the v1.1.0 tag). `packages/contracts` is self-contained; the pnpm workspace root arrives in M2 and adds it without moving files. Versions pinned (Q10): Solidity 0.8.x exact in `foundry.toml`.
+`lib/**` holds pinned git submodules only (forge-std, OpenZeppelin, commerce-payments at the v1.1.0 tag). The root `.gitmodules` holds only the entries for those three submodules, and `packages/contracts/.gitignore` only the build output (`out/`, `cache/`); both were added to this list on 2026-11-14 with Maximiliano's approval, because submodules and builds cannot work without them. The escrow source imports solady, which is taken from commerce-payments' own pinned submodule (`lib/commerce-payments/lib/solady`), not added as a fourth dependency. `packages/contracts` is self-contained; the pnpm workspace root arrives in M2 and adds it without moving files. Versions pinned (Q10): Solidity 0.8.x exact in `foundry.toml`.
 
 ## 7. Human prerequisites (agents cannot do these)
 
@@ -164,7 +166,17 @@ odd/specs/m1-contracts-gate.md
 
 ## 9. Results (filled by the implementing agent)
 
-- M1-AC0: [Pending]
+- M1-AC0: **[Verified] 2026-11-14 — match, no difference from §2.** `test/AC0_DeployedEscrow.t.sol`, 11 tests green on a Base Sepolia fork pinned at block 58767000, against the deployed escrow, collector and USDC (types, error and event selectors taken from the commerce-payments v1.1.0 source, commit `6b0a5ef`):
+  - `PAYMENT_INFO_TYPEHASH` and `getHash` equal the §2 formula; `salt` changes the hash.
+  - `collectorType()` is `Payment`; `collector.authCaptureEscrow()` is the escrow.
+  - USDC `DOMAIN_SEPARATOR()` equals the one built from name `USDC`, version `2`, chain id 84532; 6 decimals.
+  - `authorize` with an ERC-3009 `ReceiveWithAuthorization` signature (`to` = collector, `value` = `maxAmount`, `validAfter` = 0, `validBefore` = `preApprovalExpiry`, nonce = payer-agnostic hash) moves `amount` to the operator's token store, returns `maxAmount − amount` to the payer and leaves nothing in the collector.
+  - Fee rule: with `minFeeBps = maxFeeBps = 3000` and `amount = 1000001`, `feeAmount` 300001, 299999 and 0 revert `FeeAmountOutOfRange(feeAmount, 300000, 300000)`; 300000 pays 700001 to the receiver and 300000 to the fee receiver.
+  - A `feeReceiver` argument other than the configured one reverts `InvalidFeeReceiver`.
+  - `authorize`, `capture` and `void` revert `InvalidSender` for any caller but the operator; `void` returns the whole authorization to the payer and a second `void` reverts `ZeroAuthorization`.
+  - `reclaim` reverts `BeforeAuthorizationExpiry` until `authorizationExpiry`, reverts `InvalidSender` for the operator, and pays the payer from `authorizationExpiry` on; `capture` reverts `AfterAuthorizationExpiry` from that same second.
+  - Expiry ordering rule (W1, for the `preApprovalExpiry` [Pending] in §2): `block.timestamp < preApprovalExpiry ≤ authorizationExpiry ≤ refundExpiry`, otherwise `AfterPreApprovalExpiry` or `InvalidExpiries`; equality is accepted. The value for Tasks is still the team's choice.
+  - Not covered by AC0 (EOA operator here): a contract operator and ERC-3009 relayed through `TaskPolicy`, the two "Blocked when" conditions; M1-AC1 covers them.
 - Gas table: [Pending]
 - `maxLeavesPerRoot`: [Pending]
 - Base Sepolia deployment addresses and INT-02-contracts tx hashes: [Pending]
