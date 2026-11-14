@@ -38,7 +38,7 @@ Una observación `accepted` (pasó verificación) no es lo mismo que una observa
 
 | Alcance | Qué es | Este PRD |
 |---|---|---|
-| **Demo de hackathon** | Modo A y Modo B de punta a punta en Celo Sepolia, con USDC de testnet, tickets del equipo, extracción con LLM de visión, revisión manual, ledger interno y pagos de recompensa de prueba. Un tesoro de tareas en testnet con custodia temporal | **Es lo que especifica** |
+| **Demo de hackathon** | Modo A y Modo B de punta a punta en Base Sepolia, con USDC de testnet, tickets del equipo, extracción con LLM de visión, revisión manual, ledger interno y pagos de recompensa de prueba. Un tesoro de tareas en testnet con custodia temporal | **Es lo que especifica** |
 | **Protocolo objetivo** | Presupuestos retenidos sin custodia propia, verificación por capas (L0–L3), umbrales de privacidad, distribución por registries x402 y MCP | Lo describen los docs 04 y 16; acá solo se referencia |
 | **Piloto real** | Una zona chica, pocas categorías, compradores y contribuyentes reales, fondos reales con topes | Condicionado; ver "Condiciones para un piloto real" |
 
@@ -70,7 +70,7 @@ La demo no prueba que existan compradores dispuestos a pagar, ni que la verifica
 **Precisiones de implementación para la demo** (no modifican los criterios anteriores):
 
 - **P0-01:** cada `DataProduct` expone cobertura (geografía, comercios, categorías), antigüedad o frescura, origen, nivel de verificación mínimo (L0–L3), cantidad de observaciones y de contribuyentes, licencia de uso y precio. La consulta de cobertura es gratuita.
-- **P0-02 y P0-04:** pago con x402 `exact` en Celo Sepolia a través del facilitator de testnet (`https://api.x402.sepolia.celo.org`, solo USDC). `exact` es un pago directo, **no un escrow**: en la demo el presupuesto del encargo queda en un tesoro de tareas en testnet y el límite lo hace cumplir el ledger interno.
+- **P0-02 y P0-04:** pago con x402 `exact` en Base Sepolia (`eip155:84532`, USDC) a través del facilitator de testnet (`https://x402.org/facilitator`, sin API key; ver [ADR 0003](adr/0003-red-de-pagos-base.md)). `exact` es un pago directo, **no un escrow**: en la demo el presupuesto del encargo queda en un tesoro de tareas en testnet y el límite lo hace cumplir el ledger interno.
 - **P0-06:** extracción con LLM de visión contrastada con el total del QR fiscal de ARCA; dedupe por clave fiscal, `sha256` y `pHash`; los casos dudosos van a revisión manual.
 - **P0-07:** en la demo, la recompensa es un pago único al aceptar la observación, enviado en lote con USDC de testnet. Es un mecanismo distinto del cobro x402 (salida de fondos hacia contribuyentes frente a entrada de pagos de agentes).
 - **P0-08:** el resultado declara nivel de verificación, cantidad de observaciones y contribuyentes, período y supresiones aplicadas.
@@ -88,7 +88,7 @@ La demo no prueba que existan compradores dispuestos a pagar, ni que la verifica
 | P2-02 | Prueba de humano (World ID) y controles anti-sybil más fuertes | P2 |
 | P2-03 | Reparto de ingresos por ventas posteriores (regalías): requiere ledger de atribución, términos de licencia y reglas de distribución que no están diseñados | P2 |
 | P2-04 | Fotos de góndola y otros tipos de observación | P2 |
-| P2-05 | Integración con MiniPay y otras redes | P2 |
+| P2-05 | Otras redes detrás de `PaymentRail` (Solana; Celo con MiniPay y monedas locales) | P2 |
 | P2-06 | zkTLS de facturas web (experimento opcional, doc 15) | P2 |
 | P2-07 | Sistema avanzado de recompensas (niveles, bonos, reputación) | P2 |
 
@@ -188,7 +188,7 @@ Todas las pantallas y respuestas llevan la marca **«DEMO — TESTNET, SIN DINER
 
 ## Criterios de éxito de la demo
 
-- Modo A y Modo B corren de punta a punta en Celo Sepolia con el cliente automático, sin intervención manual salvo la revisión.
+- Modo A y Modo B corren de punta a punta en Base Sepolia con el cliente automático, sin intervención manual salvo la revisión.
 - Los escenarios E1 a E6 se muestran y dan el resultado esperado.
 - El ledger cuadra al final de la demo y ningún presupuesto se excede.
 - El comprador no recibe imágenes, observaciones individuales ni identificadores de contribuyentes.

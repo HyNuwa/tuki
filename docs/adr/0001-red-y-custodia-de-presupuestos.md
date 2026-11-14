@@ -1,6 +1,6 @@
 # ADR 0001 — Red principal y custodia de presupuestos de tareas
 
-**Estado:** propuesta pendiente. No aprobada para fondos reales.
+**Estado:** propuesta pendiente. No aprobada para fondos reales. **La decisión de red quedó reemplazada por el [ADR 0003](0003-red-de-pagos-base.md) (2026-11-13): Base es la red de pagos del MVP.** La parte de custodia de presupuestos (tesoro con topes en la demo, `auth-capture` como objetivo) sigue vigente; donde este ADR dice Celo Sepolia para la demo, rige Base Sepolia.
 **Fecha:** 2026-11-12
 **Contexto relacionado:** [doc 04](../04-arquitectura-tecnica.md) (decisiones abiertas), [doc 15](../15-stack-tecnologico.md) (spikes S1, S2, S6), [doc 16](../16-modelo-seguridad-verificacion-pagos.md) (§4 flujo de fondos).
 
@@ -42,4 +42,6 @@ Precedente de la opción C: un informe externo afirma que Loopuman y Agentic Eye
 
 ## Pendiente
 
-Spike S0 (pago `exact` de punta a punta con el facilitator de testnet) antes de congelar el stack. Después del hackathon: S1 (`auth-capture` en Base Sepolia), S2 (despliegue en Celo Sepolia) y S6 (MiniPay en Argentina), más una revisión legal de la custodia temporal antes de manejar fondos reales.
+> **Actualización (ADR 0003):** `AuthCaptureEscrow` ya está desplegado en Base y Base Sepolia, así que el spike S1 (`auth-capture` en Base Sepolia) corre ahora sobre la red principal, y el spike S2 (desplegar commerce-payments en Celo Sepolia) ya no es necesario. El spike S6 (MiniPay) queda despriorizado: solo vuelve a importar si se reactiva Celo. Las opciones B y C de arriba se conservan como registro histórico.
+
+Texto original: spike S0 (pago `exact` de punta a punta con el facilitator de testnet) antes de congelar el stack. Después del hackathon: S1 (`auth-capture` en Base Sepolia), S2 (despliegue en Celo Sepolia) y S6 (MiniPay en Argentina), más una revisión legal de la custodia temporal antes de manejar fondos reales.

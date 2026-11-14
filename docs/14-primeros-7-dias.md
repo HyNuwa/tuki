@@ -6,8 +6,8 @@
 
 **Límites de la semana:**
 
-- Todo corre en Celo Sepolia o en local, con USDC de testnet. Sin fondos reales ni contribuyentes externos: solo tickets del equipo.
-- Pagos con x402 `exact` a través del facilitator de testnet `https://api.x402.sepolia.celo.org` (solo USDC `0x01C5C0122039549AD1493B8220cABEdD739BC44E`, red `eip155:11142220`). Requiere `X402_API_KEY` creada en `https://x402.celo.org`. `exact` no es un escrow.
+- Todo corre en Base Sepolia o en local, con USDC de testnet. Sin fondos reales ni contribuyentes externos: solo tickets del equipo.
+- Pagos con x402 `exact` a través del facilitator de testnet `https://x402.org/facilitator` (USDC `0x036CbD53842c5426634e7929541eC2318f3dCF7e`, red `eip155:84532`, Base Sepolia). No requiere API key. USDC de testnet desde `https://faucet.circle.com/` (Base Sepolia); transacciones en `https://sepolia.basescan.org`. `exact` no es un escrow. Ver [ADR 0003](adr/0003-red-de-pagos-base.md).
 - Fuera de la semana: `auth-capture`, World ID, MiniPay, otras redes, zkTLS, regalías y recompensas avanzadas.
 - El código es de demo; se reescribe lo que haga falta si hay piloto.
 
@@ -29,16 +29,16 @@ Revisión del usuario (cita textual):
 
 ## Día 1: congelar PRD, vertical inicial y contratos de datos
 
-- Leer los docs [03](03-prd-mvp.md), [04](04-arquitectura-tecnica.md), [15](15-stack-tecnologico.md) y [16](16-modelo-seguridad-verificacion-pagos.md), y los ADR [0001](adr/0001-red-y-custodia-de-presupuestos.md) y [0002](adr/0002-verificacion-de-observaciones.md). Anotar desacuerdos.
+- Leer los docs [03](03-prd-mvp.md), [04](04-arquitectura-tecnica.md), [15](15-stack-tecnologico.md) y [16](16-modelo-seguridad-verificacion-pagos.md), y los ADR [0001](adr/0001-red-y-custodia-de-presupuestos.md), [0002](adr/0002-verificacion-de-observaciones.md) y [0003](adr/0003-red-de-pagos-base.md). Anotar desacuerdos.
 - Elegir la vertical inicial: categorías (por ejemplo, almacén básico: leche, yerba, aceite), zona y tipos de comercio.
 - Congelar el contrato de `DataProduct`: cobertura, antigüedad, origen, nivel de verificación, cantidad de observaciones y contribuyentes, licencia y precio.
 - Congelar el contrato de `Task`: requisitos, presupuesto, vencimiento, umbral k, tope por contribuyente y regla de reembolso para encargos incompletos.
 - Esquema inicial en PostgreSQL y esqueleto del monolito TypeScript con Hono.
-- Crear la `X402_API_KEY` de testnet y comprobar `GET /supported` del facilitator.
+- Comprobar `GET https://x402.org/facilitator/supported` y fondear con USDC de testnet las wallets del cliente y del tesoro desde el faucet de Circle.
 - Asignar responsables: API y pagos, ingesta y extracción, ledger y recompensas, cliente automático y demo, validación con compradores.
 
 **Entregable:** PRD congelado por una semana, contratos de API escritos (OpenAPI), vertical elegida y responsables.
-**Chequeo:** el facilitator responde con `exact` en `eip155:11142220` usando nuestra clave.
+**Chequeo:** el facilitator responde con `exact` en `eip155:84532`.
 
 ## Día 2: API de cobertura y catálogo
 
@@ -68,10 +68,10 @@ Revisión del usuario (cita textual):
 - Integrar `@x402/hono` en el endpoint pago del agregado.
 - Flujo: pedido → `402 Payment Required` → firma del cliente → verificación y liquidación vía facilitator → agregado con metadatos de calidad.
 - Si la cobertura es insuficiente, responder con error antes de liquidar.
-- Usar `payment-identifier` para que un reintento no cobre dos veces.
+- Usar una clave idempotente (`payment-identifier`) con restricción única en nuestro servidor para que un reintento no cobre dos veces; el facilitator de testnet no anuncia esa extensión, así que la garantía es nuestra.
 - Registrar el cobro en el ledger interno.
 
-**Entregable:** el cliente automático compra un agregado de punta a punta en Celo Sepolia.
+**Entregable:** el cliente automático compra un agregado de punta a punta en Base Sepolia.
 **Chequeo:** una compra sin cobertura no se cobra; un reintento con el mismo identificador no se cobra dos veces.
 
 ## Día 5: flujo de encargo y recepción de observaciones (Modo B)

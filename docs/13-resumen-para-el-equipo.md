@@ -1,6 +1,6 @@
 # 13 — Resumen para el equipo
 
-**Estado: propuesta de startup para validar, no compañía operativa. Actualizado: 12 de noviembre de 2026.** Sin código, sin usuarios reales y sin dinero real. **La arquitectura no está aprobada para fondos reales.**
+**Estado: propuesta de startup para validar, no compañía operativa. Actualizado: 13 de noviembre de 2026 (red de pagos: Base, [ADR 0003](adr/0003-red-de-pagos-base.md)).** Sin código, sin usuarios reales y sin dinero real. **La arquitectura no está aprobada para fondos reales.**
 
 **Cambio de dirección:** la propuesta anterior (pagar QR argentinos con USDC mediante una red RFQ de payment solvers) quedó archivada en el tag `archive/qr-usdc-rfq`. La dirección actual es un marketplace de datos del mundo real para agentes de IA.
 
@@ -28,7 +28,7 @@ No afirmamos ser los primeros ni que exista demanda validada para nuestra implem
 
 | | Qué es | Estado |
 |---|---|---|
-| **Demo de hackathon** | Modo A y Modo B en Celo Sepolia con USDC de testnet, tickets del equipo, cliente automático sin LLM, tesoro de tareas con custodia temporal | Es lo que vamos a construir primero |
+| **Demo de hackathon** | Modo A y Modo B en Base Sepolia con USDC de testnet, tickets del equipo, cliente automático sin LLM, tesoro de tareas con custodia temporal | Es lo que vamos a construir primero |
 | **Protocolo objetivo** | Presupuestos sin custodia propia, verificación por capas, umbrales de privacidad, distribución por registries x402 y MCP | Diseño en los docs 04 y 16 |
 | **Piloto real** | Una zona chica, compradores y contribuyentes reales, fondos reales con topes | Condicionado a compradores comprometidos, revisión legal y de seguridad. Nada de eso está resuelto |
 
@@ -36,8 +36,8 @@ No afirmamos ser los primeros ni que exista demanda validada para nuestra implem
 
 - Un escrow nuevo ni `auth-capture`: queda como experimento separado. x402 `exact` no es un escrow.
 - World ID ni prueba de humano.
-- Integración con MiniPay.
-- Varias redes: solo Celo Sepolia en la demo.
+- Integración con MiniPay (wallet de Celo; solo si se reactiva Celo).
+- Varias redes: solo Base Sepolia en la demo. La arquitectura admite otras redes (Solana como expansión si aparecen compradores allí, Celo si hay una ventaja comercial concreta en LatAm), pero se activa una sola.
 - zkTLS.
 - Reparto de ingresos (regalías) a contribuyentes por ventas posteriores: en la demo la recompensa es un pago único al aceptar la observación.
 - Un sistema avanzado de recompensas.

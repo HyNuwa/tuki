@@ -50,7 +50,7 @@ No hay que presentar uno como si fuera otro.
 
 | Alcance | Qué incluye | Qué no |
 |---|---|---|
-| **Demo de hackathon** | API con x402 `exact` en Celo Sepolia (solo USDC de testnet) vía el facilitator de testnet; servidor MCP; catálogo de productos de datos con contrato legible por agentes; una tarea encargada de punta a punta con 10–30 tickets reales del equipo; extracción con LLM de visión; revisión manual; tesoro de tareas en testnet + ledger interno con reembolso del sobrante [Simulado]; pago de recompensas de prueba en lote; un cliente automático simple (sin LLM) | Fondos reales, contribuyentes externos, escrow nuevo o `auth-capture`, World ID, integración con MiniPay, varias redes, zkTLS, reparto de ingresos, sistema avanzado de recompensas, anti-fraude fuerte, garantías legales |
+| **Demo de hackathon** | API con x402 `exact` en Base Sepolia (`eip155:84532`, USDC de testnet) vía el facilitator de testnet (`https://x402.org/facilitator`); servidor MCP; catálogo de productos de datos con contrato legible por agentes; una tarea encargada de punta a punta con 10–30 tickets reales del equipo; extracción con LLM de visión; revisión manual; tesoro de tareas en testnet + ledger interno con reembolso del sobrante [Simulado]; pago de recompensas de prueba en lote; un cliente automático simple (sin LLM) | Fondos reales, contribuyentes externos, escrow nuevo o `auth-capture`, World ID, integración con MiniPay, varias redes, zkTLS, reparto de ingresos, sistema avanzado de recompensas, anti-fraude fuerte, garantías legales |
 | **Protocolo objetivo** | Presupuesto de tareas retenido en escrow (`auth-capture`, si el experimento lo aprueba), captura al entregar y `void` del sobrante; verificación por capas (QR fiscal, constatación ARCA, consenso, dedupe, prueba de humano); agregados con umbrales de privacidad; distribución por Bazaar, agent402.tools y MCP | Todavía no existe: es el diseño de estos documentos |
 | **Piloto real** | Una zona chica (por ejemplo, Jujuy capital), pocas categorías, topes por tarea y por contribuyente, fondos reales | Solo si se cumplen las condiciones del doc 16, §10: revisión legal (datos personales, custodia, impuestos), spikes aprobados, consentimiento y registro de la base de datos |
 
@@ -61,8 +61,8 @@ No hay que presentar uno como si fuera otro.
 ```text
 GET /v1/products?category=...&zone=...   (gratis: catálogo con el contrato de cada DataProduct)
 → GET /v1/coverage?ean=...&zone=...        (gratis: ¿hay datos suficientes para esa celda?)
-→ GET /v1/prices?ean=...&zone=...&from=... → 402 PAYMENT-REQUIRED (exact, USDC, Celo Sepolia)
-→ el agente firma (EIP-3009) con `payment-identifier` → facilitator verifica → handler arma el agregado → settle → 200 + agregado
+→ GET /v1/prices?ean=...&zone=...&from=... → 402 PAYMENT-REQUIRED (exact, USDC, Base Sepolia)
+→ el agente firma (EIP-3009) con una clave idempotente (`payment-identifier`) → facilitator verifica → handler arma el agregado → settle → 200 + agregado
 ```
 
 **Modo B — encargar nuevos datos**
@@ -112,7 +112,7 @@ En el protocolo objetivo el `POST /v1/tasks` podría usar `auth-capture` en luga
  └──────────────┬───────────────┘        └──────┬──────────────────────┘
                 ▼                               ▼
         ┌───────────────┐        ┌──────────────────────────────────────────┐
-        │ PostgreSQL    │        │ Rieles: facilitator x402 (Celo), escrow  │
+        │ PostgreSQL    │        │ Rieles: facilitator x402 (Base), escrow  │
         │ (dominio,     │        │ auth-capture (experimento), Safe+Disperse│
         │  ledger)      │        │ para lotes de recompensas                │
         └───────────────┘        └──────────────────────────────────────────┘
@@ -126,14 +126,14 @@ En el protocolo objetivo el `POST /v1/tasks` podría usar `auth-capture` en luga
 | Componente | Responsabilidad | Nuestro control | Tercero |
 |---|---|---|---|
 | Agent API + MCP | Endpoints pagos y gratuitos, esquema OpenAPI, extensión `bazaar` en el 402, tools MCP pagas | Sí | Especificación x402 v2, facilitator |
-| Middleware x402 | Emitir `PAYMENT-REQUIRED`, verificar y liquidar vía facilitator | Integración (`@x402/*`) | Facilitator de Celo (`exact`); facilitator propio o de terceros para `auth-capture` [Pendiente] |
+| Middleware x402 | Emitir `PAYMENT-REQUIRED`, verificar y liquidar vía facilitator | Integración (`@x402/*`) | Facilitator de testnet `https://x402.org/facilitator` (`exact`, Base Sepolia); facilitator de CDP en mainnet; facilitator propio o de terceros para `auth-capture` [Pendiente] |
 | Task engine | Cotizar, abrir, cupos por comercio y día, criterios de aceptación, vencimiento, cierre y sobrante | Sí | — |
-| Contributor API y app | Registro, consentimiento y licencia, tareas cercanas, envío, estado, cobro, retiro del consentimiento | Sí | Navegador (MiniPay como experimento opcional) |
+| Contributor API y app | Registro, consentimiento y licencia, tareas cercanas, envío, estado, cobro, retiro del consentimiento | Sí | Navegador con wallet embebida |
 | Pipeline de ingesta | Screening, decodificación del QR fiscal, extracción, normalización, dedupe, verificación, cola de revisión | Sí | LLM de visión; constatación ARCA |
 | Revisión manual | Resolver casos dudosos con evidencia visible solo para el revisor | Sí (operación) | — |
 | Aggregation & privacy | Calcular agregados con umbrales mínimos, supresión y redondeo | Sí | — |
 | Ledger | Asientos de doble entrada: presupuestos, cobros de lo entregado, recompensas, reserva de garantía, fee, créditos y reembolsos | Sí | — |
-| Payout service | Armar lotes idempotentes y enviarlos desde el tesoro de recompensas | Sí; Safe multifirma | Safe, Disperse en Celo |
+| Payout service | Armar lotes idempotentes y enviarlos desde el tesoro de recompensas | Sí; Safe multifirma | Safe en Base [Inferencia]; Disperse en Base [Pendiente], o MultiSendCallOnly |
 | Catálogo de productos de datos | Publicar cada `DataProduct` con su contrato (cobertura, antigüedad, origen, verificación, cantidades, licencia, precio) | Sí | — |
 | Escrow de presupuestos | Retener presupuesto, `capture` al entregar, `void` del sobrante, `reclaim` del agente | No | `AuthCaptureEscrow` (Base Commerce Payments); experimento separado, fuera del hackathon |
 | Object storage | Imágenes cifradas, acceso por URL firmada, borrado programado | Configuración | Proveedor S3-compatible (R2 o Supabase Storage). Filecoin: NO-GO para imágenes; procedencia de evidencias en [Spike / Pendiente: S8] |
@@ -438,17 +438,17 @@ type ObservationAssurance = {
 - Dedupe fiscal: `(cuit, ptoVta, tipoCmp, nroCmp)` del QR fiscal es único en todo el sistema. Un mismo comprobante no se acepta dos veces, ni en tareas distintas.
 - Dedupe de imagen: `sha256` exacto y `pHash` con distancia de Hamming bajo umbral, en ventana por comercio y fecha (doc 16, §3).
 - La recompensa se calcula una sola vez por observación aceptada; la clave de idempotencia del payout deriva de los `observationId`.
-- Cada pago x402 guarda su `payment-identifier` con restricción única; un reintento con el mismo identificador devuelve el resultado ya pagado sin volver a cobrar (doc 16, §5.3).
+- Cada pago x402 guarda su clave idempotente con restricción única; un reintento con la misma clave devuelve el resultado ya pagado sin volver a cobrar (doc 16, §5.3). El facilitator de testnet de Base no anuncia la extensión `payment-identifier`, así que la garantía la da nuestro servidor.
 - Del JSON del QR fiscal se descartan `tipoDocRec` y `nroDocRec` (documento del comprador) antes de persistir.
 - Logs sin imágenes, sin URL firmadas y sin el payload completo del QR.
 - Callbacks y webhooks a agentes firmados con HMAC y protegidos contra repetición.
 
 ## Evolución
 
-1. Hackathon: modo A y modo B en Celo Sepolia con el facilitator de testnet, contribuyentes del equipo, revisión manual, cliente automático simple.
-2. Spikes y experimentos separados: `auth-capture` (Base Sepolia o despliegue en Celo), constatación ARCA, extracción con 100 tickets argentinos, prueba de humano (MeID en S7; World ID en S5), MiniPay.
+1. Hackathon: modo A y modo B en Base Sepolia con el facilitator de testnet, contribuyentes del equipo, revisión manual, cliente automático simple.
+2. Spikes y experimentos separados: `auth-capture` en Base Sepolia (S1), constatación ARCA, extracción con 100 tickets argentinos, prueba de humano (MeID en S7; World ID en S5).
 3. Piloto: una zona, pocas categorías, topes, fondos reales solo con el doc 16, §10 cerrado.
-4. Segundo riel: oferta en Base para entrar al índice de Coinbase (Bazaar) si la demanda de agentes lo justifica.
+4. Segunda red detrás de `PaymentRail`: Solana si aparecen compradores allí, o Celo si hay una ventaja comercial concreta en LatAm (monedas locales, MiniPay). Se prioriza la red donde ya operen los primeros proveedores y agentes compradores ([ADR 0003](adr/0003-red-de-pagos-base.md)).
 5. Verificación más fuerte (zkTLS de facturas web, C2PA, atestación de dispositivo) solo si el fraude medido lo exige.
 6. Procedencia de evidencias [Spike / Pendiente: S8]: recibo firmado con `evidenceRoot` por agregado (campos propuestos: `evidenceDigest` y `keyId` en `MediaRef`, `leafSalt` en `Observation`, `evidenceRoot` en `DataProduct`). Filecoin solo como posible almacén de agregados o raíces, nunca de tickets. Ver [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md).
 7. Mapeo a roles estándar [Pendiente]: Client (empresa o su agente) → Provider (la plataforma) → Evaluator (motor determinístico de quórum y calidad), según ERC-8183 [Pendiente: fuente externa no verificada]. Como referencia de escrow `auth-capture` se puede estudiar x402r / Execution Market (su SDK figura en beta) [Pendiente: fuente externa no verificada]; no se adopta sin auditoría propia.
@@ -459,7 +459,7 @@ type ObservationAssurance = {
 
 **Decididas para la demo** (no son decisiones de producción):
 
-- **Red:** Celo Sepolia para la demo; Base queda como alternativa para la evolución (escrow `auth-capture`, índice de Coinbase).
+- **Red (2026-11-13):** Base Sepolia para la demo y Base para un piloto, con una sola red activa detrás de `PaymentRail`; el almacenamiento del dato sigue separado de la red de pago. Solana como expansión y Celo como alternativa. Ver [ADR 0003](adr/0003-red-de-pagos-base.md), que reemplaza la parte de red del [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md).
 - **Reserva de garantía:** porcentaje provisional para testnet; se define después con escenarios de pérdidas (doc 16, §4.3).
 - **Umbrales k y m:** k = 5 y m = 3 son valores experimentales; se prueban en privacidad y viabilidad antes de vender resultados.
 - **Exclusividad y reventa:** desactivar inicialmente la reventa de datos encargados hasta fijar las licencias (licencia por defecto `task_only`, reutilización en el pool desactivada).
@@ -468,16 +468,15 @@ type ObservationAssurance = {
 
 **Siguen abiertas:**
 
-- **Red principal después de la demo:** Celo (wARS, facilitator con gas patrocinado, MiniPay, lotes baratos) frente a Base (escrow ya desplegado, índice de Coinbase). La recomendación es Celo para la demo y el escrow como experimento separado; ver doc 15 y [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md).
-- **Escrow de presupuestos:** desplegar `AuthCaptureEscrow` en Celo, operar los encargos en Base, o mantener el tesoro con custodia y topes. Ver doc 16, §4.
+- **Segunda red:** cuál activar si el criterio del [ADR 0003](adr/0003-red-de-pagos-base.md) lo pide: Solana si los compradores están allí, o Celo (monedas locales, MiniPay) si hay una ventaja comercial concreta en LatAm. El volumen de transacciones de una red no cuenta como demanda comercial.
+- **Escrow de presupuestos:** usar `AuthCaptureEscrow`, ya desplegado en Base (spike S1), o mantener el tesoro con custodia y topes. Ver doc 16, §4.
 - **Monetización del pool:** pago único al aceptar (demo) frente a reparto de ingresos (futuro); exclusividad de los encargos y su precio una vez definidas las licencias (doc 16, §7.2).
 - **Reserva de garantía (valor definitivo):** porcentaje del precio y saldo mínimo para cubrir recompensas de encargos no entregados (doc 16, §4.3).
 - **Verificación vendida como "verificada":** niveles mínimos por producto; ver [ADR 0002](adr/0002-verificacion-de-observaciones.md).
 - **Receptor de capturas:** el `receiver` de `auth-capture` es una sola dirección. Las recompensas pasan por un tesoro nuestro (custodia en tránsito) o por un contrato distribuidor. Sin decidir.
 - **Proveedor de prueba de humano:** zkMe MeID es el candidato prioritario a validar, no una integración aprobada. Antes de adoptarlo, el spike S7 tiene que mostrar unicidad entre cuentas y wallets de nuestra app; hoy el SDK solo devuelve un booleano `isGrant`, sin identificador por app, firma, vencimiento ni revocación. También faltan el precio confirmado por escrito, un DPA y saber retención y país de almacenamiento. Si falla, MeID solo aporta `humanityVerified`. Ver [informe](../agent-data-marketplace/identity/meid-proof-of-personhood.md).
 - **Procedencia de evidencias:** recibo firmado con `evidenceRoot` sobre almacenamiento privado frente a sumar Filecoin para agregados o raíces. Ver spike S8 y [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md).
-- **Token de recompensa:** USDC/USDT en Celo (MiniPay exige USDT y no admite wARS) frente a wARS fuera de MiniPay.
+- **Token de recompensa:** USDC en Base. Las recompensas en wARS u otras monedas locales solo existen en Celo y dependen de reactivar esa red. Costo de los lotes en Base [Pendiente].
 - **Precio por tipo de observación:** ticket existente frente a visita encargada (ver pricing).
 - **Umbrales k y m definitivos** y política de supresión (doc 16, §7).
-- **App del contribuyente:** MiniApp de MiniPay frente a app nativa (necesaria para atestación de dispositivo y C2PA).
-- **Disponibilidad de MiniPay en Argentina** [Pendiente].
+- **App del contribuyente:** PWA con wallet embebida frente a app nativa (necesaria para atestación de dispositivo y C2PA). MiniPay (wallet de Celo, spike S6) queda despriorizado y solo vuelve si se reactiva Celo.

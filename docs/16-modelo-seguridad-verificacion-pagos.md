@@ -54,7 +54,7 @@
 | R3 | Extracción errónea del LLM (precio inventado) | **Agente** | Controles determinísticos (suma = total = QR), confianza calibrada, revisión manual | Spike S3 |
 | R4 | Reidentificación del contribuyente o del comercio por consultas finas | **Contribuyente**, **comercio**; legal: **plataforma** | Umbrales k, supresión, sin observaciones crudas (§7) | [Diseño] |
 | R5 | Tesoro de tareas comprometido (demo y piloto sin escrow) | **Agentes** con presupuesto abierto | Safe multifirma, topes por tarea y totales, escrow como objetivo | [Diseño] |
-| R6 | Bug en `AuthCaptureEscrow` o en su despliegue en Celo | Agente o plataforma | Código de terceros con auditorías publicadas; spike; sin fondos reales hasta revisarlo | [Pendiente] |
+| R6 | Bug en `AuthCaptureEscrow` (desplegado en Base) | Agente o plataforma | Código de terceros con auditorías publicadas; spike; sin fondos reales hasta revisarlo | [Pendiente] |
 | R7 | Payout duplicado o perdido | **Plataforma** (duplicado), **contribuyente** (perdido) | Idempotencia por `observationId`, conciliación antes de reintentar | [Diseño] |
 | R8 | El emisor pausa USDC/USDT o bloquea una dirección | Quien tenga fondos en tránsito | Ninguna; riesgo del emisor | [Pendiente] |
 | R9 | Regulación: retener fondos de agentes y pagar a terceros puede requerir licencia; recompensas con efecto impositivo | **Plataforma** | Escrow no custodial, topes, revisión legal antes del piloto | [Pendiente] |
@@ -119,7 +119,7 @@ No son el mismo riel ni comparten cuentas del ledger.
 | | Cobro x402 (entrada) | Recompensa en stablecoins (salida) |
 |---|---|---|
 | Dirección | Agente → plataforma | Plataforma → contribuyente |
-| Mecanismo | x402 `exact`: el agente firma (EIP-3009), el facilitator verifica y liquida | Transferencia en lote desde un Safe o una hot wallet (Disperse/MultiSend); **no** usa x402 ni facilitator |
+| Mecanismo | x402 `exact`: el agente firma (EIP-3009), el facilitator verifica y liquida | Transferencia en lote desde un Safe o una hot wallet (Disperse/MultiSend; Safe en Base [Inferencia], Disperse en Base [Pendiente]); **no** usa x402 ni facilitator |
 | Disparador | Una consulta paga (modo A) o la financiación de un encargo (modo B) | Una observación `accepted` |
 | Reversibilidad | Liquidado = irreversible; la corrección es un reembolso o crédito nuestro | Irreversible; sin clawback |
 | Cuentas del ledger | `agent.paid`, `task.held`, `task.charged`, `agent.credit` | `contributor.owed`, `contributor.paid`, `reserve.used` |
@@ -145,7 +145,7 @@ Agente ──x402 exact (presupuesto B)──► Tesoro de tareas (Safe, testnet
 
 ### 4.2 Objetivo: escrow con `auth-capture` (experimento separado)
 
-Queda fuera del hackathon y como spike hasta demostrar que el flujo funciona (doc 15, S1/S2).
+Queda fuera del hackathon y como spike hasta demostrar que el flujo funciona (doc 15, S1). Con Base como red principal ([ADR 0003](adr/0003-red-de-pagos-base.md)), el escrow ya desplegado se usa directamente y el despliegue en Celo (S2) deja de ser necesario.
 
 ```text
 Agente ──firma authorize (máx. = B, captureDeadline, refundDeadline)──► AuthCaptureEscrow
@@ -213,7 +213,7 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 | Modo B: encargo financiado y la plataforma no puede operarlo (pipeline caído, zona sin cobertura descubierta después) | Presupuesto retenido sin trabajo posible | Cancelación por la plataforma y reembolso del 100 % menos lo ya entregado |
 | Pago duplicado (mismo `payment-identifier` liquidado dos veces o dos pagos para el mismo encargo) | Cobro de más | Reembolso del duplicado; la conciliación compara pagos liquidados contra `payment-identifier` |
 
-- La extensión `payment-identifier` figura en `GET /supported` del facilitator de testnet [Verificado en fuente: `https://api.x402.sepolia.celo.org/supported`, 2026-11-12]. Cada pago guarda su identificador con restricción única.
+- La extensión `payment-identifier` **no** figura en `GET /supported` del facilitator de testnet de Base [Verificado en fuente: `https://x402.org/facilitator/supported`, 2026-11-13] (sí figuraba en el de Celo Sepolia, donde se validó S0). La protección contra cobro doble no depende del facilitator: cada pago guarda su identificador (clave idempotente) con restricción única en nuestro servidor. Soporte en el facilitator de CDP para mainnet [Pendiente].
 - Un reembolso o crédito es una salida nuestra, no una reversión del pago x402: `exact` no tiene `refund`.
 
 ## 6. Disputas
@@ -241,7 +241,7 @@ La regla se publica en `POST /v1/tasks/quote` y forma parte de lo que el agente 
 | Ataque de diferencia | Celdas fijas, presupuesto de consultas y chequeo de solapamiento (§7.3); privacidad diferencial como experimento | [Diseño] |
 | Nada onchain | Ni imágenes, ni hashes de imágenes, ni direcciones de contribuyentes junto a datos de compra | [Diseño] |
 | Registro de la base | Inscripción ante la autoridad de aplicación si corresponde | [Pendiente] |
-| Procedencia de evidencias | Cada observación aceptada genera una hoja con sal `H(sal ‖ evidenceDigest ‖ observationId ‖ nivel ‖ extractionHash)`; cada agregado publica un `evidenceRoot` (Merkle) en un recibo firmado dentro de un log append-only; opcionalmente se ancla la cabeza del log en Celo. El comprador ve solo el recibo; un auditor autorizado verifica una muestra con acceso temporal y registrado | [Spike / Pendiente]: S8 |
+| Procedencia de evidencias | Cada observación aceptada genera una hoja con sal `H(sal ‖ evidenceDigest ‖ observationId ‖ nivel ‖ extractionHash)`; cada agregado publica un `evidenceRoot` (Merkle) en un recibo firmado dentro de un log append-only; opcionalmente se ancla la cabeza del log en la red de pagos activa (Base). El comprador ve solo el recibo; un auditor autorizado verifica una muestra con acceso temporal y registrado | [Spike / Pendiente]: S8 |
 | Filecoin para evidencias | **NO-GO para imágenes de tickets:** el PieceCID, el tamaño y la wallet que paga quedan públicos por ticket (contradice "Nada onchain"), el texto cifrado puede ser recuperable públicamente, el control de acceso figura como "Coming soon" y no está documentado el borrado físico. Solo se evalúa para agregados ya vendidos o raíces de compromisos | [Spike / Pendiente]: S8; ver [informe](../agent-data-marketplace/evidence-storage/filecoin-evidence-provenance.md) |
 
 **Filecoin prueba conservación e integridad de datos, no que una compra haya sucedido ni que el ticket pertenezca al colaborador.** Tampoco garantiza recuperación ni disponibilidad.
@@ -304,22 +304,22 @@ Un agente (o varios coordinados) puede pedir dos agregados casi iguales y restar
 | Operador de escrow | Cuenta que el facilitator usa como `captureAuthorizer` | `capture`, `void`, `refund` dentro del máximo firmado | Capturar más que el máximo; mover fondos de otra tarea |
 | Tesoro de tareas (demo) / tesoro de recompensas | Safe multifirma (2 de 3) | Pagar lotes y reembolsos | — (riesgo R5 si se comprometen las firmas) |
 | Hot wallet de payouts | EOA con saldo limitado, recargada desde el Safe | Enviar lotes pequeños | Superar su saldo |
-| Facilitator x402 | Clave de API (solo servidor) | Verificar y liquidar pagos | Custodiar fondos (`exact`) |
+| Facilitator x402 | Sin clave en testnet (`https://x402.org/facilitator`); API key ID y secret de CDP en mainnet (solo servidor) | Verificar y liquidar pagos | Custodiar fondos (`exact`) |
 | Revisor | Cuenta interna con 2FA | Ver imágenes enmascaradas, aceptar o rechazar | Descargar imágenes en masa; ver identidad del contribuyente |
-| Contribuyente | Wallet embebida o propia (MiniPay como experimento opcional) | Enviar, retirar consentimiento, cobrar | — |
+| Contribuyente | Wallet embebida o propia | Enviar, retirar consentimiento, cobrar | — |
 
 Las claves de API, del facilitator y de los revisores nunca llegan al navegador ni a la app.
 
 ## 10. Pendientes antes de manejar fondos reales
 
 1. Revisión legal: consentimiento y finalidad (Ley 25.326), registro de la base, alcance sobre comercios, custodia de fondos de agentes, tratamiento impositivo de recompensas.
-2. Spikes S1 y S2 (escrow) aprobados, o decisión explícita de operar con tesoro custodial, topes y respaldo legal.
+2. Spike S1 (escrow en Base) aprobado, o decisión explícita de operar con tesoro custodial, topes y respaldo legal.
 3. Spike S3 (extracción) con métricas sobre tickets reales argentinos.
 4. Spike S4 (constatación ARCA) para habilitar L2.
 5. Spike S7 (MeID) o S5 (World ID) aprobado con `uniquenessVerified` real entre cuentas y wallets, o alternativa anti-sybil aceptada.
 6. Umbrales de privacidad (k, m, granularidad) definidos y probados con ataques de diferencia (§7.3).
 7. Conciliación de payouts e invariantes I1–I14 con tests automáticos.
-8. Revisión de seguridad del despliegue de `AuthCaptureEscrow` en Celo, si se despliega.
+8. Revisión de seguridad de la integración con `AuthCaptureEscrow` en Base (despliegue de terceros, sin auditoría propia).
 9. Plazos de producción: `deadline`, `captureDeadline`, `refundDeadline`, retención de imágenes.
 10. Topes: presupuesto máximo por tarea, recompensa máxima por contribuyente y por día, saldo máximo de la hot wallet.
 11. Reserva de garantía de recompensas dimensionada y fondeada (§4.3).

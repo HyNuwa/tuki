@@ -98,7 +98,7 @@ Atributos que solo conoce el equipo fundador (experiencia, relaciones, acceso a 
 
 | Candidata | Tipo | A favor | En contra |
 |---|---|---|---|
-| **A. Marketplace de datos del mundo real para agentes de IA** | Nueva | Es la definición del usuario; único marco donde x402/MCP es ventaja; encaja con el ecosistema Celo y el hackathon | Sin compradores medidos; ancla precios en centavos; el mecanismo ya existe (Vangrid); crear categoría es caro |
+| **A. Marketplace de datos del mundo real para agentes de IA** | Nueva | Es la definición del usuario; único marco donde x402/MCP es ventaja; encaja con el ecosistema x402 en Base (Bazaar) y el hackathon | Sin compradores medidos; ancla precios en centavos; el mecanismo ya existe (Vangrid); crear categoría es caro |
 | **B. Inteligencia de precio pagado para el canal tradicional** | Subcategoría de price intelligence | Hace obvio el precio pagado; posiciona como complemento de Scanntech | Sin calificar choca con SEPA gratis; brecha lista vs. pagado no medida; esconde Modo B si no se agrega el formato encargo |
 | **C. Relevamiento de campo bajo demanda** (retail execution) | Existente | Presupuesto de trade existente; Modo B se entiende solo; ancla alta (€10.000 por ola) | El comprador espera reconocimiento de imágenes y KPI que no tenemos; esconde el precio pagado |
 
@@ -136,7 +136,7 @@ Todos los números son [Estimate] o [Assumption]. El comprador paga por **result
 
 **Reventa en Modo A.** Una observación se recompensa una sola vez al aceptarse; cada venta adicional del mismo agregado tiene costo marginal cercano a cero, siempre que la licencia de reutilización lo permita (doc 16). Ahí está la palanca de margen; las regalías a contribuyentes quedan como opción futura [Opinion]. Decisión para la demo: los datos encargados en Modo B **no se revenden** inicialmente (licencia por defecto `task_only`, ver [16](./16-modelo-seguridad-verificacion-pagos.md)) hasta fijar las licencias; la palanca aplica solo a datos aportados con licencia de reutilización.
 
-**Costos no incluidos [DATA GAP]:** costo del facilitador x402 en mainnet para pagos de ~US$0,75 (la demo usa el facilitador de testnet de Celo Sepolia con créditos gratuitos), costo de enviar recompensas en stablecoins, revisión manual, soporte y antifraude.
+**Costos no incluidos [DATA GAP]:** costo de enviar recompensas en stablecoins en Base [Pendiente], revisión manual, soporte y antifraude. El cobro del facilitador x402 en mainnet ya tiene precio publicado: con el facilitador de CDP en Base, las primeras 1.000 transacciones on-chain por mes son gratuitas y después cuestan US$0,001 cada una, frente a gas más 0,3 % del valor en el facilitador de Celo [Data, docs de CDP y x402.celo.org]. La demo usa el facilitador de testnet `https://x402.org/facilitator` en Base Sepolia, sin API key ([ADR 0003](./adr/0003-red-de-pagos-base.md)).
 
 ## Costo de adquisición de contribuyentes (hipótesis)
 
@@ -145,8 +145,8 @@ No hay ningún dato de costo de adquisición de contribuyentes en Argentina. Tod
 | Canal | Evidencia del canal | CAC hipotético por contribuyente activo | Riesgo |
 |---|---|---|---|
 | Equipo y círculo cercano (tickets del equipo para la demo) | — | ~US$0 en efectivo | No escala; sesgo de muestra |
-| Comunidades cripto y de stablecoins (Ripio, Lemon, MiniPay) | Ya tienen wallet y entienden recompensas en USDC [Assumption, gtm-analysis] | US$1-3 (bono de primera observación) | Contribuyentes mercenarios (patrón de puntos pre-token de Vangrid) |
-| Ecosistema Celo (talleres con Ripio, grants, hackathons) | Talleres "Stable Agents: LatAm", 2026-10-17 [Data] | US$0-2 (subsidiado por grants) | Audiencia de desarrolladores, no de compradores en almacenes |
+| Comunidades cripto y de stablecoins (Ripio, Lemon; MiniPay solo si se reactiva Celo) | Ya tienen wallet y entienden recompensas en USDC [Assumption, gtm-analysis] | US$1-3 (bono de primera observación) | Contribuyentes mercenarios (patrón de puntos pre-token de Vangrid) |
+| Ecosistema Celo (talleres con Ripio, grants, hackathons) | Talleres "Stable Agents: LatAm", 2026-10-17 [Data] | US$0-2 (subsidiado por grants) | Audiencia de desarrolladores, no de compradores en almacenes. Con Base como red de pagos, el encaje con este canal es menor; un canal equivalente en Base no está relevado [Pendiente] |
 | Prensa y redes ("la IA te paga") | Cobertura previa de RentAHuman en Forbes Argentina e iProfesional [Data] | Cercano a 0 si hay cobertura | Volumen sin calidad; no hay demanda que lo retenga |
 | Referidos | — | US$0,50-1 por referido activo | Fraude de cuentas múltiples |
 | Cashback y fintech (Mercado Pago, MODO, billeteras) | Mayor volumen potencial [Opinion, gtm-analysis] | Desconocido | Negociación lenta |
