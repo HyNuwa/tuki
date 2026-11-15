@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-14 · feat(contracts): add phased Base Sepolia INT-02 tooling
+- **What:** remove the incorrectly imposed fresh-key blocker under the user's explicit authorization; verify existing credentials without printing values. Add four chain-guarded script phases for deployment/reserve funding, signed authorization/delivery/root publication, bounded capture, payer-only claim and direct escrow reclaim. Real deadlines are never warped; the recovery Task opens after all verifier signing is complete. Keep broadcast/cache/output artifacts private and outside the repo.
+- **Key files:** `packages/contracts/script/Int02.s.sol`, `test/Int02_Script.t.sol`, contract README, M1 §7–§9 and own progress records. Existing `.env` and production contracts are unchanged.
+- **Checks:** observed RED then GREEN per phase rule; eight new fork tests PASS. Independent full suite: 132 PASS / 0 failures or skips, including 32 × 50 invariant calls without reverts. Parent focused snapshot spot check and scoped formatting/whitespace passed. Fixture-only native CLI smoke produced eight planned transactions and zero receipts; temporary cache audit found no fixture private-key literals/fields in the tested mode, but artifacts contain sensitive RPC/recovery/signature metadata. Rollback boundary: remove only this script, its tests and matching operational documentation; prior contracts/tests remain intact.
+- **Next step:** native review before using real keys for script execution, then the authorized Base Sepolia phases. No real transaction, push or PR yet. Record confirmed public hashes in M1 §9; reconcile partial broadcasts rather than blindly retrying. Rotation is advice, not an artificial runtime prerequisite.
+
 ## 2026-11-14 · test(contracts): verify non-vacuous reserve and capture invariants
 - **What:** complete AC15's handler-based I10/I1 monitor, seed every financial lifecycle branch and assert coverage/positive transfers so early returns cannot pass vacuously. Extract the shared fixture deployment helper without changing production contracts. Configure 32 sequences of 50 calls with unexpected reverts failing the campaign. The prior terms-binding fix `f1a30b8` completed its three-lens native review with no findings and an acknowledged, burned authority.
 - **Key files:** `packages/contracts/test/AC15_Invariants.t.sol`, `test/utils/TukiHandler.sol`, `test/utils/TukiFixture.sol`, `foundry.toml`, contract README and M1 §9.
