@@ -58,7 +58,7 @@ None; runs in parallel with M1 and M2a. M3 depends on its exit.
 ## 8. Preparation and open inputs
 
 - [Verified] Sample target selected under the user's delegation: 100, with a 20/80 calibration/evaluation split. This reconciles the supporting stack document's 100-receipt scale; its legacy accuracy thresholds are not silently adopted.
-- [Prepared, not run] Protocol and [report skeleton](../../reports/s3-extraction.md); all empirical metrics remain unavailable until real execution. The fixed `Extractor` schema is unchanged; no production adapter is claimed.
+- [Prepared, not run] Protocol, public-source retention memo and [report skeleton](../../reports/s3-extraction.md) committed as `efb6f13`; structural/schema/metric/link checks passed. Native assessment is passive, no review due. All empirical metrics remain unavailable until real execution. The fixed `Extractor` schema is unchanged; no production adapter is claimed.
 - [Pending] Private corpus via `S3_DATASET_DIR`, owner consent records and handwritten ground truth. No path has been supplied; do not scan personal folders for receipts.
 - [Pending] Team-approved candidate list (at most three), actual provider/account/API mode and spending limit. Public retention research is not upload consent, account verification or a provider choice.
 - [Pending] Precise serialization/coordinate conventions not already specified by the fixed output shape must be resolved before an executable adapter/M3 integration; no interpretation is imposed by the preparation documents.
