@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · docs(specs): close partial OCR evidence review
+- **Qué hice:** cerrar la revisión de `ef40329`: recheck privado independiente y repetición del padre aprobados; revisión nativa de riesgo, legibilidad y confiabilidad sin hallazgos, acknowledgement confirmado y autoridad consumida.
+- **Archivos clave:** reporte agregado, recuperación y estado. Corregí el conteo del próximo paso: tres registros argentinos completos de ítems/importes dejan una brecha de diecisiete para el piloto de veinte, además de completar/congelar verdad fiscal y privacidad. Solo lectura estructural aplicable; no se repitió OCR ni cambió código.
+- **Próximo paso:** reunir/completar esas entradas antes de un benchmark calificable. Sin push, PR, proveedor externo ni despliegue; Engram sigue pendiente por registro del host. Revertir elimina solo este cierre documental.
+
 ## 2026-11-15 · docs(specs): record partial local OCR calibration
 - **Qué hice:** registrar consentimiento y procedencia confirmados por el usuario, excluir los ejemplos web conocidos, anotar manualmente antes de OCR y ejecutar localmente los diez candidatos sin servicios externos. Los artefactos sensibles permanecen fuera del repositorio.
 - **Archivos clave:** spec M2b, reporte agregado, tarea de recuperación y estado propio. El worker completó 10/10 entradas con hashes de origen intactos y stderr vacío; 150,185 s totales, p50 15,345 s y p95 18,132 s. Las señales 10/16 de descripciones y 43/47 de importes son diagnósticos de OCR crudo. La verificación independiente invalidó el solape PII inicial por cajas defectuosas; se corrigieron en privado, pero el resultado posterior no cuenta como evidencia pre-OCR ni de redacción.
