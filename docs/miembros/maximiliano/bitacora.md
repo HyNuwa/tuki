@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · build(repo): pin private CPU OCR environment
+- **Qué hice:** separar el perfil reproducible de entorno del último commit local, con autorización y rama de respaldo `backup/m2b-ocr-before-split-6a3150a`. Se conserva íntegro el lock; adquisición e inferencia siguen en las unidades dependientes.
+- **Archivos clave:** requirements.in, requirements.lock, .gitignore y README dentro de `spikes/s3-extraction/ocr-worker/`. Verificación: 72 paquetes, 2.222 hashes, pines originales y `uv pip check` aprobados; evidencia independiente previa de instalación offline conservada. No cambia comportamiento ni aplica un nuevo RED/GREEN.
+- **Próximo paso:** revisión propia de este candidato y reconstruir adquisición con sus pruebas. Riesgo 5 por dependencias; sin push, PR, descarga nueva, tickets ni cambios ajenos. Revertir solo el perfil, nunca el entorno privado.
+
 ## 2026-11-15 · docs(specs): close synthetic checker verification
 - **Qué hice:** cerrar las notas de la revisión 2 (`6272cc8`) y del checker sintético (`d6947c3`). El usuario autorizó la revisión de cada candidato por separado. Los cuatro enfoques del checker no encontraron hallazgos; acknowledgement exacto confirmado y autoridad consumida, sin correcciones.
 - **Archivos clave:** reporte S3, documento de recuperación, lista propia y estado. Evidencia ejecutable: 231 pruebas, typecheck y 79 aserciones independientes aprobadas, con repetición del probe y smoke en Node. Esta unidad final solo documenta resultados: lectura estructural y enlaces, sin cambios de código ni RED aplicable. No se ejecutó un escáner de vulnerabilidades.
