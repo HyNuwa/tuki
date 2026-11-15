@@ -19,6 +19,7 @@ $env:UV_CACHE_DIR = Join-Path $Private 'uv-cache'
 uv --no-config venv --no-project --python 3.12 "$Private/venv"
 $Python = "$Private/venv/Scripts/python.exe"
 uv --no-config pip sync --python $Python --require-hashes --only-binary :all: "$Worker/requirements.lock"
+& $Python -B "$Worker/fetch_models.py" --models-dir "$Private/models"
 ```
 
 To regenerate the Windows lock deliberately, not during recognition:
@@ -28,5 +29,22 @@ uv --no-config pip compile requirements.in --python-version 3.12 --python-platfo
 ```
 
 Keep the generated header portable; do not commit local absolute paths.
+The separate fetch command uses only fixed official model revisions from `models.json`,
+checks exact byte counts and SHA-256, and publishes validated files with an atomic rename.
+It reuses matching files, rejects corrupted existing files instead of overwriting them,
+and may leave already verified files after a later download fails; rerun explicitly to resume.
+It never accepts a URL, revision or model name from command-line arguments.
+The two [official](https://huggingface.co/PaddlePaddle/PP-OCRv6_small_det)
+[model cards](https://huggingface.co/PaddlePaddle/PP-OCRv6_small_rec) declare Apache-2.0.
+Weights are not included in Git. Dependency vulnerability/license review remains separate.
 
-This slice prepares only the pinned private environment. Explicit model acquisition and the OCR CLI follow in separate dependent commits.
+## Verify model acquisition
+
+From this directory, using the private interpreter:
+
+```powershell
+& $Python -B -m unittest discover -s tests -v
+& $Python -O -B -m unittest discover -s tests -v
+```
+
+These tests use invented assets and never download models. Recognition and its synthetic real-engine smoke follow in the dependent worker commit.

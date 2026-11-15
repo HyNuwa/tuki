@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · feat(repo): add verified OCR model acquisition
+- **Qué hice:** reconstruir como unidad usable la adquisición explícita de los seis archivos de modelos oficiales, con manifiesto, hashes, límites, rutas privadas y errores controlados; código y pruebas son idénticos al original verificado.
+- **Archivos clave:** `assets.py`, `fetch_models.py`, `models.json`, fixtures y pruebas de adquisición/ciclo de vida, más README y recuperación. Verificación: 11+1 pruebas normales y optimizadas aprobadas; los modelos privados existentes devolvieron `ready` sin descarga. Una invocación inicial por nombre de módulo no agregó `tests` al import path; el discovery documentado pasó sin cambios.
+- **Próximo paso:** evaluación/revisión propia y luego reconstruir el CLI OCR con su smoke sintético. Riesgos 2 y 5; sin nuevas descargas, tickets, Fluence, push ni PR. Revertir esta unidad elimina adquisición y sus pruebas después del CLI dependiente, nunca los modelos privados.
+
 ## 2026-11-15 · build(repo): pin private CPU OCR environment
 - **Qué hice:** separar el perfil reproducible de entorno del último commit local, con autorización y rama de respaldo `backup/m2b-ocr-before-split-6a3150a`. Se conserva íntegro el lock; adquisición e inferencia siguen en las unidades dependientes.
 - **Archivos clave:** requirements.in, requirements.lock, .gitignore y README dentro de `spikes/s3-extraction/ocr-worker/`. Verificación: 72 paquetes, 2.222 hashes, pines originales y `uv pip check` aprobados; evidencia independiente previa de instalación offline conservada. No cambia comportamiento ni aplica un nuevo RED/GREEN.
