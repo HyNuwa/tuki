@@ -13,3 +13,7 @@
 | 5 | INT-01 en Base Sepolia | [M6](../../odd/specs/m6-integral-validation.md) | M2a | Pendiente |
 
 S3 va antes que M2a porque puede frenar el MVP: conviene saberlo primero.
+
+### M2b coordination note — 2026-11-15
+
+The user explicitly authorized Maximiliano to coordinate/start M2b and choose its sample size. Preparation targets 100 distinct consented team receipts (20 calibration, 80 held-out); protocol/report preparation and public retention research are tracked in `odd/tasks/m2b-s3-extraction.md`. No receipt processing, provider choice, external upload or spending is implied. This additive note does not rewrite Alexxe's original ownership rows, assume departure, edit Alexxe's personal folder or remove cross-review.

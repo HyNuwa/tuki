@@ -1,0 +1,30 @@
+# M2b S3 extraction and redaction viability
+Objective: execute the M2b experiment, not production ingestion. Branch: `feat/m2b-s3-extraction`, local base `9a9d6d6` (unpublished M1 remains separate).
+Delivery: `ask-on-risk`; initial preparation forecast about 350 authored lines. Runner: documentary checks now; real measurements require an approved private corpus/provider/account/budget. Engram mirror pending: host session registration unavailable.
+
+## Specs
+
+- S1 — User authorization: "si arranca"; latest correction: "arranca con la spec, el tamaño haz los q veas necesarios". Scope is [M2b](../specs/m2-s3-extraction-spike.md), including delegated sample-size selection; this does not authorize receipt uploads or paid requests.
+- S2 — "Team receipts only"; "consented by their owners; no third-party receipts." "Ground truth per receipt written by hand: fiscal QR fields, items, prices, total, and bounding boxes of every personal-data region (name, DNI, CUIT of the buyer, card digits)."
+- S3 — "Candidate providers: at most three vision LLMs, each evaluated for image-retention terms before any image is sent". Provider selection remains team-owned; public retention research is not approval to transmit images.
+- S4 — Measurements: "Extraction accuracy", "Deterministic-check pass rate", "Redaction false-negative rate", "Fiscal-data loss", "Pre-LLM redaction feasibility", "Manual review rate", "Latency p50/p95, cost per receipt", "Provider retention". Use the exact definitions in M2b §3, and report unavailable measurements honestly.
+- S5 — "Report at `reports/s3-extraction.md` with all metrics, the chosen provider, the confidence thresholds for auto-accept/review, and a verdict." "The verdict \"reasonable cost\" is the team's call from the report; the agent records numbers, not the decision."
+- S6 — Preserve the fixed M3 schema: `{ items: [{description, ean?, quantity, unitPriceAtomic}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }`.
+- S7 — "Receipt images and ground truth live outside the repository (public repo); the spike reads them from a path given by environment variable. No image, extraction output with personal data, or API key is committed." Follow parent Q11: selective redaction and EXIF/GPS handling; do not substitute blanket header/footer blur.
+
+## Tasks
+
+- T1 — S1/S2/S4-S7 | inline | preparation complete | sample/protocol, report skeleton and progress bookkeeping; verified schema/metric coverage, 24 local links and scoped whitespace checks; work-unit commit recorded after creation.
+- T2 — S3/S4 | delegated public-source research (research skill; independent disjoint evidence file) | public-source research complete | three unapproved API candidates researched in `spikes/s3-extraction/provider-retention.md`; primary-source spot-checks and readback passed; no images, paid calls, credentials or model/provider selection; work-unit commit recorded after creation.
+- T3 — S2-S7 | inline unless a delegation trigger applies | waiting for private corpus and explicit external-run authorization | annotate/calibrate, freeze thresholds, measure held-out receipts and publish aggregate report; no PASS or provider choice before evidence.
+
+## Log
+
+- L1 — User request authorizing M2b: "si arranca".
+- L2 — 2026-11-15, user correction: "arranca con la spec, el tamaño haz los q veas necesarios".
+- L3 — Sample decision under that delegation: target 100 distinct consented team receipts, split into 20 calibration/pilot receipts and 80 held-out evaluation receipts. This adopts the supporting stack document's 100-receipt scale, not its legacy acceptance thresholds. Freeze the protocol/thresholds before evaluating the held-out set. Coverage and actual counts must be reported; fewer receipts mean partial evidence, not an invented complete result. No statistical guarantee of privacy or population accuracy follows from the target alone.
+- L4 — Read-only mapping found no existing S3 code/report. Candidate providers, private data path, actual consent records, budget and account approval are not present. No receipt was inspected and no provider call was made. Production ingestion remains M3.
+- L5 — The M2b edit-surface list will include workflow-mandated tracking and Maximiliano's own progress records. Record his authorized coordination in Alexxe's shared task list without editing Alexxe's personal member folder or assuming departure. No push, PR, mainnet activity or `.env` access is needed for preparation.
+- L6 — Public-source research completed for OpenAI Responses, Anthropic Messages and Gemini Developer API; all remain unapproved. Parent spot-checks confirmed the dated official OpenAI data-controls page, Anthropic commercial-retention page and Gemini logging policy. Training, abuse logs, stored state/files, sharing and actual-account eligibility are distinct. No provider/account/retention setting is inferred from public documentation.
+- L7 — Verification exception: this unit is documentary preparation/research, with no loader, adapter, model request or executable schema validator. Runnable RED/GREEN and extraction benchmarks are not meaningful yet. Structural checks must cover every required metric, unchanged schema, local link targets, privacy boundaries and allowed paths. Missing empirical data is marked not measured, never 0%/PASS. Engram writes remain prohibited until the host registers its runtime session; the local recovery document is authoritative meanwhile.
+- L8 — Structural verification passed over 9 documents: the M3 output-shape string is unchanged from `9a9d6d6`, all required measures are present (12 explicit report rows), 24 local Markdown links resolve, all 3 research candidates remain unapproved, and the report's empirical verdict is NOT RUN. Scoped `git diff --check` passed. No production/executable files, receipt data or unrelated worktree changes are included. Risk: none for this passive preparation unit; later actual PII processing or external requests require their own risk assessment and consent.
