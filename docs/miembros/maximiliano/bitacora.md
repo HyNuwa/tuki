@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · docs(specs): record partial local OCR calibration
+- **Qué hice:** registrar consentimiento y procedencia confirmados por el usuario, excluir los ejemplos web conocidos, anotar manualmente antes de OCR y ejecutar localmente los diez candidatos sin servicios externos. Los artefactos sensibles permanecen fuera del repositorio.
+- **Archivos clave:** spec M2b, reporte agregado, tarea de recuperación y estado propio. El worker completó 10/10 entradas con hashes de origen intactos y stderr vacío; 150,185 s totales, p50 15,345 s y p95 18,132 s. Las señales 10/16 de descripciones y 43/47 de importes son diagnósticos de OCR crudo. La verificación independiente invalidó el solape PII inicial por cajas defectuosas; se corrigieron en privado, pero el resultado posterior no cuenta como evidencia pre-OCR ni de redacción.
+- **Próximo paso:** completar al menos diez tickets argentinos íntegros para cerrar el piloto de 20, resolver verdad fiscal QR y recién después congelar umbrales. No hay held-out, proveedor, Fluence, M3, credenciales ni veredicto M2b. Riesgo 2 por tratamiento local de tickets privados; revertir esta unidad elimina solo evidencia pública agregada, no los artefactos privados.
+
 ## 2026-11-15 · feat(repo): add bounded local CPU OCR protocol
 - **Qué hice:** reconstruir el CLI OCR local, sus pruebas públicas y el smoke real sintético con los mismos bytes del worker originalmente verificado; cerrar specs/reporte sin procesar tickets reales ni implementar M3.
 - **Archivos clave:** `worker.py`, `tests/test_worker.py`, `tests/smoke_engine.py`, README, spec M2b, reporte y coordinación. Verificación: 31 pruebas normales y optimizadas, 8 archivos AST, smoke CPU exacto `TUKI 12345` (una región, stderr vacío, entrada intacta), 231 pruebas del checker y typecheck. Árbol final del worker debe igualar `6a3150a`.
