@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · docs(specs): record confirmed Base Sepolia INT-02 results
+- **What:** execute the explicitly authorized real INT-02 phases from reviewed `39352af`: 13 confirmed Base Sepolia transactions, including contract deployment/funding, 2-of-2 capture, recipient claim and direct payer reclaim/release. Native four-lens review reported no findings and exact acknowledgement closed its authority. Claim/reclaim subprocesses had only the payer key, no `.env` or operator/verifier variables; no Tuki key signed after the second Task opened.
+- **Evidence:** M1 §9 records contract addresses, all 13 public hashes, receipt gas, real-RPC negative checks and fixed-block final balances. At block 58950831: fee receiver 0.30 USDC, payer 19.50 USDC, vault 20.20 USDC free; no locks or unclaimed rewards. All 40 initial USDC are accounted for. Source suite remains 132 PASS; no source changed during live execution. Private run artifacts stay outside the repo; key-literal scan found no matches in 80 JSON/TXT files. Existing `.env` is unchanged.
+- **Next step:** clarify §5's extra live open-dispute coverage, which was not part of AC16's three named live paths and remains fork-only. Product pre-approval default, donation/delta semantics and physical key-holder independence also remain explicit follow-ups; no design was adapted. No push or PR. Rollback is documentation-only; live transactions are immutable and must not be replayed.
+
 ## 2026-11-14 · feat(contracts): add phased Base Sepolia INT-02 tooling
 - **What:** remove the incorrectly imposed fresh-key blocker under the user's explicit authorization; verify existing credentials without printing values. Add four chain-guarded script phases for deployment/reserve funding, signed authorization/delivery/root publication, bounded capture, payer-only claim and direct escrow reclaim. Real deadlines are never warped; the recovery Task opens after all verifier signing is complete. Keep broadcast/cache/output artifacts private and outside the repo.
 - **Key files:** `packages/contracts/script/Int02.s.sol`, `test/Int02_Script.t.sol`, contract README, M1 §7–§9 and own progress records. Existing `.env` and production contracts are unchanged.

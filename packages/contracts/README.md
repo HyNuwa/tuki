@@ -73,7 +73,7 @@ $env:FOUNDRY_CACHE_PATH = Join-Path $runDir "cache"
 $env:FOUNDRY_OUT = Join-Path $runDir "out"
 ```
 
-Keep these reports private: even dry-runs write transaction/signature and recovery metadata; cache can include the RPC URL. Do not publish them, copy them into this repo, dump the environment, or enable debug traces with real credentials.
+Forge 1.9.0 uses `<function>-latest.json` for phase reports and may emit multiple JSON objects in `--json` mode. Confirm receipts through RPC rather than inferring success from return values alone. Keep these reports private: even dry-runs write transaction/signature and recovery metadata; cache can include the RPC URL. Do not publish them, copy them into this repo, dump the environment, or enable debug traces with real credentials.
 
 ### Execute in order, using real chain time
 
