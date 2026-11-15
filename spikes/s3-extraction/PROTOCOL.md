@@ -37,8 +37,8 @@ No retention duration or legal-compliance claim is selected here. Check the prov
 
 | Required measure | Recording rule |
 |---|---|
-| Extraction accuracy | Exact-match counts and denominators for item description, unit price, quantity and total, per provider and partition. Freeze line matching first; missing fields/items are failures, not exclusions. Count extra/invented items separately. Do not give fuzzy matches exact-match credit. |
-| Deterministic checks | Record the number of receipts satisfying item sum = total = fiscal QR amount. Use the annotated monetary units/precision consistently; do not silently repair discounts, rounding or unsupported cases to manufacture a pass. |
+| Extraction accuracy | Exact-match counts/denominators for item description, printed unit price, normalized exact quantity, printed line total, receipt total, and discount amount/scope/accounting, per provider and partition. Freeze matching and normalization first; missing fields/items are failures, not exclusions. Count extra/invented items separately; no fuzzy-match credit. |
+| Deterministic checks | Use [revision 2](EXTRACTOR-CONTRACT.md): printed line totals minus only `deduct_from_items` discounts = extracted total = fiscal QR amount, at the trusted receipt currency/scale. Included/informational discounts are not subtracted again. Unknown interpretation, missing context/QR or negative/unsupported effects cannot auto-accept. Do not repair prices or invent balancing adjustments. |
 | Redaction false negatives | Count personal-data regions with any personal content still visible / all annotated personal regions; record unassessable cases separately. Inspect the actual review image, not just the provider's boxes/confidence. |
 | Fiscal-data loss | Count required L1 fiscal fields hidden or made unreadable by masking, by field and receipt. Preserve issuer CUIT, ptoVta, tipoCmp, nroCmp, date, total and CAE. |
 | Pre-LLM feasibility | Record masking method, remaining personal visibility, extraction/fiscal loss and manual time. Distinguish assisted feasibility from automatic redaction capability. |
@@ -50,13 +50,13 @@ Keep raw counts, denominators, missing outputs and exclusions visible alongside 
 
 ## Fixed output contract
 
-Preserve M2b's existing schema without changing its fields:
+Use the paired M2b/M3 [revision-2 contract](EXTRACTOR-CONTRACT.md), authorized on 2026-11-15:
 
 ```text
-{ items: [{description, ean?, quantity, unitPriceAtomic}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }
+{ items: [{description, ean?, quantity, unitPriceAtomic, lineTotalAtomic}], discounts: [{label, scope, itemIndex?, amountAtomic, accounting}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }
 ```
 
-Provider adapters and precise serialization/coordinate conventions are not implemented or newly standardized here. Resolve any missing interpretation in the spec before M3 consumes it; a preparation document is not executable schema validation.
+Money uses exact nonnegative integer strings, quantities exact normalized decimal strings and the trusted receipt currency/scale context; preserve printed line amounts instead of recomputing aggregate weight. Discount inclusion is explicit and unknown effects route to review. PII-coordinate conventions remain separately pending. No provider adapter or executable schema validator is implemented by this specification; no legacy output is silently treated as revision 2.
 
 ## Report and decision
 

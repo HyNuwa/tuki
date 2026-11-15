@@ -17,3 +17,7 @@ S3 va antes que M2a porque puede frenar el MVP: conviene saberlo primero.
 ### M2b coordination note — 2026-11-15
 
 The user explicitly authorized Maximiliano to coordinate/start M2b and choose its sample size. Preparation targets 100 distinct consented team receipts (20 calibration, 80 held-out); protocol/report preparation and public retention research are tracked in `odd/tasks/m2b-s3-extraction.md`. No receipt processing, provider choice, external upload or spending is implied. This additive note does not rewrite Alexxe's original ownership rows, assume departure, edit Alexxe's personal folder or remove cross-review.
+
+The user subsequently approved a paired M2b/M3 Extractor extension with printed line totals and explicit discounts. Revision 2 is tracked in the same feature document and shared contract; both specs must change together. Actual adapter implementation, real-data/provider approval and cross-review are not implied by this specification work.
+
+The current execution plan also authorizes Maximiliano to implement a synthetic-only local monetary checker inside `spikes/s3-extraction/`, without root scaffolding, S0/M1 changes, production ingestion, external extraction calls or real-image processing. This additive coordination keeps original ownership and cross-review intact; the paired contract is delivered separately from executable tooling.

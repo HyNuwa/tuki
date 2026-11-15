@@ -21,7 +21,7 @@ The user delegated sample size; 100 is an experiment target, not a guarantee. Fr
 
 ## Separate exploratory observation
 
-See [the three-example inspection](../spikes/s3-extraction/EXPLORATORY-NOTES.md). All three files decoded; two are cropped receipt sections, one shows a non-Argentine fiscal context, and none exposes an Argentine QR in the supplied frame. Existing masks do not establish redaction quality. Exact-decimal spot-checks found that discounts, split payment and per-package versus aggregate rounding need explicit treatment. This is not a provider-accuracy result, fiscal-verification failure or qualifying sample. **[Pending]** Resolve the monetary representation gap in M2b/M3 before implementing a reconciliation convention; the output contract below is unchanged.
+See [the three-example inspection](../spikes/s3-extraction/EXPLORATORY-NOTES.md). All three files decoded; two are cropped receipt sections, one shows a non-Argentine fiscal context, and none exposes an Argentine QR in the supplied frame. Existing masks do not establish redaction quality. Exact-decimal spot-checks exposed discount/rounding ambiguity, not a provider-accuracy result, fiscal-verification failure or qualifying sample. The user subsequently approved the paired M2b/M3 revision-2 contract below; that resolves the monetary specification, not the missing real measurements or runtime implementation.
 
 ## Required measurements
 
@@ -32,8 +32,12 @@ All numeric results below are unavailable, not zero. Report per approved provide
 | Exact-match item-description accuracy | Not measured | Human ground truth and model outputs; counts/denominators. |
 | Exact-match unit-price accuracy | Not measured | Ground-truth monetary units and outputs. |
 | Exact-match quantity accuracy | Not measured | Ground truth and outputs. |
+| Exact-match printed-line-total accuracy | Not measured | Printed line amounts preserved independently of aggregate multiplication. |
 | Exact-match total accuracy | Not measured | Ground truth and outputs. |
-| Item sum = total = QR amount pass rate | Not measured | Fiscal QR truth, item totals and deterministic-check outcomes. |
+| Exact-match discount-amount accuracy | Not measured | Annotated printed discounts and outputs. |
+| Exact-match discount-scope accuracy | Not measured | Item/receipt scope truth and valid item references. |
+| Exact-match discount-accounting accuracy | Not measured | Additional/already-included/informational/unknown classification truth. |
+| Discount-aware reconciled total = total = QR amount pass rate | Not measured | Trusted receipt currency/scale, fiscal QR truth, printed line totals, discount classification and check outcomes. |
 | Personal-region redaction false-negative rate | Not measured | Annotated regions and inspected review copies; a zero denominator is not 0% error. |
 | Fiscal-data loss | Not measured | L1 fiscal-field annotations and post-redaction visibility. |
 | Pre-LLM redaction feasibility | Not measured | Actual local masking, privacy/fiscal inspection and extraction evidence; assisted and automatic methods separated. |
@@ -44,13 +48,14 @@ All numeric results below are unavailable, not zero. Report per approved provide
 
 ## Contract and decision record
 
-The M3-facing output contract is unchanged:
+The user approved [Extractor revision 2](../spikes/s3-extraction/EXTRACTOR-CONTRACT.md), changing M2b and M3 together:
 
 ```text
-{ items: [{description, ean?, quantity, unitPriceAtomic}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }
+{ items: [{description, ean?, quantity, unitPriceAtomic, lineTotalAtomic}], discounts: [{label, scope, itemIndex?, amountAtomic, accounting}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }
 ```
 
 - Chosen provider/model: **[Pending]**; the research shortlist is not a selection.
+- Monetary contract: printed line totals, exact receipt-currency values and explicit discount accounting are specified in revision 2. Synthetic worked checks are not empirical extractor performance or an implemented validator.
 - Automatic-accept and manual-review confidence thresholds: **[Pending]**, to propose from calibration and freeze before held-out evaluation.
 - Whether measured quality and manual effort are acceptable at reasonable cost: **[Pending: user's decision from actual numbers]**.
 - M2b exit: **not satisfied**. There is no measured reliability failure yet; the qualifying experiment has not run. M3 must not treat the report or the separate web-example inspection as successful provider/viability proof.
@@ -59,4 +64,4 @@ The M3-facing output contract is unchanged:
 
 Images, personal extraction outputs, handwritten annotations, consent records and detailed per-receipt results stay outside the public repository. No raw-image upload, paid request, `.env` access, credential discovery or cloud retention period is authorized by this report. Q11 requires local EXIF handling and selective redaction; uncertain personal-data removal stays in manual review.
 
-Open inputs: eligible consented-team receipts and handwritten truth; a decision on the discount/rounding representation gap; approved provider/account/mode, applicable retention and a spending limit before any external request. The separate three-web-example inspection is complete; it does not approve broader image processing or additional services.
+Open inputs: eligible consented-team receipts and handwritten truth; approved provider/account/mode, applicable retention and a spending limit before any external request. The monetary gap has an authorized revision-2 specification; executable validation/adapter implementation and PII-coordinate conventions remain separate work. The completed web-example inspection does not approve broader image processing or additional services.

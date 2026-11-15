@@ -30,3 +30,7 @@ One weighted line differs by 0.01 displayed currency units when total weight is 
 Only aggregate observations are committed. Original files are unchanged and remain outside the repo; a private manifest records source mapping, dimensions, hashes and the worked arithmetic. No `.env`, credentials, provider account, paid call or additional web service was used. Visual inspection happened in the current assistant session, not an on-device OCR engine; no standalone provider comparison was run.
 
 The 100-receipt target, 20/80 split, real-owner consent requirement and pending provider/account/budget approval remain unchanged. This exploration does not satisfy M2b's exit or unblock M3's provider prerequisite.
+
+## Subsequent resolution — 2026-11-15
+
+After this inspection, the user approved a paired M2b/M3 extension. [Revision 2](EXTRACTOR-CONTRACT.md) now preserves printed line totals and explicitly distinguishes additional, already-included, informational and unknown discount effects. The earlier pending monetary-shape observation above is historical; no new inspection, provider benchmark, executable implementation or eligibility of these web images follows from that specification change.

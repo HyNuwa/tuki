@@ -13,8 +13,8 @@ Contributor SIWE auth, consent, nearby Tasks, upload, status, appeals, consent w
 3. Fiscal QR decode (ARCA JSON in Base64) before any LLM call; drop `tipoDocRec`/`nroDocRec`.
 4. Dedupe: fiscal key `(cuit, ptoVta, tipoCmp, nroCmp)` and `sha256` unique → reject `duplicate`; `pHash` within threshold [Pending: S3] → review (E3, I3).
 5. Sensitive-data preprocessing before the external call where S3 found it feasible.
-6. `Extractor` (provider from S3) → schema-validated JSON (M2b §4).
-7. Deterministic checks: sum of items = total = QR amount; mismatch → reject `total_mismatch` or review (E4).
+6. `Extractor` (provider from S3) → schema-validated revision-2 JSON (M2b §4 and the [shared contract](../../spikes/s3-extraction/EXTRACTOR-CONTRACT.md)), with trusted receipt currency/scale interpretation context, not USDC decimals or expected ground-truth answers. Preserve printed unit prices, exact fractional quantities and printed line totals; represent discounts with explicit scope/inclusion classification.
+7. Deterministic checks: `sum(lineTotalAtomic) - sum(discounts where accounting == deduct_from_items) = totalAtomic = QR amount`, exactly at the trusted receipt scale. Already-included discounts and informational summaries are not deducted again; payment tenders are not items. Mismatch → reject `total_mismatch` or review (E4). Unknown accounting, invalid item references, missing context/QR, negative results or unsupported effects cannot auto-accept; unresolved interpretation goes to review. Do not force quantity × unit price to equal a line amount when package-level rounding differs, or invent adjustments to balance a total.
 8. Selective redaction → review copy; uncertain redaction → internal review only, never external (Q11, US 69).
 9. Level assignment (L1 + L3 in P0) and outcome: `accepted` / `rejected(reason)` / `in_review`.
 10. Storage: review copy and encrypted original as separate EXIF-free R2 objects; `MediaRef` holds `evidenceDigest`, key id, EXIF booleans.
@@ -44,7 +44,7 @@ Rejection reasons: `duplicate`, `illegible`, `total_mismatch`, `out_of_criteria`
 | M3-AC1 | Full happy path through the public API ends `accepted` with a `verified_pending_commitment` reward entry. |
 | M3-AC2 | Stored objects have no EXIF; only the three booleans persist; no GPS anywhere in DB or logs. |
 | M3-AC3 | Same fiscal key or same `sha256` → `duplicate`, no second reward entry (E3, I3), including under concurrent uploads. |
-| M3-AC4 | QR total ≠ extracted total → rejected or in review, never accepted (E4). |
+| M3-AC4 | QR total ≠ extracted total, or discount-aware reconciled total ≠ extracted total → rejected or in review, never accepted (E4). Unknown discount inclusion, invalid item references, missing trusted currency/scale or QR, and negative/unsupported accounting cannot end accepted. Gross/net lines, repeated discount summaries, fractional package rounding, genuine zero-priced merchandise and split tenders follow the shared contract; a monetary pass alone never bypasses other acceptance rules. |
 | M3-AC5 | Task at `maxRewardedObservations` → `quota_full`; 4th accepted upload by one wallet in a Task → `contributor_cap_reached`. |
 | M3-AC6 | Fake redaction with low confidence → internal review, no external call recorded. |
 | M3-AC7 | Appeal after 48 h → rejected; within 48 h → `appealed` and reserve coverage kept. |
@@ -75,3 +75,7 @@ odd/specs/m3-ingestion.md
 ## 8. Dependencies
 
 M2a (API, DB) and M2b (provider, thresholds). Parallel with M1. M4 consumes accepted observations.
+
+## 9. Paired Extractor revision
+
+The user authorized the M2b/M3 revision on 2026-11-15 under Maximiliano's development coordination. Both specifications change together; original owner records and review requirements remain intact. No executable `apps/api` or `packages/domain` consumer exists at the change baseline. Implementations/fakes must use the normative revision-2 contract, including required `lineTotalAtomic` and `discounts`; do not silently treat legacy payloads or unknown discounts as complete extraction. This contract work does not satisfy M3's S3-provider entry prerequisite.

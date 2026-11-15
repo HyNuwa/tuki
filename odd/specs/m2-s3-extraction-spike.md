@@ -18,8 +18,8 @@ Exploratory-only exception authorized by the user on 2026-11-15: qualitatively i
 
 | Metric | Definition |
 |---|---|
-| Extraction accuracy | per-field exact match against ground truth for item description, unit price, quantity, total; reported per provider |
-| Deterministic-check pass rate | share of receipts where sum of items = total = QR amount |
+| Extraction accuracy | per-field exact match against ground truth for item description, printed unit price, exact quantity, printed line total, receipt total, and discount amount/scope/accounting classification; reported per provider |
+| Deterministic-check pass rate | share where printed line totals minus only not-yet-included discounts = extracted total = QR amount, at the same trusted receipt-currency scale; unknown accounting cannot pass |
 | Redaction false-negative rate | personal-data regions left visible in the review copy / all ground-truth regions |
 | Fiscal-data loss | fiscal fields needed for L1 (CUIT of issuer, ptoVta, tipoCmp, nroCmp, date, total, CAE) hidden by redaction |
 | Pre-LLM redaction feasibility | whether personal regions can be masked before the external call without breaking extraction |
@@ -30,7 +30,7 @@ Exploratory-only exception authorized by the user on 2026-11-15: qualitatively i
 ## 4. Exit
 
 - Report at `reports/s3-extraction.md` with all metrics, the chosen provider, the confidence thresholds for auto-accept/review, and a verdict.
-- `Extractor` output schema fixed (consumed by M3): `{ items: [{description, ean?, quantity, unitPriceAtomic}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }`.
+- `Extractor` output revision 2 (consumed by M3): `{ items: [{description, ean?, quantity, unitPriceAtomic, lineTotalAtomic}], discounts: [{label, scope, itemIndex?, amountAtomic, accounting}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }`. Exact types, discount inclusion/classification, trusted monetary context and synthetic checks are normative in the [paired contract](../../spikes/s3-extraction/EXTRACTOR-CONTRACT.md). The user approved this M2b/M3 extension on 2026-11-15.
 
 ## 5. Blocked when (copied from the parent)
 
@@ -42,6 +42,7 @@ S3 shows extraction or redaction not reliable even with manual review at reasona
 spikes/s3-extraction/**
 reports/s3-extraction.md
 odd/specs/m2-s3-extraction-spike.md
+odd/specs/m3-ingestion.md
 odd/tasks/m2b-s3-extraction.md
 docs/tareas/maximiliano.md
 docs/tareas/alexxe.md
@@ -60,10 +61,10 @@ None; runs in parallel with M1 and M2a. M3 depends on its exit.
 ## 8. Preparation and open inputs
 
 - [Verified] Sample target selected under the user's delegation: 100, with a 20/80 calibration/evaluation split. This reconciles the supporting stack document's 100-receipt scale; its legacy accuracy thresholds are not silently adopted.
-- [Prepared, not run] Protocol, public-source retention memo and [report skeleton](../../reports/s3-extraction.md) committed as `efb6f13`; structural/schema/metric/link checks passed. Native assessment is passive, no review due. All empirical metrics remain unavailable until real execution. The fixed `Extractor` schema is unchanged; no production adapter is claimed.
+- [Prepared, not run] Original protocol, public-source retention memo and [report skeleton](../../reports/s3-extraction.md) were committed as `efb6f13` with structural checks and passive assessment. The subsequently authorized paired revision-2 contract updates the monetary shape/measurement definitions. All real metrics remain unavailable; no production adapter is claimed.
 - [Pending] Eligible real corpus via `S3_DATASET_DIR`, owner consent records and handwritten ground truth. A private directory with three web examples has been supplied for the separate exploratory-only exception; it is not an eligible real corpus. Do not scan other personal folders for receipts.
 - [Pending] Team-approved candidate list (at most three), actual provider/account/API mode and spending limit. Public retention research is not upload consent, account verification or a provider choice.
-- [Pending] Precise serialization/coordinate conventions not already specified by the fixed output shape must be resolved before an executable adapter/M3 integration; no interpretation is imposed by the preparation documents.
+- [Resolved for monetary values] Revision 2 defines exact integer-string money, exact decimal-string quantities, printed line totals and explicit discount accounting. Currency/scale are trusted receipt context, not USDC settlement units. PII-coordinate conventions remain [Pending] before an executable adapter/M3 integration.
 - [Exploratory-only complete] Three web examples were visually inspected in this assistant session, without standalone extraction API calls. Aggregate [findings](../../spikes/s3-extraction/EXPLORATORY-NOTES.md) cover cropping, missing visible fiscal QR, discounts, split tender and a fractional-weight rounding edge. They are excluded from the qualifying corpus and all provider metrics.
-- [Pending] The existing `Extractor` shape does not explicitly represent line totals or discounts/adjustments; quantity precision, gross/net price semantics and rounding stage are unspecified. Decide the representation jointly for M2b/M3 before an executable adapter silently invents one. No shared fields have changed.
+- [Authorized paired extension] The user approved resolving the line-total/discount gap jointly with M3. Revision 2 preserves printed prices/line amounts and distinguishes deductions, already-included effects, informational summaries and unknown interpretation. No adapter, production consumer or empirical benchmark is implemented by this specification change.
 - [Pending] Real measurements, confidence thresholds, provider choice and the user's reasonable-cost verdict. No M2b viability PASS/FAIL is inferred from this preparation.
