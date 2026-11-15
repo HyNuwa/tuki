@@ -48,14 +48,14 @@ All numeric results below are unavailable, not zero. Report per approved provide
 
 ## Contract and decision record
 
-The user approved [Extractor revision 2](../spikes/s3-extraction/EXTRACTOR-CONTRACT.md), changing M2b and M3 together:
+The user approved [Extractor revision 2](../spikes/s3-extraction/EXTRACTOR-CONTRACT.md), committed as the paired M2b/M3 unit `6272cc8` with independent structural verification and acknowledged native risk/readability review:
 
 ```text
 { items: [{description, ean?, quantity, unitPriceAtomic, lineTotalAtomic}], discounts: [{label, scope, itemIndex?, amountAtomic, accounting}], totalAtomic, confidence: 0..1, modelVersion, piiBoxes: [{x,y,w,h,kind}] }
 ```
 
 - Chosen provider/model: **[Pending]**; the research shortlist is not a selection.
-- Monetary contract: printed line totals, exact receipt-currency values and explicit discount accounting are specified in revision 2. Synthetic worked checks are not empirical extractor performance or an implemented validator.
+- Monetary contract: printed line totals, exact receipt-currency values and explicit discount accounting are specified in revision 2. The separately implemented [synthetic-only local checker](../spikes/s3-extraction/README.md) checks only that monetary projection; it is not a full extractor/privacy validator or empirical performance result.
 - Automatic-accept and manual-review confidence thresholds: **[Pending]**, to propose from calibration and freeze before held-out evaluation.
 - Whether measured quality and manual effort are acceptable at reasonable cost: **[Pending: user's decision from actual numbers]**.
 - M2b exit: **not satisfied**. There is no measured reliability failure yet; the qualifying experiment has not run. M3 must not treat the report or the separate web-example inspection as successful provider/viability proof.
@@ -64,4 +64,10 @@ The user approved [Extractor revision 2](../spikes/s3-extraction/EXTRACTOR-CONTR
 
 Images, personal extraction outputs, handwritten annotations, consent records and detailed per-receipt results stay outside the public repository. No raw-image upload, paid request, `.env` access, credential discovery or cloud retention period is authorized by this report. Q11 requires local EXIF handling and selective redaction; uncertain personal-data removal stays in manual review.
 
-Open inputs: eligible consented-team receipts and handwritten truth; approved provider/account/mode, applicable retention and a spending limit before any external request. The monetary gap has an authorized revision-2 specification; executable validation/adapter implementation and PII-coordinate conventions remain separate work. The completed web-example inspection does not approve broader image processing or additional services.
+Open inputs: eligible consented-team receipts and handwritten truth; approved provider/account/mode, applicable retention and a spending limit before any external request. The monetary gap has an authorized revision-2 specification and isolated synthetic checker; full schema/privacy validation, adapter implementation and PII-coordinate conventions remain separate work. The completed web-example inspection does not approve broader image processing or additional services.
+
+## Local executable evidence (not real extraction measurements)
+
+`checkAccounting(input, moneyContext, fiscalQrAmountAtomic)` returns only monetary `consistent` or code-only `review`, never ingestion acceptance. The spike has pinned development tools, no runtime dependency and no production consumer. The public-seam suite passes 231 invented checks, including all ten documented examples, malformed values, large integers, discount references/classification, cumulative deductions, immutability and sanitized diagnostics. Type checking passes separately. Independent dependency-risk verification passed in a fresh snapshot: offline frozen install with zero downloads, 231 passing tests, passing typecheck and 79 additional public-seam/structural assertions. The parent repeated those assertions and a native Node seam smoke test. These checks do not constitute a real-data benchmark.
+
+These local outcomes are not receipt-level deterministic-pass rates or extraction/redaction benchmarks. Eligible receipts remain **0**, with no provider choice, image processing or external requests. Every real-measurement row above remains unavailable.
