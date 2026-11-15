@@ -117,10 +117,10 @@ contract AC2_OpenTaskGuardsTest is TukiFixture {
         _assertNothingOpened(pi);
     }
 
-    function test_openTask_revertsWhenSaltIsNotTheTaskId() public {
+    function test_openTask_revertsWhenSaltDoesNotBindTheTaskAndTerms() public {
         ITaskPolicy.TaskTerms memory terms = _terms();
         IAuthCaptureEscrow.PaymentInfo memory pi = _paymentInfo(TASK_ID, terms);
-        pi.salt = uint256(TASK_ID) + 1;
+        pi.salt ^= 1;
         _expectOpenReverts(pi, terms, abi.encodeWithSelector(ITaskPolicy.InvalidSalt.selector));
         _assertNothingOpened(pi);
     }
@@ -134,6 +134,7 @@ contract AC2_OpenTaskGuardsTest is TukiFixture {
 
         pi = _paymentInfo(TASK_ID, terms);
         terms.operationalMargin -= 1;
+        pi.salt = _paymentInfo(TASK_ID, terms).salt;
         _expectOpenReverts(pi, terms, abi.encodeWithSelector(ITaskPolicy.InvalidAuthorizationExpiry.selector));
         _assertNothingOpened(pi);
     }

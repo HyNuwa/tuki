@@ -70,14 +70,15 @@ contract TaskPolicy is ITaskPolicy, VerifierQuorum {
         if (pi.token != address(usdc)) revert InvalidToken();
         if (pi.minFeeBps != FEE_BPS || pi.maxFeeBps != FEE_BPS) revert InvalidFeeBps();
         if (pi.feeReceiver != feeReceiver) revert InvalidFeeReceiver();
-        if (pi.salt != uint256(taskId)) revert InvalidSalt();
+        bytes32 termsHash = keccak256(abi.encode(TASK_TERMS_TYPEHASH, terms));
+        // The payer's ERC-3009 signature binds this salt through the escrow payment hash.
+        if (pi.salt != uint256(keccak256(abi.encode(taskId, termsHash)))) revert InvalidSalt();
         uint256 authorizationExpiry = uint256(terms.deadline) + terms.maxDeliveryDelay + terms.disputeWindow
             + terms.resolutionWindow + terms.operationalMargin;
         if (pi.authorizationExpiry != authorizationExpiry) revert InvalidAuthorizationExpiry();
         if (pi.refundExpiry != pi.authorizationExpiry) revert InvalidRefundExpiry();
 
         bytes32 paymentInfoHash = escrow.getHash(pi);
-        bytes32 termsHash = keccak256(abi.encode(TASK_TERMS_TYPEHASH, terms));
         uint256 lockAmount = uint256(terms.maxRewardedObservations) * terms.rewardPerObservation;
 
         task.paymentInfoHash = paymentInfoHash;

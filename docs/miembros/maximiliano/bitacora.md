@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-14 · fix(contracts): bind task terms to payer authorization
+- **What:** bind the existing ERC-3009 authorization to `taskId` and all quoted `TaskTerms` through the payment salt. The previous salt authenticated only the Task identifier, allowing a relayer to change dispute windows or economics while keeping the payer's signature. Update M1 §3 and M2a §7 together under Maximiliano's explicit authorization; do not change the ABI or 2-of-2 quorum. Legacy authorizations must be regenerated.
+- **Key files:** `packages/contracts/src/TaskPolicy.sol`, `test/TaskPolicy_TermsBinding.t.sol`, `test/AC2_OpenTaskGuards.t.sol`, the quote fixture, contract README and paired specs.
+- **Checks:** observed RED (4 failing cases, 1 passing control), then focused GREEN (16 tests; 256 fuzz runs). Full fork suite: 123 PASS, 0 failures/skips. Independent baseline: 116 PASS; baseline plus regression: 2 PASS / 5 FAIL; exact staged candidate: 123 PASS. Parent candidate spot check: 123 PASS. ABIs/quorum unchanged; native review pending. Final evidence is recorded in M1 §9. Rollback boundary: remove this salt-binding guard, its regression tests, quote-fixture salt change and matching spec/README update together; no deployment has occurred.
+- **Next step:** finish verification, then resume AC15 and integration tooling. No push, PR or real-network transaction is authorized by this commit.
+
 ## 2026-11-14 · test(contracts): measure publishRoot and claim gas (M1-AC14)
 - **Qué hice:** medí el gas de `publishRoot` a 16, 64, 128 y 256 hojas (con y sin hojas de contribución) y de `claim`, con las cuentas enfriadas para cobrar accesos fríos como en una transacción real. Una raíz de 256 hojas con hojas de contribución cuesta 1178770 gas, cerca del 1 % de un bloque de Base Sepolia; `claim` cuesta unos 137000. `maxLeavesPerRoot` queda en 256. Tabla en §9 de la spec.
 - **Archivos clave:** `packages/contracts/test/AC14_Gas.t.sol`, `odd/specs/m1-contracts-gate.md`.

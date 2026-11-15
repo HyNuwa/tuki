@@ -2,8 +2,9 @@
 
 **Última actualización:** 2026-11-14
 
-## Foco vigente
-**M1, gate de contratos** ([m1-contracts-gate.md](../../../odd/specs/m1-contracts-gate.md)), rama `feat/m1-contracts-gate`. Pasan M1-AC0 a AC14. Gas medido y `maxLeavesPerRoot` = 256.
+## Current focus
+M1 contract gate, branch `feat/m1-contracts-gate`. Maximiliano authorized correcting payer authentication of Task terms and is responsible for coordinating the paired M1 §3 / M2a §7 change. Alexxe's departure is not assumed; verifier quorum remains 2-of-2 with separate key holders required for the claimed trust model.
 
-**Próximo paso:** M1-AC15 (invariantes) y después M1-AC16 en Base Sepolia real.
-**Bloqueos:** ninguno para AC15. El valor de `preApprovalExpiry` para las Tasks sigue [Pending] (M1 §2); no frena los contratos. M1-AC16 necesita las claves con fondos en Base Sepolia.
+**Implemented:** bind `PaymentInfo.salt` to `keccak256(abi.encode(taskId, termsHash))`, retaining the existing ERC-3009 signature and all function/event ABIs. Reproduced RED, then focused GREEN; full suite and independent verifier passed all 123 fork tests (AC0–AC14 plus binding regressions); baseline 116 PASS and meaningful regression RED confirmed. Old authorizations require regeneration. AC15's pre-existing files and fixture/config changes remain separate and uncommitted.
+**Next step:** complete native review for this security work unit, then resume AC15 and `Int02.s.sol`. Prior AC0 re-run: 11 PASS; prior gas measurements retain `maxLeavesPerRoot = 256`.
+**Pending:** native review of this correction, effective invariant coverage, capture-receipt semantics, Task `preApprovalExpiry` selection and real AC16 proof. No real-network run until replacement funded testnet credentials and the verifier-key-holder arrangement are safely established. Never inspect `.env*` files or use chat-exposed keys.

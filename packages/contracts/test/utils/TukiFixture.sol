@@ -121,7 +121,7 @@ abstract contract TukiFixture is BaseSepoliaFork {
             minFeeBps: 3000,
             maxFeeBps: 3000,
             feeReceiver: feeReceiver,
-            salt: uint256(taskId)
+            salt: uint256(keccak256(abi.encode(taskId, keccak256(abi.encode(TASK_TERMS_TYPEHASH, terms)))))
         });
     }
 

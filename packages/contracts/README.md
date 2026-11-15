@@ -32,3 +32,16 @@ forge test
 ```
 
 Fork tests assert balance changes, not absolute balances: labelled test addresses may already hold USDC on Base Sepolia.
+
+## Task authorization commitment
+
+Before signing ERC-3009, the payer's client must verify the quoted terms and build:
+
+```solidity
+bytes32 termsHash = keccak256(abi.encode(TASK_TERMS_TYPEHASH, terms));
+paymentInfo.salt = uint256(keccak256(abi.encode(taskId, termsHash)));
+```
+
+Use the exact `TaskTerms` field order and type hash in M1 §3.2, mirrored in M2a §7. The escrow payment hash (and therefore the collector's ERC-3009 nonce) commits to this salt. An altered term cannot reuse the original authorization, even when the sum of the timeline periods stays unchanged. No additional payer signature is required.
+
+The old `salt = uint256(taskId)` format is no longer accepted by `TaskPolicy`; outstanding authorizations using that format must be regenerated. The function/event ABIs and the 2-of-2 verifier quorum are unchanged.
