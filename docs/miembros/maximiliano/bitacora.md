@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · feat(repo): add bounded local CPU OCR protocol
+- **Qué hice:** reconstruir el CLI OCR local, sus pruebas públicas y el smoke real sintético con los mismos bytes del worker originalmente verificado; cerrar specs/reporte sin procesar tickets reales ni implementar M3.
+- **Archivos clave:** `worker.py`, `tests/test_worker.py`, `tests/smoke_engine.py`, README, spec M2b, reporte y coordinación. Verificación: 31 pruebas normales y optimizadas, 8 archivos AST, smoke CPU exacto `TUKI 12345` (una región, stderr vacío, entrada intacta), 231 pruebas del checker y typecheck. Árbol final del worker debe igualar `6a3150a`.
+- **Próximo paso:** registrar el hash final y confirmar identidad del árbol. Riesgos 2 y 5; evidencia independiente previa aplica a bytes idénticos. Sin tickets reales, Fluence, credenciales, push ni PR. Revertir esta unidad elimina CLI/smoke/documentación dependiente, conservando entorno y adquisición.
+
 ## 2026-11-15 · feat(repo): add verified OCR model acquisition
 - **Qué hice:** reconstruir como unidad usable la adquisición explícita de los seis archivos de modelos oficiales, con manifiesto, hashes, límites, rutas privadas y errores controlados; código y pruebas son idénticos al original verificado.
 - **Archivos clave:** `assets.py`, `fetch_models.py`, `models.json`, fixtures y pruebas de adquisición/ciclo de vida, más README y recuperación. Verificación: 11+1 pruebas normales y optimizadas aprobadas; los modelos privados existentes devolvieron `ready` sin descarga. Una invocación inicial por nombre de módulo no agregó `tests` al import path; el discovery documentado pasó sin cambios.
