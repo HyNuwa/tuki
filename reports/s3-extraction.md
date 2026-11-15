@@ -1,6 +1,6 @@
 # S3 extraction and selective-redaction viability
 
-**Verdict: INCONCLUSIVE / NOT RUN.** This is the experiment's preparation record, not a completed M2b exit. No real receipt has been inspected, no extraction request has been sent, and no provider has been selected.
+**Verdict: INCONCLUSIVE / NO QUALIFYING EXPERIMENT RUN.** This is not a completed M2b exit. Three user-approved web examples were qualitatively inspected in this assistant session, without standalone extraction API requests; none qualify for the consented-team corpus. No provider has been selected or benchmarked.
 
 Date: 2026-11-15. Coordinator: Maximiliano, under the user's explicit authorization. Scope: [M2b](../odd/specs/m2-s3-extraction-spike.md). Procedure: [S3 protocol](../spikes/s3-extraction/PROTOCOL.md).
 
@@ -12,12 +12,16 @@ Date: 2026-11-15. Coordinator: Maximiliano, under the user's explicit authorizat
 | Calibration / held-out split | Target 20 / 80; actual 0 / 0. |
 | Stores, printers and quality strata | [Pending: private corpus and coverage inventory]. |
 | Owner consent and handwritten ground truth | [Pending: private records; no third-party receipts]. |
-| External corpus path | [Pending: user supplies `S3_DATASET_DIR` outside the repository]. |
+| External corpus path | A private directory with three web examples was supplied for exploratory-only inspection; an eligible consented-team corpus via `S3_DATASET_DIR` remains pending. |
 | Selected provider, endpoint, model version | [Pending: team selection and actual account approval]. |
 | Spending limit / actual requests | [Pending: approved budget]; actual requests: 0. No charge is inferred from a nonexistent run. |
 | Public-policy research | Separate [unapproved-candidate evidence memo](../spikes/s3-extraction/provider-retention.md); public terms do not verify account settings. |
 
 The user delegated sample size; 100 is an experiment target, not a guarantee. Freeze the procedure after the 20-receipt pilot, then evaluate the remaining 80 without tuning. Report actual counts and any justified expansion or incomplete coverage. The supporting document's old 95%/90% thresholds are not adopted as a new acceptance policy.
+
+## Separate exploratory observation
+
+See [the three-example inspection](../spikes/s3-extraction/EXPLORATORY-NOTES.md). All three files decoded; two are cropped receipt sections, one shows a non-Argentine fiscal context, and none exposes an Argentine QR in the supplied frame. Existing masks do not establish redaction quality. Exact-decimal spot-checks found that discounts, split payment and per-package versus aggregate rounding need explicit treatment. This is not a provider-accuracy result, fiscal-verification failure or qualifying sample. **[Pending]** Resolve the monetary representation gap in M2b/M3 before implementing a reconciliation convention; the output contract below is unchanged.
 
 ## Required measurements
 
@@ -49,10 +53,10 @@ The M3-facing output contract is unchanged:
 - Chosen provider/model: **[Pending]**; the research shortlist is not a selection.
 - Automatic-accept and manual-review confidence thresholds: **[Pending]**, to propose from calibration and freeze before held-out evaluation.
 - Whether measured quality and manual effort are acceptable at reasonable cost: **[Pending: user's decision from actual numbers]**.
-- M2b exit: **not satisfied**. There is no measured reliability failure yet; the experiment has not run. M3 must not treat this skeleton as successful provider/viability proof.
+- M2b exit: **not satisfied**. There is no measured reliability failure yet; the qualifying experiment has not run. M3 must not treat the report or the separate web-example inspection as successful provider/viability proof.
 
 ## Privacy boundary and next input
 
 Images, personal extraction outputs, handwritten annotations, consent records and detailed per-receipt results stay outside the public repository. No raw-image upload, paid request, `.env` access, credential discovery or cloud retention period is authorized by this report. Q11 requires local EXIF handling and selective redaction; uncertain personal-data removal stays in manual review.
 
-Next input: the private corpus directory containing consented team receipts. Provider/account/mode approval, retention verification and an explicit spending limit are separate prerequisites before any external request. Until then, only public-document research and local preparation may proceed.
+Open inputs: eligible consented-team receipts and handwritten truth; a decision on the discount/rounding representation gap; approved provider/account/mode, applicable retention and a spending limit before any external request. The separate three-web-example inspection is complete; it does not approve broader image processing or additional services.

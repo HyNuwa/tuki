@@ -12,6 +12,8 @@ Can a vision LLM behind `Extractor`, plus server-side selective redaction, proce
 - Ground truth per receipt written by hand: fiscal QR fields, items, prices, total, and bounding boxes of every personal-data region (name, DNI, CUIT of the buyer, card digits).
 - Candidate providers: at most three vision LLMs, each evaluated for image-retention terms before any image is sent [Pending: provider list chosen by the team].
 
+Exploratory-only exception authorized by the user on 2026-11-15: qualitatively inspect the three supplied web examples in this assistant session, without external extraction API calls, redistribution or admission to the consented real corpus. Their source/owner consent and reuse rights are not established. This does not change the real-data exit requirements or approve any provider.
+
 ## 3. Measurements (the report must contain every one)
 
 | Metric | Definition |
@@ -59,7 +61,9 @@ None; runs in parallel with M1 and M2a. M3 depends on its exit.
 
 - [Verified] Sample target selected under the user's delegation: 100, with a 20/80 calibration/evaluation split. This reconciles the supporting stack document's 100-receipt scale; its legacy accuracy thresholds are not silently adopted.
 - [Prepared, not run] Protocol, public-source retention memo and [report skeleton](../../reports/s3-extraction.md) committed as `efb6f13`; structural/schema/metric/link checks passed. Native assessment is passive, no review due. All empirical metrics remain unavailable until real execution. The fixed `Extractor` schema is unchanged; no production adapter is claimed.
-- [Pending] Private corpus via `S3_DATASET_DIR`, owner consent records and handwritten ground truth. No path has been supplied; do not scan personal folders for receipts.
+- [Pending] Eligible real corpus via `S3_DATASET_DIR`, owner consent records and handwritten ground truth. A private directory with three web examples has been supplied for the separate exploratory-only exception; it is not an eligible real corpus. Do not scan other personal folders for receipts.
 - [Pending] Team-approved candidate list (at most three), actual provider/account/API mode and spending limit. Public retention research is not upload consent, account verification or a provider choice.
 - [Pending] Precise serialization/coordinate conventions not already specified by the fixed output shape must be resolved before an executable adapter/M3 integration; no interpretation is imposed by the preparation documents.
+- [Exploratory-only complete] Three web examples were visually inspected in this assistant session, without standalone extraction API calls. Aggregate [findings](../../spikes/s3-extraction/EXPLORATORY-NOTES.md) cover cropping, missing visible fiscal QR, discounts, split tender and a fractional-weight rounding edge. They are excluded from the qualifying corpus and all provider metrics.
+- [Pending] The existing `Extractor` shape does not explicitly represent line totals or discounts/adjustments; quantity precision, gross/net price semantics and rounding stage are unspecified. Decide the representation jointly for M2b/M3 before an executable adapter silently invents one. No shared fields have changed.
 - [Pending] Real measurements, confidence thresholds, provider choice and the user's reasonable-cost verdict. No M2b viability PASS/FAIL is inferred from this preparation.
