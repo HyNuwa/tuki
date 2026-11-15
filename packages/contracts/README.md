@@ -89,3 +89,13 @@ Append `--broadcast --slow` only for an authorized real run. Without `--broadcas
 Bootstrap is **eight separate transactions, not atomic**. If a submission fails or its outcome is unknown, stop and reconcile receipts, deployed addresses and sender nonces. Preserve the artifact directory; do not blindly rerun bootstrap or discard an unfinished run. Use Foundry's documented `--resume` only after confirming its nonce/state conditions. Never use `vm.warp` for real-network execution.
 
 Record contract addresses and confirmed transaction hashes in M1 §9. A dry-run or passing fork test never closes AC16 or establishes physical verifier independence.
+
+### Additional section 5 live dispute check
+
+The three AC16 paths above do not themselves exercise capture with an unresolved dispute. Use `script/Int02Dispute.s.sol:Int02Dispute` with the existing deployment, not another bootstrap. The payer needs 2 USDC and gas; the existing vault needs 1 USDC free reserve. Nonces 3 and 4 must be unused. This adds five transactions, not an atomic operation:
+
+1. `--sig "openDisputedTask(address)" <POLICY>` authorizes 2 USDC, registers delivery with precomputed 2-of-2 signatures, then opens a payer dispute. All verifier signatures are made before `openTask`; only the payer signs transactions after it. Retain the returned Task deadline and capture calldata privately. Never broadcast that capture calldata.
+2. After the stored real `disputeDeadline`, and before authorization expiry, submit the returned capture calldata with read-only `eth_call` at a recorded block. Require `DisputeUnresolved(taskId)`, not a signature, deadline or expiry error. Verify the authorization, balances, reserve lock and unused capture nonce remain unchanged. This probe requires no keys.
+3. After the returned Task deadline plus 8 minutes, run `--sig "reclaimDisputedTask(address,uint48)" <POLICY> <TASK_DEADLINE>` with only the payer key and RPC available. It directly reclaims the 2 USDC on the escrow and releases the lock without a verifier resolution.
+
+The same chain guard, private artifact paths, receipt reconciliation and no-blind-retry rule apply. Do not warp live-network time. Run `forge test --match-contract '^Int02_DisputeScriptTest$'` before execution; record actual rejection data, receipts and final accounting in M1 §9.
