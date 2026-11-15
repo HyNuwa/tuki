@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-14 · test(contracts): verify non-vacuous reserve and capture invariants
+- **What:** complete AC15's handler-based I10/I1 monitor, seed every financial lifecycle branch and assert coverage/positive transfers so early returns cannot pass vacuously. Extract the shared fixture deployment helper without changing production contracts. Configure 32 sequences of 50 calls with unexpected reverts failing the campaign. The prior terms-binding fix `f1a30b8` completed its three-lens native review with no findings and an acknowledged, burned authority.
+- **Key files:** `packages/contracts/test/AC15_Invariants.t.sol`, `test/utils/TukiHandler.sol`, `test/utils/TukiFixture.sol`, `foundry.toml`, contract README and M1 §9.
+- **Checks:** RED without deterministic coverage (`coverage: fund: 0 <= 0`), then seeded smoke GREEN. Independent default campaign: 32 runs / 1600 calls / 0 reverts; full suite: 124 PASS / 0 failures or skips, preserving 123 prior tests. Two temporary negative controls detected an accounting error and an inconsistent synthetic maximum. Scoped formatting/whitespace and parent formatting spot check passed. Rollback boundary: remove this monitor/handler, invariant settings and fixture extraction together, leaving the terms-binding fix unchanged. No real-network transaction or production-source edit occurred.
+- **Next step:** native assessment of this work unit; prepare INT-02 tooling and safely resolve replacement funded testnet keys, second verifier key holder, Task pre-approval expiry and capture-receipt semantics before claiming M1 exit. No push or PR.
+
 ## 2026-11-14 · fix(contracts): bind task terms to payer authorization
 - **What:** bind the existing ERC-3009 authorization to `taskId` and all quoted `TaskTerms` through the payment salt. The previous salt authenticated only the Task identifier, allowing a relayer to change dispute windows or economics while keeping the payer's signature. Update M1 §3 and M2a §7 together under Maximiliano's explicit authorization; do not change the ABI or 2-of-2 quorum. Legacy authorizations must be regenerated.
 - **Key files:** `packages/contracts/src/TaskPolicy.sol`, `test/TaskPolicy_TermsBinding.t.sol`, `test/AC2_OpenTaskGuards.t.sol`, the quote fixture, contract README and paired specs.

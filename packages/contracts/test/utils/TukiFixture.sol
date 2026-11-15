@@ -54,6 +54,11 @@ abstract contract TukiFixture is BaseSepoliaFork {
 
     function _deployTuki() internal {
         _selectFork();
+        _deployContracts();
+    }
+
+    /// @dev Requires the fork to be selected already.
+    function _deployContracts() internal {
         (payer, payerKey) = makeAddrAndKey("tuki-agent");
         (verifierA, verifierAKey) = makeAddrAndKey("tuki-verifier-a");
         (verifierB, verifierBKey) = makeAddrAndKey("tuki-verifier-b");

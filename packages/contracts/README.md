@@ -45,3 +45,13 @@ paymentInfo.salt = uint256(keccak256(abi.encode(taskId, termsHash)));
 Use the exact `TaskTerms` field order and type hash in M1 §3.2, mirrored in M2a §7. The escrow payment hash (and therefore the collector's ERC-3009 nonce) commits to this salt. An altered term cannot reuse the original authorization, even when the sum of the timeline periods stays unchanged. No additional payer signature is required.
 
 The old `salt = uint256(taskId)` format is no longer accepted by `TaskPolicy`; outstanding authorizations using that format must be regenerated. The function/event ABIs and the 2-of-2 verifier quorum are unchanged.
+
+## Invariant campaign
+
+```sh
+forge test --match-contract AC15_InvariantsTest -vv
+```
+
+The default campaign runs 32 sequences of 50 generated handler calls with `fail_on_revert = true`. A deterministic lifecycle first exercises funding, locks, delivery, reward publication/claim, capture, disputes, void and payer reclaim; the accounting and capture-bound properties are checked after each transition. Coverage assertions require successful operations and positive captured funds and claimed rewards, so early-return handler calls cannot turn an empty campaign into a passing proof. A live delivered Task remains available to the randomized suffix.
+
+The monitor checks vault balance against free reserve, Task locks and committed rewards; aggregate locks and epoch liabilities; token-flow accounting; and each Task's captured/held amount against its authorized maximum. Logged successful-action counters are distinct from Foundry's selector invocation counts. These fork tests do not replace AC16's real Base Sepolia execution or an audit.

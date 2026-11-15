@@ -14,3 +14,8 @@ fs_permissions = []
 
 [rpc_endpoints]
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+
+[invariant]
+runs = 32
+depth = 50
+fail_on_revert = true

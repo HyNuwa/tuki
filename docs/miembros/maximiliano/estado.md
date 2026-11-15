@@ -3,8 +3,8 @@
 **Última actualización:** 2026-11-14
 
 ## Current focus
-M1 contract gate, branch `feat/m1-contracts-gate`. Maximiliano authorized correcting payer authentication of Task terms and is responsible for coordinating the paired M1 §3 / M2a §7 change. Alexxe's departure is not assumed; verifier quorum remains 2-of-2 with separate key holders required for the claimed trust model.
+M1 contract gate, branch `feat/m1-contracts-gate`. Maximiliano owns development coordination; Alexxe's departure is not assumed. The 2-of-2 threshold and separate verifier key-holder requirement remain unchanged.
 
-**Implemented:** bind `PaymentInfo.salt` to `keccak256(abi.encode(taskId, termsHash))`, retaining the existing ERC-3009 signature and all function/event ABIs. Reproduced RED, then focused GREEN; full suite and independent verifier passed all 123 fork tests (AC0–AC14 plus binding regressions); baseline 116 PASS and meaningful regression RED confirmed. Old authorizations require regeneration. AC15's pre-existing files and fixture/config changes remain separate and uncommitted.
-**Next step:** complete native review for this security work unit, then resume AC15 and `Int02.s.sol`. Prior AC0 re-run: 11 PASS; prior gas measurements retain `maxLeavesPerRoot = 256`.
-**Pending:** native review of this correction, effective invariant coverage, capture-receipt semantics, Task `preApprovalExpiry` selection and real AC16 proof. No real-network run until replacement funded testnet credentials and the verifier-key-holder arrangement are safely established. Never inspect `.env*` files or use chat-exposed keys.
+**Completed:** payer-authenticated Task terms in `f1a30b8`, with paired M1/M2a specs, 123 passing fork tests, independent baseline comparison and native risk/readability/reliability review without findings. Exact acknowledgement closed that review. AC15's separate work unit now has independent 32-run / 1600-call coverage with no reverts and a full suite of 124 passing tests; negative controls confirm monitor sensitivity. Production contracts are unchanged by AC15. Native assessment for AC15 is next.
+**Next step:** complete the work-unit assessment, then prepare `Int02.s.sol` and real AC16 prerequisites. `maxLeavesPerRoot` remains 256; gas results are in M1 §9.
+**Pending:** AC16 script and real-network proof, Task `preApprovalExpiry`, capture-receipt/unsolicited-transfer semantics, replacement funded testnet credentials and the second verifier key holder. Never inspect `.env*` files or use chat-exposed keys. No push, PR or deployment has been performed.
