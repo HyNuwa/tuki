@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · feat(web): add contributor PWA with persisted review flow
+- **Qué hice:** portar Tira térmica y fuentes propias a la PWA real: panel, carga/arrastre/vista previa, procesamiento, error/reintento, revisión con procedencia y recorte OCR fijo, detalle, historial filtrado y once módulos sin funcionalidad simulada. API relativa /api, caché solo del shell, ejemplos sintéticos procesados por OCR real.
+- **Archivos clave:** `apps/contributor-web/`, lock raíz y seguimiento M3. RED inicial por App ausente; segundo RED reprodujo el bloqueo de completar tras guardar: comparar JSON crudo confundía orden de claves con cambios. GREEN compara valores de campos en orden canónico y conserva el orden de líneas.
+- **Próximo paso:** coordinador verifica riesgos y decide T4 por separado; sin despliegue, R2, .env, push ni PR. Pruebas finales: 10 dominio + 8 API (6 PostgreSQL 16 real/Testcontainers) + 5 web; typecheck, build y 18 Python aprobados. Flujo real navegador → API → OCR → edición → guardado → validación fiscal pendiente aprobado. Ejemplo con errores devuelve advertencia total_mismatch y cinco líneas sin clasificar. A 390/1366 px no hubo desborde horizontal. Instalación PWA nativa no verificada. Riesgos 2/5: frontera de datos/caché y dependencias; revisión independiente a cargo del coordinador.
+
+
 ## 2026-11-15 · feat(api): persist contribution review and bridge local OCR
 - **Qué hice:** crear Hono + PostgreSQL 16/Drizzle, migración, carga normalizada/dedupe, evidencia inmutable, revisión con procedencia, historial, panel y reintento; reutilizar parser/normalización/worker Python mediante CLI con salida acotada y errores estables. Agregué puerto MediaStorage local para futura integración R2, sin leer .env ni contactar servicios.
 - **Archivos clave:** `apps/api/`, `spikes/s3-extraction/demo/extract_cli.py`, `spikes/s3-extraction/demo/tests/test_extract_cli.py`, lock raíz.
