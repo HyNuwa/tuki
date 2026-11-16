@@ -1,0 +1,6 @@
+{
+  "name": "@tuki/contributor-web", "private": true, "version": "0.0.0", "type": "module",
+  "scripts": { "dev": "vite --host 127.0.0.1", "build": "tsc --noEmit && vite build && node scripts/build-shell.mjs", "preview": "vite preview --host 127.0.0.1", "test": "vitest run", "typecheck": "tsc --noEmit" },
+  "dependencies": { "@tuki/domain": "workspace:*", "react": "19.3.1", "react-dom": "19.3.1" },
+  "devDependencies": { "@types/node": "24.19.2", "@types/react": "19.3.0", "@types/react-dom": "19.3.0", "typescript": "7.0.2", "vite": "8.3.8", "vitest": "5.1.0", "jsdom": "31.0.1" }
+}

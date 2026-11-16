@@ -2,6 +2,30 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · fix(api): clean OCR timeouts and canonicalize storage paths
+- **Qué hice:** corregir juntos B1 (S5) y B2 (S6) del verificador independiente. La API ahora crea y elimina su propio directorio temporal después de terminar el árbol del proceso; Python solo anida evidencia dentro de ese directorio. El guard de STORAGE_DIR usa rutas físicas y límite por componente, resolviendo ancestros existentes y junctions; los alias rotos fallan de forma cerrada.
+- **Archivos clave:** `apps/api/src/ingestion/bridge.ts`, `src/storage/directory.ts`, `src/main.ts`, pruebas de timeout/arranque, `spikes/s3-extraction/demo/extract_cli.py` y su prueba CLI. No se modificó ni borró el scratch del verificador.
+- **Próximo paso:** recheck independiente limitado a B1/B2 por el coordinador. RED observado: timeout dejó `tuki-api-ocr-*`; `..media` y junction hacia adentro llegaron a listen con exit 0. GREEN: ambos regresores pasan; suite completa 25 Vitest (10 dominio, 10 API, 5 web; PostgreSQL16 real), typecheck y 19 Python pasan. Riesgos 2/4: contención física y limpieza tras terminación. Sin push, R2, .env ni trabajo remoto.
+
+
+## 2026-11-15 · feat(web): add contributor PWA with persisted review flow
+- **Qué hice:** portar Tira térmica y fuentes propias a la PWA real: panel, carga/arrastre/vista previa, procesamiento, error/reintento, revisión con procedencia y recorte OCR fijo, detalle, historial filtrado y once módulos sin funcionalidad simulada. API relativa /api, caché solo del shell, ejemplos sintéticos procesados por OCR real.
+- **Archivos clave:** `apps/contributor-web/`, lock raíz y seguimiento M3. RED inicial por App ausente; segundo RED reprodujo el bloqueo de completar tras guardar: comparar JSON crudo confundía orden de claves con cambios. GREEN compara valores de campos en orden canónico y conserva el orden de líneas.
+- **Próximo paso:** coordinador verifica riesgos y decide T4 por separado; sin despliegue, R2, .env, push ni PR. Pruebas finales: 10 dominio + 8 API (6 PostgreSQL 16 real/Testcontainers) + 5 web; typecheck, build y 18 Python aprobados. Flujo real navegador → API → OCR → edición → guardado → validación fiscal pendiente aprobado. Ejemplo con errores devuelve advertencia total_mismatch y cinco líneas sin clasificar. A 390/1366 px no hubo desborde horizontal. Instalación PWA nativa no verificada. Riesgos 2/5: frontera de datos/caché y dependencias; revisión independiente a cargo del coordinador.
+
+
+## 2026-11-15 · feat(api): persist contribution review and bridge local OCR
+- **Qué hice:** crear Hono + PostgreSQL 16/Drizzle, migración, carga normalizada/dedupe, evidencia inmutable, revisión con procedencia, historial, panel y reintento; reutilizar parser/normalización/worker Python mediante CLI con salida acotada y errores estables. Agregué puerto MediaStorage local para futura integración R2, sin leer .env ni contactar servicios.
+- **Archivos clave:** `apps/api/`, `spikes/s3-extraction/demo/extract_cli.py`, `spikes/s3-extraction/demo/tests/test_extract_cli.py`, lock raíz.
+- **Próximo paso:** T3, PWA React. RED observado por API/CLI ausentes; GREEN: dominio 10, API 8 (6 integración con PostgreSQL 16 real vía Testcontainers), Python 18, typecheck. Docker fue habilitado por el usuario durante la tarea; la integración real pasó. Build web aún no aplicable. Riesgos 2/4/5: privacidad, exclusión OCR y dependencias; revisión independiente queda a cargo del coordinador.
+
+
+## 2026-11-15 · feat(domain): bootstrap workspace and receipt review domain
+- **Qué hice:** crear workspace pnpm raíz y portar dinero atómico, procedencia y revisión pura desde la demo; agregar etiquetas exactas y advertencias aritméticas sin corrección automática. RED observado por módulo inexistente; GREEN: 10 pruebas y typecheck. Build web aún no aplicable: paquete de T3 inexistente.
+- **Archivos clave:** `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `tsconfig.base.json`, `packages/domain/`.
+- **Próximo paso:** implementar API y persistencia PostgreSQL en T2. Riesgo 5: bootstrap y dependencias fijadas.
+
+
 ## 2026-11-15 · feat(demo): apply thermal strip design to review PWA
 - **Qué hice:** aplicar la dirección "Tira térmica" a la demo de revisión de tickets sin cambiar API, parser, errores, privacidad ni caché offline. Cada valor muestra su procedencia (extraído, corregido, no detectado) con contadores; enfocar un campo resalta su fragmento OCR y fija un recorte arriba del formulario; carga por arrastrar y soltar. Fuentes propias en WOFF2 porque el CSP del servidor es `default-src 'self'`.
 - **Archivos clave:** `spikes/s3-extraction/demo/src/` (`main.tsx`, `style.css`, `review.ts` con `provenance()`, `fonts/`), `server.py` (sirve `.woff2` como `font/woff2`; otros tipos siguen bloqueados), pruebas, `DESIGN.md`, README y manifiesto. RED/GREEN observado: 3 pruebas de procedencia y 1 de fuentes. Pruebas: 7 Vitest, 15 Python, typecheck y build. OCR real de "Impresión defectuosa" e "Incompleto" en una segunda instancia local (:8766); 390 px sin desborde. Instalación PWA nativa y teléfono físico no verificados.
