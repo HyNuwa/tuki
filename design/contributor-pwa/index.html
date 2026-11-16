@@ -1,0 +1,1365 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121210">
+<title>Tuki · Contribuyentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Silkscreen&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#121210;
+  --ground-2:#1c1c19;
+  --ground-line:#34342f;
+  --on-ground:#fcfcf9;
+  --on-ground-2:#b9b9ae;
+  --paper:#fcfcf9;
+  --paper-2:#f2f2ec;
+  --paper-3:#e6e6de;
+  --ink:#121210;
+  --ink-2:#45453f;
+  --ink-3:#64645c;
+  --lilac:#c9b0f5;
+  --lilac-deep:#9d7ae6;
+  --yellow:#ffe14d;
+  --yellow-soft:#fff4b8;
+  --cyan:#7fd3ef;
+  --coral:#ff8a6b;
+  --coral-soft:#ffd9cd;
+  --mint:#9be3b5;
+  --f-ui:"Schibsted Grotesk", system-ui, sans-serif;
+  --f-mono:"Martian Mono", ui-monospace, monospace;
+  --f-pix:"Silkscreen", var(--f-mono);
+  --r-pill:999px;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --gutter:12px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scrollbar-color:var(--ground-line) var(--ground)}
+body{margin:0;background:var(--ground);color:var(--on-ground);font:400 16px/1.45 var(--f-ui);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+::selection{background:var(--lilac);color:var(--ink)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--ground)}
+::-webkit-scrollbar-thumb{background:var(--ground-line);border-radius:10px;border:2px solid var(--ground)}
+a{color:inherit;text-underline-offset:3px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--lilac);outline-offset:3px;border-radius:6px}
+.paper :focus-visible{outline-color:var(--ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.num,.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ---------- prototype strip ---------- */
+.proto{font:500 11.5px/1.4 var(--f-mono);letter-spacing:.02em;color:var(--on-ground-2);background:var(--ground-2);border-bottom:1px solid var(--ground-line);padding:7px var(--gutter);text-align:center}
+.proto b{color:var(--yellow);font-weight:700}
+
+/* ---------- shell ---------- */
+.app{min-height:100dvh;display:grid;grid-template-rows:auto 1fr}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px var(--gutter) 6px}
+.rail{display:none}
+.logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+.stamp{display:inline-grid;place-items:center;border:2px solid var(--on-ground);border-radius:50%;padding:3px 14px 4px;font:900 22px/1 var(--f-ui);letter-spacing:-.02em;transform:rotate(-4deg)}
+.logo svg.px{width:20px;height:24px}
+.chip-session{display:inline-flex;align-items:center;gap:8px;background:var(--lilac);color:var(--ink);border:1px solid var(--ink);border-radius:var(--r-pill);padding:5px 11px;font:700 11.5px/1 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.chip-session::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink)}
+main{padding:8px var(--gutter) 120px;min-width:0}
+.view{max-width:1180px;margin:0 auto}
+
+/* bottom nav (mobile) */
+.bnav{position:fixed;left:var(--gutter);right:var(--gutter);bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;align-items:center;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:var(--r-pill);padding:6px;box-shadow:0 6px 14px -6px rgba(0,0,0,.6)}
+.bnav a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:var(--r-pill);text-decoration:none;font:600 11.5px/1.1 var(--f-ui);color:var(--ink-2)}
+.bnav a[aria-current="page"]{color:var(--ink)}
+.bnav a[aria-current="page"] svg{stroke-width:2.1}
+.bnav a.cta{width:56px;height:56px;margin:0 6px;justify-content:center;background:var(--ink);color:var(--paper);border-radius:50%}
+.bnav a.cta svg{width:24px;height:24px}
+.bnav a.cta span{display:none}
+
+@media (min-width:960px){
+  :root{--gutter:32px}
+  .proto{text-align:left;padding-left:280px}
+  .app{grid-template-columns:248px 1fr;grid-template-rows:1fr}
+  .top,.bnav{display:none}
+  .rail{display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100dvh;padding:28px 22px;border-right:1px solid var(--ground-line)}
+  .rail nav{display:grid;gap:6px}
+  .rail nav a{display:flex;align-items:center;gap:12px;padding:11px 16px;border:1px solid transparent;border-radius:var(--r-pill);text-decoration:none;font:600 15px/1 var(--f-ui);color:var(--on-ground-2);transition:background .2s,color .2s,border-color .2s}
+  .rail nav a:hover{color:var(--on-ground);border-color:var(--ground-line)}
+  .rail nav a[aria-current="page"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .rail nav a.cta-rail{margin-top:10px;background:transparent;border-color:var(--on-ground);color:var(--on-ground)}
+  .rail nav a.cta-rail:hover{background:var(--on-ground);color:var(--ink)}
+  .rail .foot{margin-top:auto;display:grid;gap:10px;font:500 11.5px/1.5 var(--f-mono);color:var(--on-ground-2)}
+  main{padding:36px var(--gutter) 64px}
+}
+
+/* ---------- type ---------- */
+.h1{font:600 clamp(2.1rem,7.4vw,3.6rem)/1 var(--f-ui);letter-spacing:-.035em;margin:18px 0 12px;text-wrap:balance;max-width:16ch}
+.lede{color:var(--on-ground-2);max-width:56ch;margin:0 0 24px;font-size:16px}
+.h2{font:400 13px/1.2 var(--f-pix);letter-spacing:.04em;text-transform:uppercase;margin:0}
+.h3{font:600 20px/1.15 var(--f-ui);letter-spacing:-.015em;margin:0}
+
+/* ---------- paper strip ---------- */
+.paper{position:relative;background:var(--paper);color:var(--ink);--tooth:12px}
+.paper.tear-b{margin-bottom:12px}
+.paper.tear-b::after,.paper.tear-t::before{content:"";position:absolute;left:0;right:0;height:9px;background-size:var(--tooth) 9px;background-repeat:repeat-x}
+.paper.tear-b::after{bottom:-8px;background-image:radial-gradient(circle at 50% 9px,transparent 5px,var(--paper) 5.5px)}
+.paper.tear-t{margin-top:12px}
+.paper.tear-t::before{top:-8px;background-image:radial-gradient(circle at 50% 0,transparent 5px,var(--paper) 5.5px)}
+.wave{height:10px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 5 Q5 0 10 5 T20 5' fill='none' stroke='%23121210' stroke-width='1.2'/%3E%3C/svg%3E") repeat-x left center}
+.ground .wave,.wave.on-ground{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 5 Q5 0 10 5 T20 5' fill='none' stroke='%2334342f' stroke-width='1.2'/%3E%3C/svg%3E")}
+.rule{border:0;border-top:1px solid var(--ink);margin:0}
+.rule.dash{border-top:1px dashed var(--ink-3)}
+.pad{padding:20px 18px}
+@media (min-width:640px){.pad{padding:24px 28px}}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 20px;border-radius:var(--r-pill);border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:600 15px/1 var(--f-ui);text-decoration:none;transition:transform .15s var(--ease-out),background .2s,color .2s}
+.btn:hover{background:var(--paper-2)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--ink);color:var(--paper);justify-content:space-between;padding:0 22px 0 8px;min-width:220px}
+.btn.primary .ic{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--paper);color:var(--ink)}
+.btn.primary:hover{background:#2a2a26}
+.btn.on-ground{background:transparent;color:var(--on-ground);border-color:var(--on-ground)}
+.btn.on-ground:hover{background:var(--on-ground);color:var(--ink)}
+.btn.primary.on-ground{background:var(--paper);color:var(--ink)}
+.btn.primary.on-ground .ic{background:var(--ink);color:var(--paper)}
+.btn.primary.on-ground:hover{background:#fff}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+.btn.sm{min-height:36px;padding:0 14px;font-size:13.5px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{border-color:var(--ink);background:transparent}
+.icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--ink);background:var(--paper);color:var(--ink)}
+.icon-btn:hover{background:var(--paper-2)}
+.icon-btn svg{width:18px;height:18px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* ---------- state chips & stickers ---------- */
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ink);border-radius:var(--r-pill);padding:4px 10px;font:700 11.5px/1.1 var(--f-mono);letter-spacing:.03em;text-transform:uppercase;color:var(--ink);white-space:nowrap;background:var(--paper)}
+.chip[data-s="uploaded"]{background:var(--paper-2)}
+.chip[data-s="processing"]{background:var(--cyan)}
+.chip[data-s="extraction_ready"]{background:var(--paper)}
+.chip[data-s="needs_review"]{background:var(--yellow)}
+.chip[data-s="reviewed"]{background:var(--mint)}
+.chip[data-s="fiscal_pending"]{background:var(--lilac)}
+.chip[data-s="processing_error"]{background:var(--coral)}
+.chip[data-s="processing"]::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink)}
+@keyframes blink{50%{opacity:0}}
+.sticker{display:grid;place-items:center;text-align:center;width:118px;height:118px;border-radius:50%;background:var(--lilac);color:var(--ink);border:1px solid var(--ink);font:800 13px/1.05 var(--f-ui);letter-spacing:.01em;text-transform:uppercase;padding:14px;transform:rotate(-9deg);box-shadow:0 6px 14px -6px rgba(0,0,0,.45)}
+.sticker.yellow{background:var(--yellow)}
+.sticker.coral{background:var(--coral)}
+.tape{display:inline-block;background:var(--yellow);color:var(--ink);font:700 11.5px/1.25 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--ink);transform:rotate(-1.5deg)}
+.tape.ink{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.synthetic-band{margin:0 0 18px}
+
+/* ---------- dotted leaders + provenance ---------- */
+.leader{display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:8px;padding:7px 0;font:500 13.5px/1.35 var(--f-mono)}
+.leader .k{flex:none;font:600 12px/1.35 var(--f-mono);letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2);padding-bottom:2px}
+.leader .dots{flex:1 1 14px;border-bottom:2px dotted var(--ink-3);height:0;margin-bottom:7px;min-width:14px}
+.leader .v{flex:0 1 auto;margin-left:auto;font:500 13.5px/1.35 var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;color:var(--ink);overflow-wrap:anywhere;padding-bottom:2px}
+.leader>.mark,.leader>span:last-child:empty{flex:none;width:11px}
+.leader .v.empty{color:var(--ink-3)}
+.leader.big .k{font-size:14px;color:var(--ink)}
+.leader.big .v{font:700 20px/1.2 var(--f-mono)}
+input.v{border:0;border-bottom:1px solid transparent;background:transparent;padding:2px 2px 2px;border-radius:0;min-width:5ch;max-width:100%;width:auto;field-sizing:content}
+input.v::placeholder{color:var(--ink-3)}
+input.v:hover{border-bottom-color:var(--ink-3)}
+input.v:focus{outline:none;border-bottom:2px solid var(--ink);background:var(--yellow-soft)}
+.mark{width:11px;height:11px;margin-bottom:6px;justify-self:end}
+.mark[data-o="extracted"]{background:var(--ink)}
+.mark[data-o="corrected"]{background:var(--lilac-deep);border:1px solid var(--ink);transform:rotate(45deg) scale(.92)}
+.mark[data-o="missing"]{border:1.5px solid var(--ink);background:transparent}
+.was{font:500 11.5px/1.4 var(--f-mono);color:var(--ink-3);margin:-4px 22px 4px 0;text-align:right}
+.was q{quotes:"«" "»";color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font:500 11.5px/1.3 var(--f-mono);color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend .mark{margin:0}
+
+/* ---------- dashboard ---------- */
+.dash{display:grid;gap:28px}
+@media (min-width:960px){.dash{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:start;gap:40px}}
+.summary .head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.summary .px-big{width:40px;height:48px}
+.summary .leader{padding:10px 0}
+.summary .leader .v{font-size:18px;font-weight:700}
+.summary .foot{margin-top:16px;display:flex;justify-content:space-between;align-items:end;gap:14px;font:500 11.5px/1.45 var(--f-mono);color:var(--ink-3)}
+.recent h2{margin:0 0 10px;color:var(--on-ground)}
+.empty{padding:28px 0;display:grid;gap:14px;justify-items:start}
+.empty p{margin:0;color:var(--ink-2);max-width:42ch}
+
+/* ---------- list rows ---------- */
+.rows{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 0;border-top:1px solid var(--ink);text-decoration:none;color:var(--ink)}
+.rows li:first-child .row{border-top:0}
+.row:hover .r-title{text-decoration:underline;text-underline-offset:3px}
+.r-title{font:600 17px/1.2 var(--f-ui);letter-spacing:-.01em}
+.r-title.muted{color:var(--ink-3);font-style:normal}
+.r-meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 14px;font:500 11.5px/1.4 var(--f-mono);color:var(--ink-2)}
+.r-meta .id{color:var(--ink)}
+.r-state{align-self:start}
+.tbl-head{display:none}
+@media (min-width:860px){
+  .history .row{grid-template-columns:150px minmax(0,1.6fr) 140px 64px 170px 210px;align-items:center;padding:16px 0}
+  .history .r-meta{display:contents}
+  .history .r-state{justify-self:end;align-self:center}
+  .history .tbl-head{display:grid;grid-template-columns:150px minmax(0,1.6fr) 140px 64px 170px 210px;gap:12px;padding:0 0 10px;font:700 11.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--ink)}
+  .history .tbl-head span:last-child{text-align:right}
+  .history .row{column-gap:12px}
+  .history .r-title{font-size:16px;order:2}
+  .history .id{order:1}
+  .history .c-date{order:3}.history .c-items{order:4}.history .c-up{order:5}.history .r-state{order:6}
+}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 14px;margin:0 -2px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filt{flex:none;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--on-ground);border-radius:var(--r-pill);padding:8px 14px;background:transparent;color:var(--on-ground);font:600 13.5px/1 var(--f-ui)}
+.filt .n{font:700 11.5px/1 var(--f-mono);opacity:.8}
+.filt[aria-pressed="true"]{background:var(--fc,var(--paper));color:var(--ink);border-color:var(--fc,var(--paper))}
+
+/* ---------- capture ---------- */
+.capture{display:grid;gap:22px}
+@media (min-width:960px){.capture{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:start;gap:36px}}
+.drop{display:grid;place-items:center;text-align:center;gap:14px;min-height:300px;padding:28px 20px;border:1.5px dashed var(--ink);border-radius:22px;background:var(--paper);cursor:pointer;transition:background .2s,border-color .2s}
+.drop:hover{background:var(--paper-2)}
+.drop.over{background:var(--yellow-soft);border-style:solid}
+.drop .px-big{width:56px;height:68px}
+.drop strong{font:600 22px/1.15 var(--f-ui);letter-spacing:-.02em;display:block}
+.drop small{font:500 11.5px/1.5 var(--f-mono);color:var(--ink-2)}
+.drop .btn{pointer-events:none}
+.err{display:flex;gap:10px;align-items:flex-start;background:var(--coral-soft);border:1px solid var(--ink);border-radius:14px;padding:12px 14px;color:var(--ink);font-size:14.5px}
+.err svg{margin-top:1px}
+.preview{display:grid;gap:16px}
+.preview-frame{background:var(--ground-2);border-radius:22px;padding:18px;display:grid;place-items:center;min-height:300px;max-height:560px;overflow:hidden}
+.preview-frame img{max-width:100%;max-height:520px;border-radius:6px}
+.preview-frame svg.receipt{width:100%;max-width:340px;height:auto}
+.file-meta{display:flex;flex-wrap:wrap;gap:6px 16px;font:500 12px/1.4 var(--f-mono);color:var(--on-ground-2)}
+.samples{display:grid;grid-template-columns:1fr;border:1px solid var(--ink);border-radius:22px;overflow:hidden;background:var(--paper)}
+@media (min-width:520px){.samples{grid-template-columns:1fr 1fr}}
+.sample{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;text-align:left;padding:18px;border:0;background:transparent;color:var(--ink);border-top:1px solid var(--ink)}
+.sample:first-of-type{border-top:0}
+@media (min-width:520px){.sample{border-top:0;border-left:1px solid var(--ink)}.sample:first-of-type{border-left:0}}
+.sample:hover{background:var(--paper-2)}
+.sample[aria-pressed="true"]{background:var(--yellow-soft)}
+.sample .thumb{width:62px;height:78px;border-radius:50% 50% 8px 8px / 30% 30% 8px 8px;background:var(--paper-2);border:1px solid var(--ink);display:grid;place-items:center;overflow:hidden}
+.sample .thumb svg{width:56px;height:auto;margin-top:16px}
+.sample b{font:600 16px/1.2 var(--f-ui);display:block;margin-bottom:4px}
+.sample span{font-size:13.5px;color:var(--ink-2);display:block}
+.formats{font:500 11.5px/1.6 var(--f-mono);color:var(--on-ground-2);margin:0}
+
+/* ---------- processing ---------- */
+.proc{display:grid;gap:22px}
+@media (min-width:960px){.proc{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:40px;align-items:start}}
+.scanbox{position:relative;background:var(--ground-2);border-radius:22px;padding:22px;display:grid;place-items:center;overflow:hidden}
+.scanbox svg.receipt{width:100%;max-width:330px;height:auto}
+.scanbox img{max-width:100%;max-height:480px;border-radius:6px}
+.scanbar{position:absolute;left:0;right:0;top:0;height:64px;background:linear-gradient(180deg,transparent,rgba(127,211,239,.0) 20%,rgba(127,211,239,.55) 92%,var(--cyan) 100%);mix-blend-mode:screen;animation:scan 1.8s var(--ease-out) infinite;pointer-events:none}
+@keyframes scan{from{transform:translateY(-70px)}to{transform:translateY(560px)}}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.step{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px dashed var(--ink-3);font:500 14px/1.3 var(--f-ui);color:var(--ink-3)}
+.step:first-child{border-top:0}
+.step .dot{width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center}
+.step .dot svg{width:14px;height:14px;stroke-width:2.4}
+.step[data-st="ok"]{color:var(--ink)}
+.step[data-st="ok"] .dot{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.step[data-st="run"]{color:var(--ink)}
+.step[data-st="run"] .dot{background:var(--cyan);border-color:var(--ink);animation:pulse 1s ease-in-out infinite}
+.step[data-st="fail"]{color:var(--ink)}
+.step[data-st="fail"] .dot{background:var(--coral);border-color:var(--ink)}
+.step .note{font:500 11.5px/1.3 var(--f-mono);color:var(--ink-3);text-align:right}
+@keyframes pulse{50%{transform:scale(.82)}}
+.print{overflow:hidden}
+.print .ln{font:500 12.5px/1.75 var(--f-mono);white-space:pre-wrap;overflow-wrap:anywhere;opacity:0;transform:translateY(-6px);animation:println .32s var(--ease-out) forwards}
+@keyframes println{to{opacity:1;transform:none}}
+.done-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:6px}
+
+/* ---------- review ---------- */
+.review{display:grid;gap:18px}
+.seg{display:inline-grid;grid-template-columns:1fr 1fr;border:1px solid var(--on-ground);border-radius:var(--r-pill);padding:3px;width:100%;max-width:360px}
+.seg button{border:0;background:transparent;color:var(--on-ground);border-radius:var(--r-pill);padding:9px 10px;font:600 14px/1 var(--f-ui)}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--ink)}
+.review[data-pane="data"] .pane-image{display:none}
+.review[data-pane="image"] .pane-data{display:none}
+@media (min-width:960px){
+  .review{grid-template-columns:minmax(300px,.8fr) minmax(0,1.2fr);gap:36px;align-items:start}
+  .review .seg{display:none}
+  .review[data-pane] .pane-image,.review[data-pane] .pane-data{display:block}
+  .pane-image{position:sticky;top:24px}
+}
+.imgwrap{background:var(--ground-2);border-radius:22px;padding:18px;display:grid;gap:12px;justify-items:center}
+.imgwrap svg.receipt{width:100%;max-width:360px;height:auto}
+.imgwrap img{max-width:100%;border-radius:6px}
+.imgwrap figcaption{font:500 11.5px/1.45 var(--f-mono);color:var(--on-ground-2);text-align:center;max-width:40ch}
+svg.receipt .hl{transition:y .25s var(--ease-out),opacity .2s}
+.warns{display:grid;gap:0;border:1px solid var(--ink);border-radius:18px;background:var(--yellow);color:var(--ink);overflow:hidden}
+.warns .wh{display:flex;align-items:center;gap:10px;padding:12px 16px;font:700 12px/1.2 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--ink)}
+.warns ul{list-style:none;margin:0;padding:0}
+.warns li{padding:10px 16px;border-top:1px dashed rgba(18,18,16,.45);font-size:14.5px;line-height:1.4}
+.warns li:first-child{border-top:0}
+.warns li button{border:0;background:none;padding:0;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.warns.ok{background:var(--paper-2)}
+.sec{padding:18px 18px 8px}
+@media (min-width:640px){.sec{padding:22px 28px 10px}}
+.sec-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px}
+.item{padding:14px 0 10px;border-top:1px dashed var(--ink-3)}
+.item:first-of-type{border-top:0}
+.item-h{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;margin-bottom:4px}
+.item-n{font:400 12px/1 var(--f-pix);border:1px solid var(--ink);border-radius:var(--r-pill);padding:5px 8px;margin-top:2px}
+.item-raw{font:700 14px/1.35 var(--f-mono);overflow-wrap:anywhere}
+.item-raw small{display:block;font:500 11.5px/1.4 var(--f-mono);color:var(--ink-3);letter-spacing:.03em;text-transform:uppercase;margin-top:2px}
+.item-grid{display:grid;grid-template-columns:1fr;column-gap:24px}
+@media (min-width:640px){.item-grid{grid-template-columns:1fr 1fr}.item-grid .full{grid-column:1/-1}}
+.check{font:500 11.5px/1.4 var(--f-mono);margin:4px 0 2px;display:flex;gap:8px;align-items:center;color:var(--ink-2)}
+.check.bad{color:var(--ink);background:var(--yellow-soft);padding:6px 8px;border-radius:8px}
+.item.removed{opacity:1}
+.item.removed .gone{display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 12.5px/1.4 var(--f-mono);color:var(--ink-3)}
+.item.removed .gone s{color:var(--ink-2)}
+.add{margin:6px 0 14px}
+.unparsed{background:var(--paper-2)}
+.unparsed .ul{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:10px 0;border-top:1px dashed var(--ink-3)}
+.unparsed .ul:first-of-type{border-top:0}
+.unparsed code{font:500 13px/1.4 var(--f-mono);overflow-wrap:anywhere;color:var(--ink)}
+.unparsed .ul .st{font:500 11.5px/1.4 var(--f-mono);color:var(--ink-3);grid-column:1/-1}
+.ocr-raw{padding:0 18px 22px}
+@media (min-width:640px){.ocr-raw{padding:0 28px 26px}}
+details.raw summary{cursor:pointer;font:600 14px/1.3 var(--f-ui);padding:14px 0;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.raw summary::-webkit-details-marker{display:none}
+details.raw summary::after{content:"+";font:500 20px/1 var(--f-mono)}
+details.raw[open] summary::after{content:"−"}
+details.raw ol{margin:0;padding:0 0 0 0;list-style:none;font:500 12px/1.75 var(--f-mono);counter-reset:l}
+details.raw li{display:grid;grid-template-columns:3ch 1fr auto;gap:10px;color:var(--ink)}
+details.raw li::before{counter-increment:l;content:counter(l,decimal-leading-zero);color:var(--ink-3)}
+details.raw li span:last-child{color:var(--ink-3)}
+.savebar{position:sticky;bottom:calc(92px + env(safe-area-inset-bottom));z-index:15;margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:24px;padding:10px 10px 10px 18px;box-shadow:0 6px 14px -6px rgba(0,0,0,.6)}
+.savebar .state{font:500 12px/1.4 var(--f-mono);color:var(--ink-2)}
+@media (max-width:639px){
+  .savebar{padding:8px;border-radius:var(--r-pill)}
+  .savebar .state{display:none}
+  .savebar .actions{width:100%;display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+  .proto .long{display:none}
+}
+.savebar .state b{color:var(--ink)}
+@media (min-width:960px){.savebar{bottom:18px}}
+.notice{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:16px;padding:10px 12px 10px 16px;margin-bottom:16px;font-size:14.5px}
+.notice.lilac{background:var(--lilac)}
+.notice.mint{background:var(--mint)}
+
+/* ---------- detail ---------- */
+.detail{display:grid;gap:22px}
+@media (min-width:960px){.detail{grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:40px;align-items:start}}
+.d-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:18px}
+.d-head .id{font:500 12px/1.4 var(--f-mono);color:var(--on-ground-2)}
+.fiscal{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:0 0 18px;border-bottom:2px dotted var(--ink-3)}
+.fiscal .sticker{align-self:start;margin:-64px 0 0 -6px}
+.stk-row{width:92px;height:92px;padding:10px;font-size:11.5px}
+.row{position:relative;padding-right:104px}
+.row .r-state{position:absolute;right:0;top:50%;margin-top:-46px}
+@media (min-width:860px){
+  .history .row{padding-right:0}
+  .history .row .r-state{position:static;margin:0}
+}
+.rows li:nth-child(even) .stk-row{transform:rotate(7deg)}
+.review-paper{position:relative}
+.review-paper>.sticker{position:absolute;right:14px;top:-78px;width:96px;height:96px;font-size:11.5px;z-index:2}
+.peek{display:none}
+@media (max-width:959px){
+  .peek{display:block;position:sticky;top:0;z-index:12;height:118px;overflow:hidden;background:var(--ground-2);border-radius:0 0 18px 18px;border:1px solid var(--ground-line);border-top:0;margin:0 calc(-1 * var(--gutter)) 0}
+  .peek svg.receipt{width:100%;height:auto;display:block;transition:transform .35s var(--ease-out)}
+  .peek .cap{position:absolute;left:0;right:0;top:0;z-index:1;font:500 11.5px/1 var(--f-mono);color:var(--on-ground-2);background:var(--ground);padding:7px 14px;border-bottom:1px solid var(--ground-line)}
+}
+.fiscal p{margin:0;font-size:14.5px;color:var(--ink-2)}
+.fiscal strong{display:block;font:800 15px/1.2 var(--f-ui);text-transform:uppercase;letter-spacing:.01em;color:var(--ink);margin-bottom:6px}
+.fiscal .sticker{width:96px;height:96px;font-size:11.5px}
+.counts{display:flex;flex-wrap:wrap;gap:8px 18px;font:500 12px/1.4 var(--f-mono);color:var(--ink-2)}
+.counts span{display:inline-flex;align-items:center;gap:8px}
+.counts .mark{margin:0}
+.timeline{list-style:none;margin:0;padding:0}
+.timeline li{display:grid;grid-template-columns:1fr;justify-items:start;gap:5px;padding:10px 0;border-top:1px dashed var(--ink-3);font-size:14px}
+.timeline li:first-child{border-top:0}
+.timeline time{font:500 11.5px/1.3 var(--f-mono);color:var(--ink-3);white-space:nowrap}
+.changes{list-style:none;margin:0;padding:0}
+.changes li{padding:10px 0;border-top:1px dashed var(--ink-3);font:500 12.5px/1.5 var(--f-mono)}
+.changes li:first-child{border-top:0}
+.changes .f{display:block;font:600 11.5px/1.3 var(--f-mono);text-transform:uppercase;letter-spacing:.03em;color:var(--ink-2);margin-bottom:2px}
+.changes del{color:var(--ink-3)}
+.changes ins{text-decoration:none;background:var(--lilac);padding:0 4px;border-radius:4px}
+.barcode{display:grid;gap:6px;justify-items:start}
+.barcode svg{height:44px;width:auto}
+.barcode span{font:500 11.5px/1 var(--f-mono);letter-spacing:.25em}
+.errbox{display:grid;gap:16px;padding:22px 18px;background:var(--coral-soft)}
+.errbox h2{font:700 22px/1.15 var(--f-ui);letter-spacing:-.02em;margin:0}
+.errbox p{margin:0;max-width:52ch;color:var(--ink)}
+.errbox .code{font:500 11.5px/1.4 var(--f-mono);color:var(--ink-2)}
+
+/* ---------- modules ---------- */
+.mods{display:grid;grid-template-columns:1fr;border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:22px;overflow:hidden}
+@media (min-width:640px){.mods{grid-template-columns:1fr 1fr}}
+@media (min-width:1100px){.mods{grid-template-columns:1fr 1fr 1fr}}
+.mod{position:relative;display:grid;grid-template-columns:auto 1fr;gap:14px;padding:20px 18px 22px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);margin:0 -1px -1px 0}
+.mod .px{width:36px;height:36px;opacity:.9}
+.mod h3{font:600 17px/1.2 var(--f-ui);letter-spacing:-.01em;margin:2px 0 6px}
+.mod p{margin:0 0 12px;font-size:14px;color:var(--ink-2)}
+.mod .tape{font-size:11.5px;padding:4px 9px}
+.mod.lead{grid-column:1/-1;background:var(--paper-2)}
+@media (max-width:959px){.dash,.capture,.proc,.review,.detail{grid-template-columns:minmax(0,1fr)}}
+.stack{grid-template-columns:minmax(0,1fr)}
+.dash>*,.capture>*,.proc>*,.review>*,.detail>*,.stack>*{min-width:0}
+.leader .v{min-width:0}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;z-index:40;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:var(--r-pill);padding:12px 18px;font:600 14px/1.3 var(--f-ui);box-shadow:0 6px 14px -6px rgba(0,0,0,.6);transition:opacity .25s,transform .35s var(--ease-out);pointer-events:none;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (min-width:960px){.toast{bottom:28px}}
+
+.stack{display:grid;gap:16px}
+.back{display:inline-flex;align-items:center;gap:8px;color:var(--on-ground-2);text-decoration:none;font:600 14px/1 var(--f-ui);margin-top:6px}
+.back:hover{color:var(--on-ground)}
+.view-enter{animation:viewin .4s var(--ease-out)}
+@keyframes viewin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .scanbar{display:none}
+}
+</style>
+</head>
+<body>
+<div class="proto" role="note"><b>PROTOTIPO DE DISEÑO</b> · OCR no conectado<span class="long"> · los ejemplos sintéticos usan una salida OCR fija · los datos quedan solo en este navegador</span></div>
+<div class="app">
+  <header class="top">
+    <a class="logo" href="#/" aria-label="Tuki, inicio"><span data-px="mascot" class="pxslot"></span><span class="stamp">TUKI</span></a>
+    <span class="chip-session">Sesión local de demo</span>
+  </header>
+  <aside class="rail" aria-label="Navegación principal">
+    <div style="display:grid;gap:14px;justify-items:start">
+      <a class="logo" href="#/" aria-label="Tuki, inicio"><span data-px="mascot" class="pxslot"></span><span class="stamp">TUKI</span></a>
+      <span class="chip-session">Sesión local de demo</span>
+    </div>
+    <nav>
+      <a href="#/" data-nav="panel"><svg class="i" viewBox="0 0 24 24"><use href="#i-receipt"/></svg>Panel</a>
+      <a href="#/historial" data-nav="historial"><svg class="i" viewBox="0 0 24 24"><use href="#i-history"/></svg>Historial</a>
+      <a href="#/modulos" data-nav="modulos"><svg class="i" viewBox="0 0 24 24"><use href="#i-grid"/></svg>Módulos</a>
+      <a href="#/cargar" data-nav="cargar" class="cta-rail"><svg class="i" viewBox="0 0 24 24"><use href="#i-upload"/></svg>Cargar ticket</a>
+    </nav>
+    <div class="foot">
+      <span>Contribuyente de prueba. Sin cuenta, sin wallet y sin recompensas en esta versión.</span>
+    </div>
+  </aside>
+  <main id="main" tabindex="-1"></main>
+</div>
+<nav class="bnav" aria-label="Navegación principal">
+  <a href="#/" data-nav="panel"><svg class="i" viewBox="0 0 24 24"><use href="#i-receipt"/></svg><span>Panel</span></a>
+  <a href="#/historial" data-nav="historial"><svg class="i" viewBox="0 0 24 24"><use href="#i-history"/></svg><span>Historial</span></a>
+  <a href="#/cargar" data-nav="cargar" class="cta" aria-label="Cargar ticket"><svg class="i" viewBox="0 0 24 24"><use href="#i-plus"/></svg><span>Cargar</span></a>
+  <a href="#/modulos" data-nav="modulos"><svg class="i" viewBox="0 0 24 24"><use href="#i-grid"/></svg><span>Módulos</span></a>
+  <a href="#/historial?f=needs_review" data-nav="revisar"><svg class="i" viewBox="0 0 24 24"><use href="#i-alert"/></svg><span>Revisar</span></a>
+</nav>
+<div class="toast" role="status" aria-live="polite"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21z"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 3.5v5h5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5"/><rect x="13.5" y="4" width="6.5" height="6.5"/><rect x="4" y="13.5" width="6.5" height="6.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7L20 8.5"/><path d="M20 3.5v5h-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.2v.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
+  </defs>
+</svg>
+
+<script>
+(() => {
+'use strict';
+
+/* ======================= utilities ======================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ic = (id, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmtDate = (iso) => new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+const fmtTime = (iso) => new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(iso));
+
+/* Money and quantity use integer arithmetic: cents and thousandths. Never floats. */
+function parseMoney(s) {
+  if (s == null) return null;
+  const t = String(s).replace(/[\s$]/g, '');
+  if (!/^-?(\d{1,3}(\.\d{3})+|\d+)(,\d{1,2})?$/.test(t)) return null;
+  const neg = t.startsWith('-');
+  const [i, d = ''] = t.replace('-', '').replace(/\./g, '').split(',');
+  return (neg ? -1 : 1) * (parseInt(i, 10) * 100 + parseInt((d + '00').slice(0, 2), 10));
+}
+function fmtMoney(c) {
+  if (c == null) return '—';
+  const neg = c < 0; const a = Math.abs(c);
+  const i = Math.floor(a / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return (neg ? '-' : '') + i + ',' + String(a % 100).padStart(2, '0');
+}
+function parseQty(s) {
+  const t = String(s ?? '').trim();
+  if (!/^\d+(,\d{1,3})?$/.test(t)) return null;
+  const [i, d = ''] = t.split(',');
+  return parseInt(i, 10) * 1000 + parseInt((d + '000').slice(0, 3), 10);
+}
+
+/* ======================= pixel art ======================= */
+const PX = {
+  mascot: ['##########','#........#','#.##..##.#','#.##..##.#','#........#','#..####..#','#........#','#.######.#','#........#','#.####...#','#........#','#.#.#.#.##'],
+  identity: ['..###.....','.#...#....','.#.#.#....','.#...#....','..###.....','...#......','...##.....','...#......','...##.....','..........'],
+  tasks: ['...####...','.##....##.','.#.####.#.','.#......#.','.#.##.#.#.','.#......#.','.#.##.#.#.','.#......#.','.########.','..........'],
+  rewards: ['..######..','.#......#.','..######..','.#......#.','..######..','.#......#.','..######..','.#......#.','..######..','..........'],
+  proof: ['..######..','.#......#.','.#......#.','.#....#.#.','.#.#.#..#.','.#..#...#.','..#....#..','...#..#...','....##....','..........'],
+  fiscal: ['###.#.###.','#.#..##.#.','###.#.###.','....#.....','#.##.##.#.','.#..#..#..','###.##.#.#','#.#..#.##.','###.#.#.#.','..........'],
+  verify: ['..####....','.#....#...','#......#..','#......#..','#......#..','.#....#...','..####.#..','.......##.','........##','..........'],
+  market: ['##########','#.#.#.#.##','##########','.#......#.','.#.##.#.#.','.#.##.#.#.','.#....#.#.','.#.##.#.#.','##########','..........'],
+  agents: ['....#.....','....#.....','.########.','#........#','#.##..##.#','#.##..##.#','#........#','#..####..#','.########.','..#....#..'],
+  payments: ['......#...','......##..','#########.','......##..','......#...','...#......','..##......','.#########','..##......','...#......'],
+  provenance: ['...####...','...####...','....##....','.########.','.#......#.','.#......#.','###....###','###....###','..........','..........'],
+  storage: ['....##....','....##....','....#.....','##..#..##.','##.###.##.','..#...#...','.#.....#..','##.....##.','##.....##.','..........'],
+};
+function px(name, fill = 'currentColor') {
+  const m = PX[name]; const w = m[0].length; const h = m.length;
+  let r = '';
+  m.forEach((row, y) => [...row].forEach((c, x) => { if (c === '#') r += `<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`; }));
+  return `<svg class="px" viewBox="0 0 ${w} ${h}" fill="${fill}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+$$('.pxslot').forEach((el) => { el.outerHTML = px('mascot'); });
+
+function barcode(id) {
+  let x = 0; let bars = '';
+  const seq = [...id].flatMap((ch) => { const c = ch.charCodeAt(0); return [1 + (c % 3), 1 + ((c >> 2) % 2), 1 + ((c >> 1) % 3), 1]; });
+  seq.forEach((w, i) => { if (i % 2 === 0) bars += `<rect x="${x}" y="0" width="${w}" height="40"/>`; x += w; });
+  return `<svg viewBox="0 0 ${x} 40" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">${bars}</svg>`;
+}
+
+/* ======================= synthetic samples ======================= */
+/* Fixed OCR output for the two synthetic tickets. In the real app this comes from the OCR service. */
+const L = (text, role) => ({ text, role });
+const F = (value, line, ocr) => ({ value, orig: value, origOrigin: value == null ? 'missing' : 'extracted', origin: value == null ? 'missing' : 'extracted', ocr: ocr ?? value, line });
+const SAMPLES = {
+  1: {
+    title: 'Ejemplo 1 · ticket legible',
+    blurb: 'Comercio, varios productos, una promoción y un total que cierra.',
+    ocr: [
+      L('AUTOSERVICIO PRUEBA SINTETICA', 'merchant'), L('CUIT 30-00000000-0', 'cuit'), L('TIQUE FACTURA B  N 0003-00012345', 'doc'),
+      L('FECHA 12/11/2026   HORA 18:42', 'date'), L('--------------------------------', 'sep'), L('2000000000015', 'item'),
+      L('LECHE ENTERA 1L', 'item'), L('2 x 1.250,00           2.500,00', 'item'), L('PROMO 2DO AL 50%        -625,00', 'item'),
+      L('PAN FRANCES', 'item'), L('0,750 kg x 2.800,00    2.100,00', 'item'), L('2000000000022', 'item'),
+      L('YERBA MATE 1KG', 'item'), L('1 x 4.350,00           4.350,00', 'item'), L('ACEITE GIRASOL 900ML', 'item'),
+      L('1 x 2.990,00           2.990,00', 'item'), L('--------------------------------', 'sep'), L('SUBTOTAL            $ 11.940,00', 'total'),
+      L('DESCUENTOS          $   -625,00', 'total'), L('TOTAL               $ 11.315,00', 'total'), L('GRACIAS POR SU COMPRA', 'footer'),
+    ],
+    fields: {
+      merchant: F('AUTOSERVICIO PRUEBA SINTETICA', 0), cuit: F('30-00000000-0', 1), datetime: F('12/11/2026 18:42', 3, 'FECHA 12/11/2026   HORA 18:42'),
+      docType: F('Tique factura B', 2, 'TIQUE FACTURA B'), docNumber: F('0003-00012345', 2), currency: F('ARS', 17, '$'),
+      subtotal: F('11.940,00', 17), discounts: F('-625,00', 18), total: F('11.315,00', 19),
+    },
+    items: [
+      { raw: 'LECHE ENTERA 1L', rawLine: 6, name: F('Leche entera 1 L', 6, 'LECHE ENTERA 1L'), ean: F('2000000000015', 5), qty: F('2', 7), unit: F('un', 7, 'x'), unitPrice: F('1.250,00', 7), lineTotal: F('2.500,00', 7), discount: F('-625,00', 8, 'PROMO 2DO AL 50% -625,00') },
+      { raw: 'PAN FRANCES', rawLine: 9, name: F('Pan francés', 9, 'PAN FRANCES'), ean: F(null, null), qty: F('0,750', 10), unit: F('kg', 10), unitPrice: F('2.800,00', 10), lineTotal: F('2.100,00', 10), discount: F(null, null) },
+      { raw: 'YERBA MATE 1KG', rawLine: 12, name: F('Yerba mate 1 kg', 12, 'YERBA MATE 1KG'), ean: F('2000000000022', 11), qty: F('1', 13), unit: F('un', 13, 'x'), unitPrice: F('4.350,00', 13), lineTotal: F('4.350,00', 13), discount: F(null, null) },
+      { raw: 'ACEITE GIRASOL 900ML', rawLine: 14, name: F('Aceite de girasol 900 ml', 14, 'ACEITE GIRASOL 900ML'), ean: F(null, null), qty: F('1', 15), unit: F('un', 15, 'x'), unitPrice: F('2.990,00', 15), lineTotal: F('2.990,00', 15), discount: F(null, null) },
+    ],
+  },
+  2: {
+    title: 'Ejemplo 2 · ticket con errores',
+    blurb: 'Descripción mal leída, importe ambiguo, una línea ilegible y un total que no cierra.',
+    ocr: [
+      L('KI0SCO PRUEBA', 'merchant'), L('13/11/2026 09:15', 'date'), L('------------------------', 'sep'),
+      L('GALL3TITAS AGUA 3OOG', 'item'), L('1 x 1.180,00       1.180,00', 'item'), L('GASEOSA COLA 2,25L', 'item'),
+      L('1 x 2.4S0,00       2.4S0,00', 'item'), L('ALFAJOR TRIPLE', 'item'), L('3 x 850,00         2.550,00', 'item'),
+      L('CH1CL€ MEN7A ..  9 4 O,OO', 'unparsed'), L('------------------------', 'sep'), L('TOTAL $       7.120,00', 'total'),
+      L('##..:: 4O% ~~ R3F ::', 'unparsed'),
+    ],
+    fields: {
+      merchant: F('KI0SCO PRUEBA', 0), cuit: F(null, null), datetime: F('13/11/2026 09:15', 1), docType: F(null, null), docNumber: F(null, null),
+      currency: F('ARS', 11, '$'), subtotal: F(null, null), discounts: F(null, null), total: F('7.120,00', 11),
+    },
+    items: [
+      { raw: 'GALL3TITAS AGUA 3OOG', rawLine: 3, name: F(null, 3, 'GALL3TITAS AGUA 3OOG'), ean: F(null, null), qty: F('1', 4), unit: F('un', 4, 'x'), unitPrice: F('1.180,00', 4), lineTotal: F('1.180,00', 4), discount: F(null, null) },
+      { raw: 'GASEOSA COLA 2,25L', rawLine: 5, name: F('Gaseosa cola 2,25 L', 5, 'GASEOSA COLA 2,25L'), ean: F(null, null), qty: F('1', 6), unit: F('un', 6, 'x'), unitPrice: F(null, 6, '2.4S0,00'), lineTotal: F(null, 6, '2.4S0,00'), discount: F(null, null) },
+      { raw: 'ALFAJOR TRIPLE', rawLine: 7, name: F('Alfajor triple', 7, 'ALFAJOR TRIPLE'), ean: F(null, null), qty: F('3', 8), unit: F('un', 8, 'x'), unitPrice: F('850,00', 8), lineTotal: F('2.550,00', 8), discount: F(null, null) },
+    ],
+  },
+};
+SAMPLES[2].items[1].unitPrice.ambiguous = true;
+SAMPLES[2].items[1].lineTotal.ambiguous = true;
+
+const FIELD_LABEL = { merchant: 'Comercio', cuit: 'CUIT', datetime: 'Fecha y hora', docType: 'Tipo de comprobante', docNumber: 'N.º de comprobante', currency: 'Moneda', subtotal: 'Subtotal', discounts: 'Descuentos', total: 'Total' };
+const ITEM_LABEL = { name: 'Nombre normalizado', ean: 'EAN', qty: 'Cantidad', unit: 'Unidad', unitPrice: 'Precio unitario', lineTotal: 'Importe', discount: 'Descuento' };
+const ORIGIN_LABEL = { extracted: 'Extraído automáticamente', corrected: 'Corregido manualmente', missing: 'No detectado' };
+const STATUS = {
+  uploaded: 'Cargado', processing: 'Procesando', extraction_ready: 'Extracción disponible', needs_review: 'Requiere revisión',
+  reviewed: 'Revisión completada', fiscal_pending: 'Validación fiscal pendiente', processing_error: 'Error de procesamiento',
+};
+const STEPS = [
+  ['id', 'Identificador de contribución generado'], ['validate', 'Archivo validado'], ['exif', 'Metadatos EXIF eliminados'],
+  ['prepare', 'Imagen preparada para el OCR'], ['ocr', 'OCR'], ['parse', 'Parser de ticket'],
+];
+
+function buildExtraction(n) {
+  const s = SAMPLES[n];
+  return {
+    ocr: clone(s.ocr),
+    fields: clone(s.fields),
+    items: s.items.map((it, i) => ({ ...clone(it), key: 'e' + i, origin: 'extracted', removed: false })),
+    unparsed: s.ocr.map((l, i) => (l.role === 'unparsed' ? { line: i, state: 'open', usedBy: null } : null)).filter(Boolean),
+  };
+}
+
+/* ======================= store ======================= */
+const STORE_KEY = 'tuki.contributor.prototype.v1';
+const blobs = {}; // uploaded images live only in memory; never persisted
+let db = { records: [] };
+try { const raw = localStorage.getItem(STORE_KEY); if (raw) db = JSON.parse(raw); } catch (e) { /* storage unavailable: run in memory */ }
+let saveT;
+function persist() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); } catch (e) { /* ignore */ } }, 120); }
+const rec = (id) => db.records.find((r) => r.id === id);
+function setStatus(r, s) { r.status = s; r.history.push({ status: s, at: new Date().toISOString() }); persist(); }
+function newId() {
+  const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = '';
+  const buf = new Uint32Array(6); crypto.getRandomValues(buf); buf.forEach((v) => { s += a[v % a.length]; });
+  return 'TK-' + s.slice(0, 3) + '-' + s.slice(3);
+}
+function createRecord(sel) {
+  const r = {
+    id: newId(), createdAt: new Date().toISOString(), status: 'uploaded', history: [],
+    sample: sel.kind === 'sample' ? sel.n : null, synthetic: sel.kind === 'sample',
+    file: sel.kind === 'file' ? { name: sel.file.name, size: sel.file.size, type: sel.file.type } : null,
+    steps: [], error: null, extraction: null, draft: null,
+  };
+  r.history.push({ status: 'uploaded', at: r.createdAt });
+  if (sel.kind === 'file') blobs[r.id] = sel.url;
+  db.records.unshift(r); persist();
+  return r;
+}
+
+/* ======================= domain: warnings ======================= */
+function liveItems(ex) { return ex.items.filter((i) => !i.removed); }
+function computeWarnings(ex) {
+  const w = [];
+  const f = ex.fields;
+  ['merchant', 'datetime', 'total'].forEach((k) => { if (f[k].value == null) w.push({ k: 'missing', field: k, text: `Campo importante sin detectar: ${FIELD_LABEL[k].toLowerCase()}.` }); });
+  const items = liveItems(ex);
+  if (!items.length) w.push({ k: 'missing', text: 'No hay ítems en el ticket.' });
+  let sum = 0; let unknown = 0;
+  items.forEach((it, idx) => {
+    const n = ex.items.indexOf(it) + 1;
+    const amb = ['unitPrice', 'lineTotal'].filter((k) => it[k].value == null && it[k].ambiguous);
+    if (amb.length) w.push({ k: 'ambiguous', key: it.key, text: `Ítem ${n}: importe ambiguo, el OCR leyó «${it[amb[0]].ocr}». Queda sin completar hasta que se corrija (${amb.map((k) => ITEM_LABEL[k].toLowerCase()).join(' e ')}).` });
+    ['unitPrice', 'lineTotal'].forEach((k) => {
+      const v = it[k];
+      if (v.value != null && parseMoney(v.value) == null) w.push({ k: 'format', key: it.key, text: `Ítem ${n}: «${v.value}» no es un importe válido (${ITEM_LABEL[k].toLowerCase()}).` });
+    });
+    if (it.qty.value != null && parseQty(it.qty.value) == null) w.push({ k: 'format', key: it.key, text: `Ítem ${n}: «${it.qty.value}» no es una cantidad válida.` });
+    const q = parseQty(it.qty.value); const p = parseMoney(it.unitPrice.value); const t = parseMoney(it.lineTotal.value);
+    if (q != null && p != null && t != null) {
+      const calc = Math.round((q * p) / 1000);
+      if (calc !== t) w.push({ k: 'line', key: it.key, text: `Ítem ${n}: ${it.qty.value} × ${fmtMoney(p)} = ${fmtMoney(calc)}, pero el importe de línea es ${fmtMoney(t)}.` });
+    }
+    if (t == null) unknown += 1; else sum += t;
+  });
+  const sub = parseMoney(f.subtotal.value); const disc = parseMoney(f.discounts.value); const tot = parseMoney(f.total.value);
+  if (sub != null && sum !== sub) w.push({ k: 'sum', text: `La suma de los importes de línea (${fmtMoney(sum)}) no coincide con el subtotal (${fmtMoney(sub)}).` });
+  if (tot != null) {
+    const expected = (sub ?? sum) - Math.abs(disc ?? 0);
+    if (expected !== tot) {
+      const extra = unknown ? ` Hay ${unknown} ${unknown === 1 ? 'ítem' : 'ítems'} sin importe.` : '';
+      w.push({ k: 'sum', text: `La suma de los ítems${disc ? ' menos descuentos' : ''} da ${fmtMoney(expected)} y el total del ticket es ${fmtMoney(tot)}. Diferencia: ${fmtMoney(tot - expected)}.${extra}` });
+    }
+  }
+  const open = ex.unparsed.filter((u) => u.state === 'open').length;
+  if (open) w.push({ k: 'unparsed', text: `${open} ${open === 1 ? 'línea del OCR no pudo interpretarse' : 'líneas del OCR no pudieron interpretarse'}. Se conservan abajo, sin cambios.` });
+  return w;
+}
+function provenanceCounts(ex) {
+  const c = { extracted: 0, corrected: 0, missing: 0 };
+  Object.values(ex.fields).forEach((v) => { c[v.origin] += 1; });
+  liveItems(ex).forEach((it) => Object.keys(ITEM_LABEL).forEach((k) => { c[it[k].origin] += 1; }));
+  return c;
+}
+function corrections(ex) {
+  const out = [];
+  Object.entries(ex.fields).forEach(([k, v]) => { if (v.origin === 'corrected') out.push({ f: FIELD_LABEL[k], from: v.orig ?? (v.ambiguous ? v.ocr : null), to: v.value }); });
+  ex.items.forEach((it, i) => {
+    const label = `Ítem ${i + 1}`;
+    if (it.removed) { out.push({ f: label, from: it.raw || 'ítem agregado', to: null, removed: true }); return; }
+    if (it.origin === 'added') { out.push({ f: label, from: null, to: it.name.value || it.raw || 'sin descripción', added: true }); return; }
+    Object.keys(ITEM_LABEL).forEach((k) => { const v = it[k]; if (v.origin === 'corrected') out.push({ f: `${label} · ${ITEM_LABEL[k]}`, from: v.orig ?? (v.ambiguous ? v.ocr : null), to: v.value }); });
+  });
+  return out;
+}
+
+/* ======================= pipeline ======================= */
+const running = new Set();
+async function runPipeline(id) {
+  if (running.has(id)) return;
+  running.add(id);
+  const r = rec(id);
+  r.steps = []; r.error = null; r.extraction = null; r.draft = null;
+  setStatus(r, 'processing');
+  patchProcessing(r);
+  for (const [k] of STEPS) {
+    r.steps.push({ k, st: 'run' }); patchProcessing(r);
+    await wait(reduced ? 80 : (k === 'ocr' ? 1300 : 520));
+    const cur = r.steps[r.steps.length - 1];
+    if (k === 'ocr' && !r.synthetic) {
+      cur.st = 'fail';
+      r.error = blobs[id] ? 'ocr_unavailable' : 'image_gone';
+      setStatus(r, 'processing_error');
+      running.delete(id); persist(); route(); return;
+    }
+    cur.st = 'ok'; persist(); patchProcessing(r);
+  }
+  r.extraction = buildExtraction(r.sample);
+  setStatus(r, 'extraction_ready');
+  if (computeWarnings(r.extraction).length) setStatus(r, 'needs_review');
+  running.delete(id); persist();
+  if (currentRoute().id === id) renderProcessingDone(r);
+}
+// Resume or fail records that were mid-pipeline when the page reloaded.
+db.records.forEach((r) => {
+  if (r.status === 'processing' || r.status === 'uploaded') {
+    if (r.synthetic) setTimeout(() => runPipeline(r.id), 50);
+    else { r.error = 'image_gone'; setStatus(r, 'processing_error'); }
+  }
+});
+
+/* ======================= receipt image (synthetic) ======================= */
+function receiptSvg(r, opts = {}) {
+  const lines = SAMPLES[r.sample].ocr;
+  const lh = 22; const top = 50; const W = 360; const H = top + lines.length * lh + 66;
+  const rough = r.sample === 2;
+  let txt = '';
+  lines.forEach((l, i) => {
+    const y = top + i * lh;
+    const center = ['merchant', 'footer'].includes(l.role) || (l.role === 'sep');
+    const op = rough && (i === 9 || i === 12) ? 0.45 : rough && i === 6 ? 0.7 : 0.92;
+    const weight = l.role === 'merchant' ? 700 : 500;
+    txt += `<text x="${center ? W / 2 : 26}" y="${y}" text-anchor="${center ? 'middle' : 'start'}" opacity="${op}" font-weight="${weight}"${rough && i === 12 ? ' filter="url(#smudge)"' : ''}>${esc(l.text)}</text>`;
+  });
+  let teeth = ''; for (let x = 0; x <= W; x += 12) teeth += `L${x + 6} ${H - 6} L${x + 12} ${H}`;
+  const rot = rough ? -2.2 : 1.1;
+  // Unique ids per instance: a gradient defined inside a hidden SVG does not paint in another one.
+  const u = 'r' + (receiptSvg.n = (receiptSvg.n || 0) + 1);
+  return `<svg class="receipt" viewBox="-20 -20 ${W + 40} ${H + 40}" role="img" aria-label="Imagen sintética del ${esc(SAMPLES[r.sample].title.toLowerCase())}">
+    <defs>
+      <filter id="shadow-${u}" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#000" flood-opacity=".55"/></filter>
+      <filter id="smudge-${u}"><feGaussianBlur stdDeviation=".9"/></filter>
+      <linearGradient id="sheen-${u}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#fbfbf6"/><stop offset=".55" stop-color="#f3f2ea"/><stop offset="1" stop-color="${rough ? '#e3e0d2' : '#ecebe2'}"/></linearGradient>
+    </defs>
+    <g transform="rotate(${rot} ${W / 2} ${H / 2})">
+      <path d="M0 0 H${W} V${H} L${W} ${H} ${teeth} L0 ${H} Z" fill="url(#sheen-${u})" filter="url(#shadow-${u})"/>
+      <rect class="hl" x="12" y="${top - 16}" width="${W - 24}" height="${lh}" rx="3" fill="#ffe14d" opacity="0"/>
+      <g font-family="Martian Mono, monospace" font-size="11.4" fill="#1d1d1a" letter-spacing=".2">${txt.replaceAll('url(#smudge)', `url(#smudge-${u})`)}</g>
+      <text x="${W / 2}" y="${H - 22}" text-anchor="middle" font-family="Martian Mono, monospace" font-size="8" fill="#64645c" letter-spacing="1">IMAGEN SINTÉTICA · SIN DATOS PERSONALES</text>
+    </g>
+  </svg>`;
+}
+function highlightLine(svgRoot, line) {
+  const hl = svgRoot && $('.hl', svgRoot);
+  if (!hl) return;
+  if (line == null) { hl.setAttribute('opacity', '0'); return; }
+  hl.setAttribute('y', 50 + line * 22 - 16);
+  hl.setAttribute('opacity', '.55');
+}
+function imageFor(r, opts = {}) {
+  if (r.synthetic) return receiptSvg(r, opts);
+  if (blobs[r.id]) return `<img src="${blobs[r.id]}" alt="Imagen cargada por el contribuyente">`;
+  return `<p class="formats" style="padding:40px 10px;text-align:center">La imagen original no se guarda en este prototipo y ya no está disponible.</p>`;
+}
+
+/* ======================= shared bits ======================= */
+const chip = (s) => `<span class="chip" data-s="${s}">${STATUS[s]}</span>`;
+const STK_COLOR = { uploaded: 'var(--paper-2)', processing: 'var(--cyan)', extraction_ready: 'var(--paper)', needs_review: 'var(--yellow)', reviewed: 'var(--mint)', fiscal_pending: 'var(--lilac)', processing_error: 'var(--coral)' };
+const stickerRow = (s) => `<span class="sticker stk-row" style="background:${STK_COLOR[s]}">${STATUS[s]}</span>`;
+const mark = (o) => `<span class="mark" data-o="${o}" title="${ORIGIN_LABEL[o]}" aria-label="${ORIGIN_LABEL[o]}" role="img"></span>`;
+const legend = () => `<div class="legend" aria-label="Procedencia de los valores"><span>${mark('extracted')}Extraído</span><span>${mark('corrected')}Corregido</span><span>${mark('missing')}No detectado</span></div>`;
+const syntheticTape = () => `<div class="synthetic-band"><span class="tape">Datos sintéticos — no representan compras reales</span></div>`;
+const titleOf = (r) => (r.extraction?.fields.merchant.value) || null;
+function toast(msg) {
+  const t = $('.toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 3200);
+}
+let flash = null;
+
+/* ======================= router ======================= */
+function currentRoute() {
+  const h = location.hash.replace(/^#/, '') || '/';
+  const [path, qs] = h.split('?');
+  const q = new URLSearchParams(qs || '');
+  const parts = path.split('/').filter(Boolean);
+  if (!parts.length) return { name: 'panel' };
+  if (parts[0] === 'cargar') return { name: 'cargar' };
+  if (parts[0] === 'historial') return { name: 'historial', f: q.get('f') || 'all' };
+  if (parts[0] === 'modulos') return { name: 'modulos' };
+  if (parts[0] === 'c' && parts[1]) return { name: parts[2] === 'revisar' ? 'revisar' : 'detalle', id: parts[1] };
+  return { name: 'panel' };
+}
+const main = $('#main');
+function mount(html, title) {
+  main.innerHTML = `<div class="view view-enter">${html}</div>`;
+  document.title = title ? `${title} · Tuki` : 'Tuki · Contribuyentes';
+  window.scrollTo(0, 0);
+}
+function route() {
+  const rt = currentRoute();
+  const navKey = rt.name === 'historial' && rt.f === 'needs_review' ? 'revisar' : ['detalle', 'revisar'].includes(rt.name) ? 'historial' : rt.name;
+  $$('[data-nav]').forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  ({ panel: viewPanel, cargar: viewCapture, historial: viewHistory, modulos: viewModules, detalle: viewDetail, revisar: viewReview })[rt.name](rt);
+  if (flash) { toast(flash); flash = null; }
+}
+addEventListener('hashchange', route);
+
+/* ======================= view: panel ======================= */
+function viewPanel() {
+  const R = db.records;
+  const n = (fn) => R.filter(fn).length;
+  const counts = [
+    ['Tickets cargados', R.length],
+    ['Procesándose', n((r) => ['uploaded', 'processing'].includes(r.status))],
+    ['Pendientes de revisión', n((r) => ['extraction_ready', 'needs_review'].includes(r.status))],
+    ['Revisión completada', n((r) => ['reviewed', 'fiscal_pending'].includes(r.status))],
+    ['Validación fiscal pendiente', n((r) => r.status === 'fiscal_pending')],
+    ['Con error de procesamiento', n((r) => r.status === 'processing_error')],
+  ];
+  const recent = R.slice(0, 4);
+  const now = new Date();
+  mount(`
+    <h1 class="h1">Tus aportes, línea por línea.</h1>
+    <p class="lede">Cada ticket cargado se lee, se ordena y queda listo para revisar. Nada se da por validado: la validación fiscal todavía no existe en esta versión.</p>
+    <div class="dash">
+      <section class="paper tear-b tear-t summary pad" aria-labelledby="sum-h">
+        <div class="head">
+          <h2 class="h2" id="sum-h">Resumen de aportes</h2>
+          ${px('mascot').replace('class="px"', 'class="px px-big"')}
+        </div>
+        <div class="wave" aria-hidden="true"></div>
+        ${counts.map(([k, v]) => `<div class="leader"><span class="k">${k}</span><span class="dots"></span><span class="v num">${v}</span><span></span></div>`).join('')}
+        <div class="wave" aria-hidden="true" style="margin-top:6px"></div>
+        <div class="foot">
+          <span>Calculado con los registros<br>de este navegador · ${esc(fmtDate(now.toISOString()))}</span>
+          <a class="btn primary" href="#/cargar"><span class="ic">${ic('plus')}</span>Cargar ticket</a>
+        </div>
+      </section>
+      <section class="recent" aria-labelledby="rec-h">
+        <h2 class="h2" id="rec-h">Últimos tickets</h2>
+        <div class="paper tear-b pad" style="margin-top:12px">
+          ${recent.length ? `<ul class="rows">${recent.map(rowHtml).join('')}</ul>
+            <div class="wave" aria-hidden="true" style="margin:8px 0 14px"></div>
+            <a class="btn sm" href="#/historial">Ver todo el historial ${ic('arrow')}</a>` : `
+            <div class="empty">
+              ${px('mascot').replace('class="px"', 'class="px" style="width:34px;height:40px"')}
+              <p><strong>Todavía no hay tickets cargados.</strong> Se puede empezar con una foto propia o con uno de los dos ejemplos sintéticos.</p>
+              <a class="btn" href="#/cargar">Ir a cargar ${ic('arrow')}</a>
+            </div>`}
+        </div>
+        <a class="btn on-ground" href="#/modulos" style="margin-top:18px">${ic('grid')} 11 módulos en desarrollo</a>
+      </section>
+    </div>`, 'Panel');
+}
+function rowHtml(r) {
+  const t = titleOf(r);
+  const ex = r.extraction;
+  const items = ex ? liveItems(ex).length : null;
+  const date = ex?.fields.datetime.value;
+  return `<li><a class="row" href="#/c/${r.id}">
+    <span class="r-title ${t ? '' : 'muted'}">${t ? esc(t) : (r.status === 'processing_error' ? 'Sin lectura' : r.status === 'processing' ? 'Procesando…' : 'Comercio no detectado')}</span>
+    <span class="r-state">${stickerRow(r.status)}</span>
+    <span class="r-meta">
+      <span class="id num">${r.id}</span>
+      <span class="c-date">${date ? 'Ticket ' + esc(date.split(' ')[0]) : 'Fecha no detectada'}</span>
+      <span class="c-items">${items != null ? items + (items === 1 ? ' ítem' : ' ítems') : '— ítems'}</span>
+      <span class="c-up">Cargado ${esc(fmtDate(r.createdAt))}</span>
+    </span>
+  </a></li>`;
+}
+
+/* ======================= view: capture ======================= */
+let selection = null;
+let captureError = null;
+const ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX = 10 * 1024 * 1024;
+function viewCapture() {
+  const sel = selection;
+  const fake = sel?.kind === 'sample' ? { sample: sel.n, synthetic: true, id: 'preview' } : null;
+  mount(`
+    <h1 class="h1">Cargar un ticket.</h1>
+    <p class="lede">Una foto clara, de frente y con todo el ticket a la vista. Antes de leerlo se le quitan los metadatos (incluida la ubicación).</p>
+    <div class="capture">
+      <div class="stack">
+        ${sel ? `
+        <div class="preview">
+          <div class="preview-frame">${sel.kind === 'file' ? `<img src="${sel.url}" alt="Vista previa de la imagen elegida">` : receiptSvg(fake)}</div>
+          <div class="file-meta">${sel.kind === 'file'
+            ? `<span>${esc(sel.file.name)}</span><span>${(sel.file.size / 1024 / 1024).toFixed(2).replace('.', ',')} MB</span><span>${esc(sel.file.type.replace('image/', '').toUpperCase())}</span>`
+            : `<span>${esc(SAMPLES[sel.n].title)}</span><span>Datos sintéticos</span>`}</div>
+          ${sel.kind === 'sample' ? syntheticTape() : ''}
+          <div class="actions">
+            <button class="btn primary on-ground" data-act="process"><span class="ic">${ic('arrow')}</span>Procesar ticket</button>
+            <button class="btn on-ground" data-act="clear">Elegir otra</button>
+          </div>
+        </div>` : `
+        <label class="drop" id="drop" for="file">
+          ${px('mascot').replace('class="px"', 'class="px px-big"')}
+          <span><strong>Arrastrar la foto aquí</strong><small>o elegirla desde los archivos</small></span>
+          <span class="btn sm">${ic('image')} Elegir imagen</span>
+          <small>JPG, PNG o WEBP · hasta 10 MB</small>
+        </label>
+        <input id="file" type="file" accept="${ACCEPT.join(',')}" class="sr">`}
+        ${captureError ? `<div class="err" role="alert">${ic('alert')}<span>${esc(captureError)}</span></div>` : ''}
+      </div>
+      <section class="stack" aria-labelledby="samp-h">
+        <h2 class="h2" id="samp-h">O usar un ejemplo sintético</h2>
+        <div class="samples">
+          ${[1, 2].map((n) => `<button class="sample" data-sample="${n}" aria-pressed="${sel?.kind === 'sample' && sel.n === n}">
+            <span class="thumb">${px(n === 1 ? 'mascot' : 'verify')}</span>
+            <span><b>${SAMPLES[n].title}</b><span>${SAMPLES[n].blurb}</span></span>
+          </button>`).join('')}
+        </div>
+        <p class="formats">Los ejemplos están marcados como DATOS SINTÉTICOS y nunca pueden entrar en un dataset comercial ni en un resultado entregable.</p>
+      </section>
+    </div>`, 'Cargar ticket');
+
+  const input = $('#file'); const drop = $('#drop');
+  if (input) input.addEventListener('change', () => input.files[0] && pick(input.files[0]));
+  if (drop) {
+    ['dragenter', 'dragover'].forEach((e) => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach((e) => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove('over'); }));
+    drop.addEventListener('drop', (ev) => { const f = ev.dataTransfer.files[0]; if (f) pick(f); });
+  }
+}
+function pick(file) {
+  captureError = null;
+  if (!ACCEPT.includes(file.type)) { captureError = `Formato no admitido (${file.type || 'desconocido'}). Se aceptan imágenes JPG, PNG o WEBP.`; selection = null; return viewCapture(); }
+  if (file.size > MAX) { captureError = `La imagen pesa ${(file.size / 1024 / 1024).toFixed(1).replace('.', ',')} MB y el máximo es 10 MB.`; selection = null; return viewCapture(); }
+  if (selection?.url) URL.revokeObjectURL(selection.url);
+  selection = { kind: 'file', file, url: URL.createObjectURL(file) };
+  viewCapture();
+}
+
+/* ======================= view: processing / detail ======================= */
+function viewDetail(rt) {
+  const r = rec(rt.id);
+  if (!r) return mount(`<h1 class="h1">No encontramos ese ticket.</h1><p class="lede">Puede que se haya borrado de este navegador.</p><a class="btn on-ground" href="#/historial">Ir al historial</a>`, 'No encontrado');
+  if (['uploaded', 'processing'].includes(r.status)) return viewProcessing(r);
+  if (r.status === 'processing_error') return viewError(r);
+  return viewRecord(r);
+}
+function stepsHtml(r) {
+  return STEPS.map(([k, label]) => {
+    const s = r.steps.find((x) => x.k === k);
+    const st = s ? s.st : 'todo';
+    const note = k === 'ocr' && r.synthetic && st !== 'todo' ? 'salida fija del ejemplo' : st === 'run' ? 'en curso' : st === 'fail' ? 'falló' : '';
+    return `<li class="step" data-st="${st}"><span class="dot">${st === 'ok' ? ic('check') : st === 'fail' ? ic('x') : ''}</span><span>${label}</span><span class="note">${note}</span></li>`;
+  }).join('');
+}
+function viewProcessing(r) {
+  mount(`
+    <a class="back" href="#/historial">${ic('back')} Historial</a>
+    <h1 class="h1">Leyendo el ticket…</h1>
+    <p class="lede"><span class="num">${r.id}</span> · ${chip(r.status)}</p>
+    <div class="proc">
+      <div class="scanbox">${imageFor(r)}<div class="scanbar" aria-hidden="true"></div></div>
+      <div class="paper tear-b tear-t pad" id="procpaper">
+        <h2 class="h2" style="margin-bottom:10px">Estado del procesamiento</h2>
+        <ol class="steps" id="steps" aria-live="polite">${stepsHtml(r)}</ol>
+      </div>
+    </div>`, 'Procesando');
+}
+function patchProcessing(r) {
+  const rt = currentRoute();
+  if (rt.id !== r.id || rt.name !== 'detalle') return;
+  const el = $('#steps');
+  if (!el) { route(); return; }
+  el.innerHTML = stepsHtml(r);
+}
+function renderProcessingDone(r) {
+  const paper = $('#procpaper'); if (!paper) return route();
+  $('.scanbar')?.remove();
+  const chipEl = $('.lede .chip'); if (chipEl) chipEl.outerHTML = chip(r.status);
+  $('.h1').textContent = 'Extracción completada.';
+  const w = computeWarnings(r.extraction);
+  paper.insertAdjacentHTML('beforeend', `
+    <div class="wave" aria-hidden="true" style="margin:14px 0"></div>
+    <div class="done-head"><h2 class="h2">Texto leído por el OCR</h2>${chip(r.status)}</div>
+    <div class="print">${r.extraction.ocr.map((l, i) => `<div class="ln" style="animation-delay:${reduced ? 0 : i * 55}ms">${esc(l.text)}</div>`).join('')}</div>
+    <div class="wave" aria-hidden="true" style="margin:14px 0"></div>
+    <p style="margin:0 0 14px;font-size:14.5px">${w.length ? `Encontramos <strong>${w.length} ${w.length === 1 ? 'punto' : 'puntos'} para revisar</strong>. Nada se corrige solo.` : 'No encontramos inconsistencias. Igual conviene revisar los datos antes de completar.'}</p>
+    <a class="btn primary" href="#/c/${r.id}/revisar"><span class="ic">${ic('arrow')}</span>Revisar datos</a>`);
+}
+function viewError(r) {
+  const gone = r.error === 'image_gone';
+  mount(`
+    <a class="back" href="#/historial">${ic('back')} Historial</a>
+    <h1 class="h1">No pudimos leer este ticket.</h1>
+    <p class="lede"><span class="num">${r.id}</span> · ${chip(r.status)}</p>
+    <div class="proc">
+      <div class="scanbox">${imageFor(r)}</div>
+      <div class="paper tear-b tear-t">
+        <div class="errbox">
+          <span class="sticker coral" style="width:92px;height:92px;font-size:11.5px">Error de procesamiento</span>
+          <h2>${gone ? 'La imagen ya no está disponible.' : 'El servicio OCR no respondió.'}</h2>
+          <p>${gone
+            ? 'Este prototipo no guarda las imágenes propias entre sesiones. Para reintentar hay que cargarla de nuevo.'
+            : 'En este prototipo de diseño el OCR real no está conectado, así que las fotos propias no se pueden leer todavía. No mostramos resultados inventados. Los ejemplos sintéticos sí recorren todo el flujo.'}</p>
+          <span class="code">Código: ${gone ? 'IMAGE_NOT_AVAILABLE' : 'OCR_UNAVAILABLE'} · paso: OCR</span>
+          <div class="actions">
+            ${gone ? '' : `<button class="btn primary" data-act="retry" data-id="${r.id}"><span class="ic">${ic('refresh')}</span>Reintentar</button>`}
+            <a class="btn" href="#/cargar">Cargar otra imagen</a>
+          </div>
+        </div>
+        <div class="pad"><h2 class="h2" style="margin-bottom:8px">Pasos</h2><ol class="steps">${stepsHtml(r)}</ol></div>
+      </div>
+    </div>`, 'Error de procesamiento');
+}
+function readonlyLeader(label, v, opts = {}) {
+  const val = v.value == null ? (v.ambiguous ? `ambiguo: «${v.ocr}»` : 'No detectado') : v.value;
+  return `<div class="leader ${opts.big ? 'big' : ''}"><span class="k">${label}</span><span class="dots"></span><span class="v ${v.value == null ? 'empty' : ''}">${esc(val)}</span>${mark(v.origin)}</div>`;
+}
+function viewRecord(r) {
+  const ex = r.extraction;
+  const w = computeWarnings(ex);
+  const pc = provenanceCounts(ex);
+  const ch = corrections(ex);
+  const t = titleOf(r);
+  const reviewedOnce = r.history.some((h) => h.status === 'reviewed');
+  const f = ex.fields;
+  mount(`
+    <a class="back" href="#/historial">${ic('back')} Historial</a>
+    <div class="d-head">
+      <div>
+        <h1 class="h1">${t ? esc(t) : 'Comercio no detectado'}</h1>
+        <p class="lede" style="margin-bottom:0"><span class="num">${r.id}</span> · cargado ${esc(fmtDate(r.createdAt))} · ${chip(r.status)}</p>
+      </div>
+      <a class="btn primary on-ground" href="#/c/${r.id}/revisar" style="margin-top:18px"><span class="ic">${ic(reviewedOnce ? 'edit' : 'arrow')}</span>${reviewedOnce ? 'Editar revisión' : 'Revisar datos'}</a>
+    </div>
+    ${r.synthetic ? `<div style="margin-top:18px">${syntheticTape()}</div>` : ''}
+    ${r.draft ? `<div class="notice">Hay cambios sin guardar de una sesión anterior. <a class="btn sm" href="#/c/${r.id}/revisar">Seguir revisando</a></div>` : ''}
+    <div class="detail" style="margin-top:64px">
+      <div class="stack">
+        <div class="paper tear-b tear-t">
+          <div class="sec">
+            ${r.status === 'fiscal_pending' ? `
+            <div class="fiscal" style="margin-bottom:18px">
+              <span class="sticker">Validación fiscal pendiente</span>
+              <div><strong>Validación fiscal pendiente</strong><p>La revisión manual está completa. Eso no es una validación fiscal ni una aceptación de la observación: la constatación ante ARCA todavía no existe en esta versión.</p></div>
+            </div>` : `
+            <div class="fiscal" style="margin-bottom:18px">
+              <span class="sticker yellow">${STATUS[r.status]}</span>
+              <div><strong>${STATUS[r.status]}</strong><p>${w.length ? `${w.length} ${w.length === 1 ? 'punto para revisar' : 'puntos para revisar'} antes de completar.` : 'Los datos están listos para revisar y completar.'}</p></div>
+            </div>`}
+            <div class="sec-h"><h2 class="h2">Comprobante</h2>${legend()}</div>
+            ${Object.keys(FIELD_LABEL).filter((k) => !['subtotal', 'discounts', 'total'].includes(k)).map((k) => readonlyLeader(FIELD_LABEL[k], f[k])).join('')}
+          </div>
+          <div class="wave" aria-hidden="true"></div>
+          <div class="sec">
+            <h2 class="h2" style="margin-bottom:6px">Ítems · ${liveItems(ex).length}</h2>
+            ${ex.items.filter((i) => !i.removed).map((it) => `
+              <div class="item">
+                <div class="item-h"><span class="item-n">${String(ex.items.indexOf(it) + 1).padStart(2, '0')}</span><span class="item-raw">${it.raw ? esc(it.raw) : '<span style="color:var(--ink-3)">Sin texto OCR</span>'}<small>${it.origin === 'added' ? 'Agregado manualmente' : 'Descripción original del OCR'}</small></span><span></span></div>
+                <div class="item-grid">
+                  <div class="full">${readonlyLeader('Nombre', it.name)}</div>
+                  ${readonlyLeader('Cantidad', it.qty)}${readonlyLeader('Unidad', it.unit)}
+                  ${readonlyLeader('Precio unit.', it.unitPrice)}${readonlyLeader('Importe', it.lineTotal)}
+                  ${it.ean.value ? readonlyLeader('EAN', it.ean) : ''}${it.discount.value ? readonlyLeader('Descuento', it.discount) : ''}
+                </div>
+              </div>`).join('')}
+          </div>
+          <div class="wave" aria-hidden="true"></div>
+          <div class="sec" style="padding-bottom:22px">
+            ${readonlyLeader('Subtotal', f.subtotal)}${readonlyLeader('Descuentos', f.discounts)}${readonlyLeader('Total', f.total, { big: true })}
+          </div>
+          ${ex.unparsed.length ? `<div class="unparsed sec" style="padding-bottom:20px">
+            <h2 class="h2" style="margin-bottom:6px">Líneas sin interpretar</h2>
+            ${ex.unparsed.map((u) => `<div class="ul"><code>${esc(ex.ocr[u.line].text)}</code><span class="st">${u.state === 'used' ? 'Usada para un ítem agregado' : u.state === 'dismissed' ? 'Descartada por el contribuyente (se conserva)' : 'Sin resolver'}</span></div>`).join('')}
+          </div>` : ''}
+        </div>
+      </div>
+      <div class="stack">
+        <figure class="imgwrap" style="margin:0">${imageFor(r)}<figcaption>Imagen original${r.synthetic ? ' sintética' : ''}. El texto del OCR se conserva sin cambios.</figcaption></figure>
+        <div class="paper tear-b tear-t pad">
+          <h2 class="h2" style="margin-bottom:10px">Procedencia</h2>
+          <div class="counts"><span>${mark('extracted')}${pc.extracted} extraídos</span><span>${mark('corrected')}${pc.corrected} corregidos</span><span>${mark('missing')}${pc.missing} no detectados</span></div>
+          <div class="wave" aria-hidden="true" style="margin:16px 0 8px"></div>
+          <h2 class="h2" style="margin:12px 0 4px">Correcciones manuales</h2>
+          ${ch.length ? `<ul class="changes">${ch.map((c) => `<li><span class="f">${esc(c.f)}</span>${c.added ? `Agregado: <ins>${esc(c.to)}</ins>` : c.removed ? `Eliminado: <del>${esc(c.from)}</del>` : `<del>${esc(c.from ?? 'no detectado')}</del> → <ins>${esc(c.to ?? 'vacío')}</ins>`}</li>`).join('')}</ul>` : '<p style="margin:6px 0 0;font-size:14px;color:var(--ink-2)">Sin correcciones. Todos los valores son los que extrajo el parser.</p>'}
+          <div class="wave" aria-hidden="true" style="margin:16px 0 8px"></div>
+          <h2 class="h2" style="margin:12px 0 4px">Historial de estados</h2>
+          <ol class="timeline">${r.history.map((h) => `<li>${chip(h.status)}<span></span><time datetime="${h.at}">${esc(fmtTime(h.at))}</time></li>`).join('')}</ol>
+          <div class="wave" aria-hidden="true" style="margin:16px 0 14px"></div>
+          <div class="barcode">${barcode(r.id)}<span>${r.id}</span></div>
+        </div>
+      </div>
+    </div>`, t || r.id);
+}
+
+/* ======================= view: review ======================= */
+let draft = null; let draftId = null; let dirty = false;
+function viewReview(rt) {
+  const r = rec(rt.id);
+  if (!r || !r.extraction) { location.hash = `#/c/${rt.id}`; return; }
+  draftId = r.id;
+  const restored = !!r.draft;
+  draft = clone(r.draft || r.extraction);
+  dirty = restored;
+  mount(`
+    <a class="back" href="#/c/${r.id}">${ic('back')} Ticket ${r.id}</a>
+    <h1 class="h1">Lo que se leyó, para revisar.</h1>
+    <p class="lede">Se puede corregir lo que esté mal, agregar lo que falte y eliminar lo que sobre. El texto original del OCR no se modifica.</p>
+    ${r.synthetic ? syntheticTape() : ''}
+    ${restored ? `<div class="notice lilac">Recuperamos cambios sin guardar de tu última sesión. <button class="btn sm" data-act="discard">Descartarlos</button></div>` : ''}
+    <div class="review" data-pane="data" id="review">
+      <div class="seg" role="group" aria-label="Vista">
+        <button aria-pressed="true" data-pane="data">Datos</button>
+        <button aria-pressed="false" data-pane="image">Imagen original</button>
+      </div>
+      <div class="pane-image">
+        <figure class="imgwrap" style="margin:0" id="imgpane">${imageFor(r)}<figcaption>Al editar un campo se resalta su línea en la imagen.</figcaption></figure>
+      </div>
+      <div class="pane-data stack">
+        <div class="peek" id="peek" aria-hidden="true">${r.synthetic ? receiptSvg(r) : ''}<span class="cap">Línea del OCR en la imagen</span></div>
+        <div id="warns"></div>
+        <form class="paper tear-b tear-t review-paper" id="form" autocomplete="off" novalidate>
+          ${['needs_review', 'extraction_ready'].includes(r.status) ? `<span class="sticker ${r.status === 'needs_review' ? 'yellow' : ''}" style="${r.status === 'extraction_ready' ? 'background:var(--paper)' : ''}">${STATUS[r.status]}</span>` : ''}
+          <div class="sec">
+            <div class="sec-h"><h2 class="h2">Comprobante</h2>${legend()}</div>
+            ${['merchant', 'datetime', 'cuit', 'docType', 'docNumber', 'currency'].map((k) => fieldRow(FIELD_LABEL[k], `f.${k}`, draft.fields[k])).join('')}
+          </div>
+          <div class="wave" aria-hidden="true"></div>
+          <div class="sec" id="items"></div>
+          <div class="wave" aria-hidden="true"></div>
+          <div class="sec" style="padding-bottom:18px">
+            <h2 class="h2" style="margin-bottom:6px">Totales</h2>
+            ${fieldRow('Subtotal', 'f.subtotal', draft.fields.subtotal)}
+            ${fieldRow('Descuentos', 'f.discounts', draft.fields.discounts)}
+            ${fieldRow('Total', 'f.total', draft.fields.total, { big: true })}
+          </div>
+          <div class="unparsed sec" id="unparsed" style="padding-bottom:18px"></div>
+          <div class="ocr-raw unparsed">
+            <details class="raw"><summary>Texto OCR original · ${draft.ocr.length} líneas</summary>
+              <ol>${draft.ocr.map((l) => `<li><span>${esc(l.text)}</span><span>${l.role === 'unparsed' ? 'sin interpretar' : ''}</span></li>`).join('')}</ol>
+            </details>
+          </div>
+        </form>
+        <div class="savebar">
+          <span class="state" id="savestate"></span>
+          <span class="actions">
+            <button class="btn sm" data-act="save">Guardar cambios</button>
+            <button class="btn sm" data-act="complete" style="background:var(--ink);color:var(--paper)">${ic('check')} Completar revisión</button>
+          </span>
+        </div>
+      </div>
+    </div>`, `Revisión ${r.id}`);
+  renderItems(); renderUnparsed(); refreshWarnings(); refreshSaveState();
+  const form = $('#form');
+  form.addEventListener('input', onEdit);
+  form.addEventListener('focusin', (e) => {
+    const l = e.target.closest('[data-line]');
+    const line = l && l.dataset.line !== '' ? +l.dataset.line : null;
+    highlightLine($('#imgpane svg'), line);
+    const peekSvg = $('#peek svg.receipt');
+    if (peekSvg) {
+      highlightLine(peekSvg, line);
+      // viewBox starts at -20; scale maps viewBox units to rendered pixels.
+      const scale = peekSvg.getBoundingClientRect().width / peekSvg.viewBox.baseVal.width;
+      const y = line == null ? 0 : (50 + line * 22 - 6 + 20) * scale - 72;
+      peekSvg.style.transform = `translateY(${-Math.max(0, y)}px)`;
+    }
+  });
+  form.addEventListener('submit', (e) => e.preventDefault());
+}
+function fieldRow(label, path, v, opts = {}) {
+  const ph = v.ambiguous ? 'Ambiguo' : 'No detectado';
+  const showWas = v.origin === 'corrected' || v.ambiguous;
+  return `<div class="fr" data-line="${v.line ?? ''}">
+    <label class="leader ${opts.big ? 'big' : ''}"><span class="k">${label}</span><span class="dots"></span><input class="v" data-path="${path}" value="${esc(v.value ?? '')}" placeholder="${esc(ph)}" size="${Math.max(8, (v.value || ph).length + 1)}" inputmode="${/Price|Total|subtotal|discounts|total|discount|qty/.test(path) ? 'decimal' : 'text'}">${mark(v.origin)}</label>
+    <div class="was" ${showWas ? '' : 'hidden'}>OCR: <q>${esc(v.ocr ?? 'no detectado')}</q>${v.ambiguous ? ' · ambiguo' : ''}</div>
+  </div>`;
+}
+function getByPath(path) {
+  const [scope, a, b] = path.split('.');
+  if (scope === 'f') return draft.fields[a];
+  return draft.items.find((i) => i.key === a)[b];
+}
+function onEdit(e) {
+  const input = e.target.closest('input[data-path]'); if (!input) return;
+  const v = getByPath(input.dataset.path);
+  const val = input.value.trim() === '' ? null : input.value.trim();
+  v.value = val;
+  v.origin = val === v.orig ? v.origOrigin : 'corrected';
+  if (val === null && v.orig === null) v.origin = 'missing';
+  const row = input.closest('.fr');
+  $('.mark', row).dataset.o = v.origin;
+  $('.mark', row).title = ORIGIN_LABEL[v.origin];
+  $('.mark', row).setAttribute('aria-label', ORIGIN_LABEL[v.origin]);
+  $('.was', row).hidden = !(v.origin === 'corrected' || v.ambiguous);
+  input.size = Math.max(8, (input.value || input.placeholder).length + 1);
+  markDirty(); refreshWarnings(); refreshItemChecks();
+}
+function markDirty() {
+  dirty = true;
+  const r = rec(draftId); r.draft = draft; persist();
+  refreshSaveState();
+}
+function refreshSaveState() {
+  const el = $('#savestate'); if (!el) return;
+  const pc = provenanceCounts(draft);
+  el.innerHTML = `${dirty ? '<b>Cambios sin guardar</b> · borrador protegido en este navegador' : 'Sin cambios pendientes'}<br>${pc.corrected} corregidos · ${pc.missing} no detectados`;
+}
+function itemCheck(it) {
+  const q = parseQty(it.qty.value); const p = parseMoney(it.unitPrice.value); const t = parseMoney(it.lineTotal.value);
+  if (q == null || p == null) return `<div class="check">${ic('alert')} No se puede comprobar cantidad × precio: falta un valor.</div>`;
+  const calc = Math.round((q * p) / 1000);
+  if (t == null) return `<div class="check bad">${ic('alert')} ${esc(it.qty.value)} × ${fmtMoney(p)} = ${fmtMoney(calc)}. El importe de línea no está completo.</div>`;
+  return calc === t ? `<div class="check">${ic('check')} ${esc(it.qty.value)} × ${fmtMoney(p)} = ${fmtMoney(calc)}</div>` : `<div class="check bad">${ic('alert')} ${esc(it.qty.value)} × ${fmtMoney(p)} = ${fmtMoney(calc)}, no ${fmtMoney(t)}</div>`;
+}
+function renderItems() {
+  const box = $('#items');
+  box.innerHTML = `<div class="sec-h"><h2 class="h2">Ítems · <span id="icount">${liveItems(draft).length}</span></h2></div>` + draft.items.map((it, i) => {
+    const n = String(i + 1).padStart(2, '0');
+    if (it.removed) return `<div class="item removed" data-key="${it.key}"><div class="gone"><span>${n} · <s>${esc(it.raw || it.name.value || 'Ítem agregado')}</s> · eliminado</span><button type="button" class="btn sm ghost" data-act="restore" data-key="${it.key}">${ic('undo')} Restaurar</button></div></div>`;
+    return `<div class="item" data-key="${it.key}">
+      <div class="item-h">
+        <span class="item-n">${n}</span>
+        <span class="item-raw" data-line="${it.rawLine ?? ''}">${it.raw ? esc(it.raw) : '<span style="color:var(--ink-3)">Sin texto OCR</span>'}<small>${it.origin === 'added' ? 'Agregado manualmente' : 'Descripción original del OCR · no editable'}</small></span>
+        <button type="button" class="icon-btn" data-act="remove" data-key="${it.key}" aria-label="Eliminar ítem ${n}">${ic('trash')}</button>
+      </div>
+      <div class="item-grid">
+        <div class="full">${fieldRow('Nombre', `i.${it.key}.name`, it.name)}</div>
+        ${fieldRow('Cantidad', `i.${it.key}.qty`, it.qty)}${fieldRow('Unidad', `i.${it.key}.unit`, it.unit)}
+        ${fieldRow('Precio unit.', `i.${it.key}.unitPrice`, it.unitPrice)}${fieldRow('Importe', `i.${it.key}.lineTotal`, it.lineTotal)}
+        ${fieldRow('EAN', `i.${it.key}.ean`, it.ean)}${fieldRow('Descuento', `i.${it.key}.discount`, it.discount)}
+      </div>
+      <div class="ck">${itemCheck(it)}</div>
+    </div>`;
+  }).join('') + `<button type="button" class="btn sm add" data-act="add">${ic('plus')} Agregar ítem no detectado</button>`;
+}
+function refreshItemChecks() {
+  liveItems(draft).forEach((it) => { const el = $(`.item[data-key="${it.key}"] .ck`); if (el) el.innerHTML = itemCheck(it); });
+}
+function renderUnparsed() {
+  const box = $('#unparsed');
+  if (!draft.unparsed.length) { box.innerHTML = `<h2 class="h2" style="margin-bottom:4px">Líneas sin interpretar</h2><p style="margin:6px 0 0;font-size:14px;color:var(--ink-2)">El parser interpretó todas las líneas del OCR.</p>`; return; }
+  box.innerHTML = `<h2 class="h2" style="margin-bottom:6px">Líneas sin interpretar</h2>` + draft.unparsed.map((u) => `
+    <div class="ul" data-line="${u.line}">
+      <code>${esc(draft.ocr[u.line].text)}</code>
+      ${u.state === 'open' ? `<span class="actions"><button type="button" class="btn sm" data-act="useline" data-line="${u.line}">${ic('plus')} Crear ítem</button><button type="button" class="btn sm ghost" data-act="dismiss" data-line="${u.line}">Descartar</button></span>` : `<button type="button" class="btn sm ghost" data-act="reopen" data-line="${u.line}">${ic('undo')} Deshacer</button>`}
+      <span class="st">${u.state === 'used' ? 'Usada para un ítem agregado. El texto se conserva igual.' : u.state === 'dismissed' ? 'Descartada. Se conserva en el registro.' : 'El parser no pudo interpretarla.'}</span>
+    </div>`).join('');
+}
+function refreshWarnings() {
+  const w = computeWarnings(draft);
+  const box = $('#warns'); if (!box) return;
+  box.innerHTML = w.length ? `<section class="warns" aria-live="polite"><div class="wh">${ic('alert')} ${w.length} ${w.length === 1 ? 'advertencia' : 'advertencias'} · nada se corrige automáticamente</div><ul>${w.map((x) => `<li>${esc(x.text)}${x.key ? ` <button type="button" data-act="goto" data-key="${x.key}">Ir al ítem</button>` : ''}</li>`).join('')}</ul></section>`
+    : `<section class="warns ok" aria-live="polite"><div class="wh" style="border-bottom:0">${ic('check')} Sin advertencias aritméticas ni campos importantes vacíos</div></section>`;
+  const ic2 = $('#icount'); if (ic2) ic2.textContent = liveItems(draft).length;
+}
+function blankField() { return { value: null, orig: null, origOrigin: 'missing', origin: 'missing', ocr: null, line: null }; }
+function addItem(fromLine) {
+  const it = { key: 'a' + Date.now().toString(36), raw: fromLine != null ? draft.ocr[fromLine].text : '', rawLine: fromLine, origin: 'added', removed: false };
+  Object.keys(ITEM_LABEL).forEach((k) => { it[k] = blankField(); });
+  draft.items.push(it);
+  if (fromLine != null) { const u = draft.unparsed.find((x) => x.line === fromLine); u.state = 'used'; u.usedBy = it.key; }
+  renderItems(); renderUnparsed(); markDirty(); refreshWarnings();
+  const el = $(`.item[data-key="${it.key}"] input`); el?.focus(); el?.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+}
+
+/* ======================= view: history ======================= */
+function viewHistory(rt) {
+  const R = db.records;
+  const FILTERS = [
+    ['all', 'Todos', null], ['needs_review', 'Requiere revisión', 'var(--yellow)'], ['fiscal_pending', 'Validación fiscal pendiente', 'var(--lilac)'],
+    ['processing', 'Procesando', 'var(--cyan)'], ['processing_error', 'Con error', 'var(--coral)'],
+  ];
+  const match = (r, f) => f === 'all' || (f === 'needs_review' ? ['needs_review', 'extraction_ready'].includes(r.status) : f === 'processing' ? ['processing', 'uploaded'].includes(r.status) : r.status === f);
+  const list = R.filter((r) => match(r, rt.f));
+  mount(`
+    <h1 class="h1">Historial.</h1>
+    <p class="lede">Todos los tickets, con lo que leyó el OCR y lo que se corrigió a mano. Cada uno se abre para ver el detalle.</p>
+    <div class="filters" role="group" aria-label="Filtrar por estado">
+      ${FILTERS.map(([k, label, c]) => `<a class="filt" href="#/historial${k === 'all' ? '' : '?f=' + k}" aria-pressed="${rt.f === k}" style="${c ? '--fc:' + c : ''}">${label}<span class="n">${R.filter((r) => match(r, k)).length}</span></a>`).join('')}
+    </div>
+    <div class="paper tear-b tear-t pad history">
+      ${list.length ? `<div class="tbl-head" aria-hidden="true"><span>ID</span><span>Comercio</span><span>Fecha ticket</span><span>Ítems</span><span>Cargado</span><span>Estado</span></div><ul class="rows">${list.map(rowHtml).join('')}</ul>` : `
+        <div class="empty">
+          ${px('mascot').replace('class="px"', 'class="px" style="width:34px;height:40px"')}
+          <p><strong>${R.length ? 'No hay tickets con este estado.' : 'Todavía no hay tickets.'}</strong> ${R.length ? 'Hay tickets en otros filtros.' : 'Cuando se cargue uno, aparece aquí con su estado.'}</p>
+          ${R.length ? '' : `<a class="btn" href="#/cargar">Cargar ticket ${ic('arrow')}</a>`}
+        </div>`}
+    </div>`, 'Historial');
+}
+
+/* ======================= view: modules ======================= */
+const MODULES = [
+  ['fiscal', 'Validación fiscal', 'Decodificación del QR fiscal y constatación del comprobante ante ARCA.'],
+  ['identity', 'Identidad y wallet', 'Inicio de sesión con SIWE y, más adelante, wallet embebida.'],
+  ['tasks', 'Encargos disponibles', 'Tareas abiertas financiadas por agentes que necesitan observaciones nuevas.'],
+  ['rewards', 'Recompensas', 'Importes por aporte y cobro en USDC mediante RewardVault.'],
+  ['proof', 'Proof of Contribution', 'Pruebas criptográficas de contribución, verificables por terceros.'],
+  ['verify', 'Verificación independiente', 'Revisión por verificadores y compromisos Merkle por época.'],
+  ['market', 'Marketplace', 'Productos de datos agregados y cobertura por región.'],
+  ['agents', 'Agentes compradores', 'Encargos y compras automatizadas mediante REST y MCP.'],
+  ['payments', 'Pagos', 'x402, escrow y liquidación en Base.'],
+  ['provenance', 'Procedencia de datos', 'Compromisos criptográficos y verificación de datasets.'],
+  ['storage', 'Almacenamiento descentralizado', 'IPFS, Lighthouse y Filecoin PDP.'],
+];
+function viewModules() {
+  mount(`
+    <h1 class="h1">Lo que viene, sin simulaciones.</h1>
+    <p class="lede">Así va a crecer Tuki. Ninguno de estos módulos funciona todavía: no hay botones que finjan hacer algo.</p>
+    <div class="mods" role="list">
+      ${MODULES.map(([pxn, t, d], i) => `<article class="mod ${i === 0 ? 'lead' : ''}" role="listitem" aria-disabled="true">
+        ${px(pxn)}
+        <div><h3>${t}</h3><p>${d}</p><span class="tape ink">En desarrollo</span></div>
+      </article>`).join('')}
+    </div>`, 'Módulos');
+}
+
+/* ======================= actions ======================= */
+document.addEventListener('click', (e) => {
+  const sampleBtn = e.target.closest('[data-sample]');
+  if (sampleBtn) { captureError = null; if (selection?.url) URL.revokeObjectURL(selection.url); selection = { kind: 'sample', n: +sampleBtn.dataset.sample }; viewCapture(); return; }
+  const seg = e.target.closest('.seg [data-pane]');
+  if (seg) { $('#review').dataset.pane = seg.dataset.pane; $$('.seg button').forEach((b) => b.setAttribute('aria-pressed', b === seg)); return; }
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act;
+  if (act === 'clear') { if (selection?.url) URL.revokeObjectURL(selection.url); selection = null; captureError = null; viewCapture(); }
+  if (act === 'process') { const r = createRecord(selection); selection = null; location.hash = `#/c/${r.id}`; setTimeout(() => runPipeline(r.id), 30); }
+  if (act === 'retry') { location.hash = `#/c/${a.dataset.id}`; const r = rec(a.dataset.id); r.status = 'uploaded'; route(); runPipeline(r.id); }
+  if (act === 'remove') { const it = draft.items.find((i) => i.key === a.dataset.key); it.removed = true; if (it.origin === 'added' && it.rawLine != null) { const u = draft.unparsed.find((x) => x.usedBy === it.key); if (u) { u.state = 'open'; u.usedBy = null; } } renderItems(); renderUnparsed(); markDirty(); refreshWarnings(); toast('Ítem eliminado. Se puede restaurar.'); }
+  if (act === 'restore') { draft.items.find((i) => i.key === a.dataset.key).removed = false; renderItems(); markDirty(); refreshWarnings(); }
+  if (act === 'add') addItem(null);
+  if (act === 'useline') addItem(+a.dataset.line);
+  if (act === 'dismiss' || act === 'reopen') {
+    const u = draft.unparsed.find((x) => x.line === +a.dataset.line);
+    if (act === 'reopen' && u.usedBy) { const it = draft.items.find((i) => i.key === u.usedBy); if (it) it.removed = true; renderItems(); }
+    u.state = act === 'dismiss' ? 'dismissed' : 'open'; u.usedBy = null;
+    renderUnparsed(); markDirty(); refreshWarnings();
+  }
+  if (act === 'goto') { const el = $(`.item[data-key="${a.dataset.key}"]`); el?.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' }); $('input', el)?.focus({ preventScroll: true }); }
+  if (act === 'discard') { const r = rec(draftId); r.draft = null; persist(); dirty = false; route(); toast('Cambios descartados.'); }
+  if (act === 'save') { const r = rec(draftId); r.extraction = clone(draft); r.draft = null; dirty = false; persist(); refreshSaveState(); toast('Cambios guardados.'); }
+  if (act === 'complete') {
+    const r = rec(draftId);
+    r.extraction = clone(draft); r.draft = null; dirty = false;
+    setStatus(r, 'reviewed'); setStatus(r, 'fiscal_pending');
+    flash = 'Revisión completada. El ticket queda con validación fiscal pendiente.';
+    location.hash = `#/c/${r.id}`;
+  }
+});
+
+route();
+})();
+</script>
+</body>
+</html>

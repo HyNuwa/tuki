@@ -1,0 +1,576 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-16T00:32:04.797Z",
+  "title": "Design System: Tuki Contributor PWA",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Night Ground",
+        "canonical": "oklch(18.1% 0.004 107)",
+        "tonalRamp": [
+          "oklch(15% 0.002 107)",
+          "oklch(25% 0.002 107)",
+          "oklch(36% 0.004 107)",
+          "oklch(48% 0.004 107)",
+          "oklch(60% 0.004 107)",
+          "oklch(72% 0.004 107)",
+          "oklch(84% 0.004 107)",
+          "oklch(95% 0.002 107)"
+        ]
+      },
+      "ground-2": {
+        "role": "neutral",
+        "displayName": "Ground Raised",
+        "canonical": "oklch(22.5% 0.006 107)",
+        "tonalRamp": [
+          "oklch(15% 0.003 107)",
+          "oklch(25% 0.003 107)",
+          "oklch(36% 0.006 107)",
+          "oklch(48% 0.006 107)",
+          "oklch(60% 0.006 107)",
+          "oklch(72% 0.006 107)",
+          "oklch(84% 0.006 107)",
+          "oklch(95% 0.003 107)"
+        ]
+      },
+      "ground-line": {
+        "role": "neutral",
+        "displayName": "Ground Line",
+        "canonical": "oklch(32.3% 0.009 107)",
+        "tonalRamp": [
+          "oklch(15% 0.004 107)",
+          "oklch(25% 0.004 107)",
+          "oklch(36% 0.009 107)",
+          "oklch(48% 0.009 107)",
+          "oklch(60% 0.009 107)",
+          "oklch(72% 0.009 107)",
+          "oklch(84% 0.009 107)",
+          "oklch(95% 0.004 107)"
+        ]
+      },
+      "on-ground": {
+        "role": "neutral",
+        "displayName": "Paper On Ground",
+        "canonical": "oklch(99.0% 0.004 106)",
+        "tonalRamp": [
+          "oklch(15% 0.002 106)",
+          "oklch(25% 0.002 106)",
+          "oklch(36% 0.004 106)",
+          "oklch(48% 0.004 106)",
+          "oklch(60% 0.004 106)",
+          "oklch(72% 0.004 106)",
+          "oklch(84% 0.004 106)",
+          "oklch(95% 0.002 106)"
+        ]
+      },
+      "on-ground-2": {
+        "role": "neutral",
+        "displayName": "Muted Ground Text",
+        "canonical": "oklch(78.3% 0.015 107)",
+        "tonalRamp": [
+          "oklch(15% 0.008 107)",
+          "oklch(25% 0.008 107)",
+          "oklch(36% 0.015 107)",
+          "oklch(48% 0.015 107)",
+          "oklch(60% 0.015 107)",
+          "oklch(72% 0.015 107)",
+          "oklch(84% 0.015 107)",
+          "oklch(95% 0.008 107)"
+        ]
+      },
+      "paper": {
+        "role": "primary",
+        "displayName": "Thermal Paper",
+        "canonical": "oklch(99.0% 0.004 106)",
+        "tonalRamp": [
+          "oklch(15% 0.002 106)",
+          "oklch(25% 0.002 106)",
+          "oklch(36% 0.004 106)",
+          "oklch(48% 0.004 106)",
+          "oklch(60% 0.004 106)",
+          "oklch(72% 0.004 106)",
+          "oklch(84% 0.004 106)",
+          "oklch(95% 0.002 106)"
+        ]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "oklch(95.9% 0.008 107)",
+        "tonalRamp": [
+          "oklch(15% 0.004 107)",
+          "oklch(25% 0.004 107)",
+          "oklch(36% 0.008 107)",
+          "oklch(48% 0.008 107)",
+          "oklch(60% 0.008 107)",
+          "oklch(72% 0.008 107)",
+          "oklch(84% 0.008 107)",
+          "oklch(95% 0.004 107)"
+        ]
+      },
+      "paper-3": {
+        "role": "neutral",
+        "displayName": "Paper Deep",
+        "canonical": "oklch(92.3% 0.011 107)",
+        "tonalRamp": [
+          "oklch(15% 0.005 107)",
+          "oklch(25% 0.005 107)",
+          "oklch(36% 0.011 107)",
+          "oklch(48% 0.011 107)",
+          "oklch(60% 0.011 107)",
+          "oklch(72% 0.011 107)",
+          "oklch(84% 0.011 107)",
+          "oklch(95% 0.005 107)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Receipt Ink",
+        "canonical": "oklch(18.1% 0.004 107)",
+        "tonalRamp": [
+          "oklch(15% 0.002 107)",
+          "oklch(25% 0.002 107)",
+          "oklch(36% 0.004 107)",
+          "oklch(48% 0.004 107)",
+          "oklch(60% 0.004 107)",
+          "oklch(72% 0.004 107)",
+          "oklch(84% 0.004 107)",
+          "oklch(95% 0.002 107)"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "oklch(38.8% 0.010 107)",
+        "tonalRamp": [
+          "oklch(15% 0.005 107)",
+          "oklch(25% 0.005 107)",
+          "oklch(36% 0.010 107)",
+          "oklch(48% 0.010 107)",
+          "oklch(60% 0.010 107)",
+          "oklch(72% 0.010 107)",
+          "oklch(84% 0.010 107)",
+          "oklch(95% 0.005 107)"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink Faint",
+        "canonical": "oklch(50.1% 0.012 107)",
+        "tonalRamp": [
+          "oklch(15% 0.006 107)",
+          "oklch(25% 0.006 107)",
+          "oklch(36% 0.012 107)",
+          "oklch(48% 0.012 107)",
+          "oklch(60% 0.012 107)",
+          "oklch(72% 0.012 107)",
+          "oklch(84% 0.012 107)",
+          "oklch(95% 0.006 107)"
+        ]
+      },
+      "lilac": {
+        "role": "secondary",
+        "displayName": "Fiscal Lilac",
+        "canonical": "oklch(80.3% 0.099 301)",
+        "tonalRamp": [
+          "oklch(15% 0.050 301)",
+          "oklch(25% 0.050 301)",
+          "oklch(36% 0.099 301)",
+          "oklch(48% 0.099 301)",
+          "oklch(60% 0.099 301)",
+          "oklch(72% 0.099 301)",
+          "oklch(84% 0.099 301)",
+          "oklch(95% 0.050 301)"
+        ]
+      },
+      "lilac-deep": {
+        "role": "secondary",
+        "displayName": "Corrected Violet",
+        "canonical": "oklch(66.0% 0.158 297)",
+        "tonalRamp": [
+          "oklch(15% 0.079 297)",
+          "oklch(25% 0.079 297)",
+          "oklch(36% 0.158 297)",
+          "oklch(48% 0.158 297)",
+          "oklch(60% 0.158 297)",
+          "oklch(72% 0.158 297)",
+          "oklch(84% 0.158 297)",
+          "oklch(95% 0.079 297)"
+        ]
+      },
+      "yellow": {
+        "role": "secondary",
+        "displayName": "Review Yellow",
+        "canonical": "oklch(90.9% 0.163 97)",
+        "tonalRamp": [
+          "oklch(15% 0.081 97)",
+          "oklch(25% 0.081 97)",
+          "oklch(36% 0.163 97)",
+          "oklch(48% 0.163 97)",
+          "oklch(60% 0.163 97)",
+          "oklch(72% 0.163 97)",
+          "oklch(84% 0.163 97)",
+          "oklch(95% 0.081 97)"
+        ]
+      },
+      "yellow-soft": {
+        "role": "tertiary",
+        "displayName": "Highlighter Yellow",
+        "canonical": "oklch(96.2% 0.077 99)",
+        "tonalRamp": [
+          "oklch(15% 0.039 99)",
+          "oklch(25% 0.039 99)",
+          "oklch(36% 0.077 99)",
+          "oklch(48% 0.077 99)",
+          "oklch(60% 0.077 99)",
+          "oklch(72% 0.077 99)",
+          "oklch(84% 0.077 99)",
+          "oklch(95% 0.039 99)"
+        ]
+      },
+      "cyan": {
+        "role": "secondary",
+        "displayName": "Scanner Cyan",
+        "canonical": "oklch(82.3% 0.091 221)",
+        "tonalRamp": [
+          "oklch(15% 0.045 221)",
+          "oklch(25% 0.045 221)",
+          "oklch(36% 0.091 221)",
+          "oklch(48% 0.091 221)",
+          "oklch(60% 0.091 221)",
+          "oklch(72% 0.091 221)",
+          "oklch(84% 0.091 221)",
+          "oklch(95% 0.045 221)"
+        ]
+      },
+      "coral": {
+        "role": "secondary",
+        "displayName": "Fault Coral",
+        "canonical": "oklch(75.6% 0.149 36)",
+        "tonalRamp": [
+          "oklch(15% 0.075 36)",
+          "oklch(25% 0.075 36)",
+          "oklch(36% 0.149 36)",
+          "oklch(48% 0.149 36)",
+          "oklch(60% 0.149 36)",
+          "oklch(72% 0.149 36)",
+          "oklch(84% 0.149 36)",
+          "oklch(95% 0.075 36)"
+        ]
+      },
+      "coral-soft": {
+        "role": "tertiary",
+        "displayName": "Error Wash",
+        "canonical": "oklch(91.4% 0.046 38)",
+        "tonalRamp": [
+          "oklch(15% 0.023 38)",
+          "oklch(25% 0.023 38)",
+          "oklch(36% 0.046 38)",
+          "oklch(48% 0.046 38)",
+          "oklch(60% 0.046 38)",
+          "oklch(72% 0.046 38)",
+          "oklch(84% 0.046 38)",
+          "oklch(95% 0.023 38)"
+        ]
+      },
+      "mint": {
+        "role": "secondary",
+        "displayName": "Done Mint",
+        "canonical": "oklch(85.6% 0.097 156)",
+        "tonalRamp": [
+          "oklch(15% 0.048 156)",
+          "oklch(25% 0.048 156)",
+          "oklch(36% 0.097 156)",
+          "oklch(48% 0.097 156)",
+          "oklch(60% 0.097 156)",
+          "oklch(72% 0.097 156)",
+          "oklch(84% 0.097 156)",
+          "oklch(95% 0.048 156)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "One page headline per view, on the ground."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Drop-sheet prompt, in-strip section titles, error result heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Record titles in lists and module names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Sentences, ledes (max 56ch), notices."
+      },
+      "label-pixel": {
+        "displayName": "Pixel Label",
+        "purpose": "Silkscreen section names and item number pills only."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "OCR-derived values and editable fields, tabular figures."
+      },
+      "data-key": {
+        "displayName": "Data Key",
+        "purpose": "Uppercase leader keys."
+      },
+      "data-meta": {
+        "displayName": "Data Meta",
+        "purpose": "IDs, dates, captions, OCR lines, original values."
+      },
+      "label-state": {
+        "displayName": "State Label",
+        "purpose": "Chips, tape, warning header, table head."
+      },
+      "sticker": {
+        "displayName": "Sticker",
+        "purpose": "Text inside round state stickers."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 6px 14px -6px rgba(0,0,0,.6)",
+        "purpose": "Bottom nav, save bar, toast."
+      },
+      {
+        "name": "sticker-lift",
+        "value": "0 6px 14px -6px rgba(0,0,0,.45)",
+        "purpose": "Round state stickers, read as stuck on."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "The single easing for all transitions and entrances."
+      },
+      {
+        "name": "press",
+        "value": "transform: scale(.97); .15s",
+        "purpose": "Button press squash."
+      },
+      {
+        "name": "view-enter",
+        "value": "opacity 0 to 1, translateY(8px) to none, .4s",
+        "purpose": "Each view entering."
+      },
+      {
+        "name": "print-line",
+        "value": "opacity 0 to 1, translateY(-6px) to none, .32s per line",
+        "purpose": "OCR lines printing in during processing."
+      },
+      {
+        "name": "scan",
+        "value": "1.8s infinite, screen blend, cyan gradient bar",
+        "purpose": "Scan bar sweeping the receipt while processing."
+      },
+      {
+        "name": "pulse",
+        "value": "scale(.82) at 50%, 1s ease-in-out infinite",
+        "purpose": "Running step dot."
+      },
+      {
+        "name": "toast",
+        "value": "opacity .25s, transform .35s",
+        "purpose": "Toast rise from 20px below."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "durations .01ms, single iteration, scan bar hidden",
+        "purpose": "prefers-reduced-motion collapses all motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "samples-2up",
+        "value": "520px"
+      },
+      {
+        "name": "strip-pad",
+        "value": "640px"
+      },
+      {
+        "name": "history-table",
+        "value": "860px"
+      },
+      {
+        "name": "desktop-rail",
+        "value": "960px"
+      },
+      {
+        "name": "modules-3up",
+        "value": "1100px"
+      }
+    ],
+    "shapes": {
+      "tearEdge": "radial-gradient(circle at 50% 9px, transparent 5px, var(--paper) 5.5px); 12px x 9px tile; repeat-x; offset -8px past the edge",
+      "waveRule": "20x10 SVG quadratic wave, stroke 1.2; ink on paper, ground-line on the ground",
+      "rotations": {
+        "stamp": "-4deg",
+        "sticker": "-9deg (alternate rows +7deg)",
+        "tape": "-1.5deg",
+        "correctedMark": "45deg"
+      }
+    },
+    "copy": {
+      "language": "Neutral Spanish",
+      "stateLabels": {
+        "uploaded": "Cargado",
+        "processing": "Procesando",
+        "extraction_ready": "Extracción disponible",
+        "needs_review": "Requiere revisión",
+        "reviewed": "Revisión completada",
+        "fiscal_pending": "Validación fiscal pendiente",
+        "processing_error": "Error de procesamiento"
+      },
+      "forbiddenLabels": [
+        "Aceptado",
+        "Verificado",
+        "Apto para agregación",
+        "Entregable",
+        "Recompensa aprobada"
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action (\"Cargar ticket\", \"Completar revisión\"): ink pill with a leading circular icon well.",
+      "html": "<button class=\"ds-btn-primary\"><span class=\"ds-ic\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></span>Cargar ticket</button>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-btn-primary{display:inline-flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;min-width:220px;padding:0 22px 0 8px;border-radius:var(--r-pill);border:1px solid var(--ink);background:var(--ink);color:var(--paper);font:600 15px/1 var(--f-ui);cursor:pointer;transition:transform .15s var(--ease-out),background .2s}.ds-btn-primary .ds-ic{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--paper);color:var(--ink)}.ds-btn-primary:hover{background:#2a2a26}.ds-btn-primary:active{transform:scale(.97)}.ds-btn-primary:focus-visible{outline:2px solid var(--lilac);outline-offset:3px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary action on paper: paper pill with ink outline.",
+      "html": "<button class=\"ds-btn\">Guardar cambios</button>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 20px;border-radius:var(--r-pill);border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:600 15px/1 var(--f-ui);cursor:pointer;transition:transform .15s var(--ease-out),background .2s}.ds-btn:hover{background:var(--paper-2)}.ds-btn:active{transform:scale(.97)}.ds-btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}"
+    },
+    {
+      "name": "State Chips",
+      "kind": "chip",
+      "refersTo": "chip-state",
+      "description": "Inline contribution state in dense lists, colored by the state map.",
+      "html": "<div class=\"ds-row\"><span class=\"ds-chip\" data-s=\"processing\">Procesando</span><span class=\"ds-chip\" data-s=\"needs_review\">Requiere revisión</span><span class=\"ds-chip\" data-s=\"reviewed\">Revisión completada</span><span class=\"ds-chip\" data-s=\"fiscal_pending\">Validación fiscal pendiente</span><span class=\"ds-chip\" data-s=\"processing_error\">Error de procesamiento</span></div>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-row{display:flex;flex-wrap:wrap;gap:8px;padding:16px;background:var(--paper)}.ds-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ink);border-radius:var(--r-pill);padding:4px 10px;font:700 11.5px/1.1 var(--f-mono);letter-spacing:.03em;text-transform:uppercase;color:var(--ink);background:var(--paper);white-space:nowrap}.ds-chip[data-s=processing]{background:var(--cyan)}.ds-chip[data-s=processing]::before{content:\"\";width:6px;height:6px;border-radius:50%;background:var(--ink)}.ds-chip[data-s=needs_review]{background:var(--yellow)}.ds-chip[data-s=reviewed]{background:var(--mint)}.ds-chip[data-s=fiscal_pending]{background:var(--lilac)}.ds-chip[data-s=processing_error]{background:var(--coral)}"
+    },
+    {
+      "name": "State Sticker",
+      "kind": "custom",
+      "refersTo": "sticker",
+      "description": "Headline state of a record: round, rotated, state-colored, stuck onto the strip.",
+      "html": "<div class=\"ds-stage\"><span class=\"ds-sticker\">Validación fiscal pendiente</span><span class=\"ds-sticker ds-yellow\">Requiere revisión</span></div>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-stage{display:flex;gap:24px;padding:24px;background:var(--paper)}.ds-sticker{display:grid;place-items:center;text-align:center;width:118px;height:118px;padding:14px;border-radius:50%;background:var(--lilac);color:var(--ink);border:1px solid var(--ink);font:800 13px/1.05 var(--f-ui);letter-spacing:.01em;text-transform:uppercase;transform:rotate(-9deg);box-shadow:0 6px 14px -6px rgba(0,0,0,.45)}.ds-yellow{background:var(--yellow);transform:rotate(7deg)}"
+    },
+    {
+      "name": "Tape Labels",
+      "kind": "chip",
+      "refersTo": "tape",
+      "description": "Yellow tape marks synthetic data; ink tape marks unbuilt modules.",
+      "html": "<div class=\"ds-stage\"><span class=\"ds-tape\">Datos sintéticos — no representan compras reales</span><span class=\"ds-tape ds-ink\">En desarrollo</span></div>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-stage{display:flex;flex-wrap:wrap;gap:16px;padding:20px;background:var(--paper)}.ds-tape{display:inline-block;background:var(--yellow);color:var(--ink);font:700 11.5px/1.25 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--ink);transform:rotate(-1.5deg)}.ds-ink{background:var(--ink);color:var(--paper)}"
+    },
+    {
+      "name": "Paper Strip With Provenance Leaders",
+      "kind": "card",
+      "refersTo": "paper-strip",
+      "description": "Signature container: torn paper strip on the ground holding dotted-leader rows with provenance marks.",
+      "html": "<div class=\"ds-ground\"><section class=\"ds-paper\"><h2 class=\"ds-h2\">Comprobante</h2><div class=\"ds-wave\"></div><div class=\"ds-leader\"><span class=\"ds-k\">Comercio</span><span class=\"ds-dots\"></span><span class=\"ds-v\">Kiosco Prueba</span><span class=\"ds-mark\" data-o=\"extracted\"></span></div><div class=\"ds-leader\"><span class=\"ds-k\">Total</span><span class=\"ds-dots\"></span><span class=\"ds-v\">4.630,00</span><span class=\"ds-mark\" data-o=\"corrected\"></span></div><div class=\"ds-leader\"><span class=\"ds-k\">EAN</span><span class=\"ds-dots\"></span><span class=\"ds-v ds-empty\">No detectado</span><span class=\"ds-mark\" data-o=\"missing\"></span></div></section></div>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-ground{background:var(--ground);padding:24px 16px}.ds-paper{position:relative;background:var(--paper);color:var(--ink);padding:20px 18px;margin-bottom:12px}.ds-paper::after{content:\"\";position:absolute;left:0;right:0;bottom:-8px;height:9px;background:radial-gradient(circle at 50% 9px,transparent 5px,var(--paper) 5.5px) 0 0/12px 9px repeat-x}.ds-h2{font:400 13px/1.2 var(--f-pix);letter-spacing:.04em;text-transform:uppercase;margin:0 0 10px}.ds-wave{height:10px;margin-bottom:6px;background:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 5 Q5 0 10 5 T20 5' fill='none' stroke='%23121210' stroke-width='1.2'/%3E%3C/svg%3E\") repeat-x left center}.ds-leader{display:flex;align-items:flex-end;column-gap:8px;padding:7px 0;font:500 13.5px/1.35 var(--f-mono)}.ds-k{font:600 12px/1.35 var(--f-mono);letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2);padding-bottom:2px}.ds-dots{flex:1 1 14px;border-bottom:2px dotted var(--ink-3);margin-bottom:7px}.ds-v{font-variant-numeric:tabular-nums;padding-bottom:2px}.ds-empty{color:var(--ink-3)}.ds-mark{flex:none;width:11px;height:11px;margin-bottom:6px}.ds-mark[data-o=extracted]{background:var(--ink)}.ds-mark[data-o=corrected]{background:var(--lilac-deep);border:1px solid var(--ink);transform:rotate(45deg) scale(.92)}.ds-mark[data-o=missing]{border:1.5px solid var(--ink)}"
+    },
+    {
+      "name": "Inline Leader Input",
+      "kind": "input",
+      "refersTo": "input-inline",
+      "description": "The value side of a leader row is the editable field; focus is a highlighter pass.",
+      "html": "<div class=\"ds-paper\"><label class=\"ds-leader\"><span class=\"ds-k\">Precio unit.</span><span class=\"ds-dots\"></span><input class=\"ds-in\" value=\"2.450,00\"></label><p class=\"ds-was\">OCR: «2.4S0,00» · ambiguo</p></div>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-paper{background:var(--paper);color:var(--ink);padding:18px}.ds-leader{display:flex;align-items:flex-end;column-gap:8px;font:500 13.5px/1.35 var(--f-mono)}.ds-k{font:600 12px/1.35 var(--f-mono);text-transform:uppercase;color:var(--ink-2)}.ds-dots{flex:1;border-bottom:2px dotted var(--ink-3);margin-bottom:7px}.ds-in{font:500 13.5px/1.35 var(--f-mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;width:9ch;border:0;border-bottom:1px solid transparent;background:transparent;padding:2px}.ds-in:hover{border-bottom-color:var(--ink-3)}.ds-in:focus{outline:none;border-bottom:2px solid var(--ink);background:var(--yellow-soft)}.ds-was{font:500 11.5px/1.4 var(--f-mono);color:var(--ink-3);text-align:right;margin:4px 0 0}"
+    },
+    {
+      "name": "Bottom Pill Nav",
+      "kind": "nav",
+      "refersTo": "nav-bottom",
+      "description": "Mobile navigation: floating paper pill with a central ink capture circle.",
+      "html": "<nav class=\"ds-bnav\"><a aria-current=\"page\" tabindex=\"0\">Panel</a><a tabindex=\"0\">Historial</a><a class=\"ds-cta\" aria-label=\"Cargar ticket\" tabindex=\"0\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></a><a tabindex=\"0\">Módulos</a><a tabindex=\"0\">Cuenta</a></nav>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-bnav{display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;align-items:center;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:var(--r-pill);padding:6px;box-shadow:0 6px 14px -6px rgba(0,0,0,.6);max-width:380px}.ds-bnav a{display:flex;justify-content:center;padding:10px 2px;border-radius:var(--r-pill);font:600 11.5px/1.1 var(--f-ui);color:var(--ink-2);cursor:pointer}.ds-bnav a[aria-current=page]{color:var(--ink)}.ds-bnav a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}.ds-bnav .ds-cta{width:56px;height:56px;margin:0 6px;align-items:center;background:var(--ink);border-radius:50%;color:var(--paper)}"
+    },
+    {
+      "name": "Desktop Rail Link",
+      "kind": "nav",
+      "refersTo": "nav-rail-item",
+      "description": "Desktop left-rail item on the ground; current item fills with paper.",
+      "html": "<nav class=\"ds-rail\"><a aria-current=\"page\" tabindex=\"0\">Panel</a><a tabindex=\"0\">Historial</a><a tabindex=\"0\">Módulos</a></nav>",
+      "css": ":host{--ground:#121210;--ground-2:#1c1c19;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;--paper:#fcfcf9;--paper-2:#f2f2ec;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;--lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--yellow-soft:#fff4b8;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;--f-ui:\"Schibsted Grotesk\",system-ui,sans-serif;--f-mono:\"Martian Mono\",ui-monospace,monospace;--f-pix:\"Silkscreen\",var(--f-mono);--r-pill:999px;--ease-out:cubic-bezier(.16,1,.3,1)} .ds-rail{display:grid;gap:6px;width:220px;padding:20px;background:var(--ground)}.ds-rail a{display:flex;align-items:center;padding:11px 16px;border:1px solid transparent;border-radius:var(--r-pill);font:600 15px/1 var(--f-ui);color:var(--on-ground-2);cursor:pointer;transition:background .2s,color .2s,border-color .2s}.ds-rail a:hover{color:var(--on-ground);border-color:var(--ground-line)}.ds-rail a[aria-current=page]{background:var(--paper);color:var(--ink);border-color:var(--paper)}.ds-rail a:focus-visible{outline:2px solid var(--lilac);outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Thermal Strip",
+    "overview": "Every contribution is a thermal receipt strip. Content lives on white thermal paper (`paper`) torn with a scalloped edge and laid on a near-black ground (`ground`); the ground is chrome, the paper is the record. Inside a strip the receipt's own vocabulary carries the interface: 1px ink hairlines, wavy rules, dotted leaders running from an uppercase key to a tabular value, and a small provenance mark at the end of every row. State is announced the way a desk announces it: a round, rotated color sticker slapped onto the strip, or yellow tape across it.\n\nDensity is receipt-dense, not dashboard-dense. Numbers and extracted data are always monospace and tabular; human sentences stay in a calm grotesk. The system refuses the KPI-card dashboard and the generic upload wizard: counters are printed as dotted-leader lines on a strip, not tiles, and capture is a single dashed drop sheet with synthetic samples beside it.\n\nThe world is honest by construction. There is no color for \"accepted\" or \"verified\": the normal end of the flow is lilac (fiscal validation pending), and the strongest positive state is mint (review completed). Unbuilt modules sit under black tape reading \"En desarrollo\" and do nothing.",
+    "keyCharacteristics": [
+      "Paper strips with scalloped tear edges on a near-black ground.",
+      "Three type voices: Schibsted Grotesk speaks, Martian Mono records, Silkscreen labels.",
+      "Dotted-leader rows with drawn provenance marks (filled square extracted, rotated lilac diamond corrected, hollow square not detected).",
+      "Round rotated stickers for headline state; inline pill chips for state in dense lists and filters.",
+      "Pills everywhere a finger lands: buttons, nav, chips, filters, save bar, toast.",
+      "Neutral Spanish UI copy using the product's exact state labels."
+    ],
+    "rules": [
+      {
+        "name": "The Sticker Is The State Rule",
+        "body": "The five saturated colors map one-to-one to contribution states: uploaded `paper-2`, processing `cyan`, extraction ready `paper`, needs review `yellow`, reviewed `mint`, fiscal pending `lilac`, processing error `coral`. The same mapping drives chips, stickers, filters and step dots. Outside the map, saturated color appears only in the utility roles listed above (lilac for session, focus, selection and inserted values; yellow for warnings and synthetic-data tape), never as decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper On Ground Rule",
+        "body": "Records, forms and lists are printed on paper; the ground carries only navigation, headings, ledes and image frames. Ink text never sits directly on the ground.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Green Light Rule",
+        "body": "No color means accepted, verified, paid or approved. Mint is the ceiling and means only that a human finished reviewing.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Voices Rule",
+        "body": "Schibsted speaks, Martian records, Silkscreen labels. Any value that came from the OCR or the parser, and any number, is set in Martian Mono with tabular figures.",
+        "section": "typography"
+      },
+      {
+        "name": "The Pixel Is A Label Rule",
+        "body": "Silkscreen is used only at 12 to 13px for section names and item numbers; never for sentences, values or headlines.",
+        "section": "typography"
+      },
+      {
+        "name": "The Only Floaters Lift Rule",
+        "body": "Strips, panels, rows and buttons never cast shadows. Only fixed or sticky overlays and stickers get the soft lift.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** print records, forms and lists on `paper` strips with a scalloped tear edge, laid on the `ground`.",
+      "**Do** set every OCR-derived value and every number in Martian Mono with tabular figures, in a dotted-leader row ending in its provenance mark.",
+      "**Do** color state only through the sticker map: processing `cyan`, needs review `yellow`, reviewed `mint`, fiscal pending `lilac`, error `coral`, uploaded `paper-2`, extraction ready `paper`.",
+      "**Do** keep the original OCR reading visible beside any correction, and show unparsed lines rather than hiding them.",
+      "**Do** use 1px ink borders and pills (999px) for every interactive control on paper.",
+      "**Do** write UI copy in neutral Spanish using the exact state labels: \"Cargado\", \"Procesando\", \"Extracción disponible\", \"Requiere revisión\", \"Revisión completada\", \"Validación fiscal pendiente\", \"Error de procesamiento\".",
+      "**Do** label synthetic data with yellow tape and unbuilt modules with ink tape reading \"En desarrollo\", with no simulated function."
+    ],
+    "donts": [
+      "**Don't** show the labels \"Aceptado\", \"Verificado\", \"Apto para agregación\", \"Entregable\" or \"Recompensa aprobada\", or any color, badge or icon implying them.",
+      "**Don't** build KPI tiles or metric cards; counters are dotted-leader lines on a strip.",
+      "**Don't** round the corners of a paper strip or give it a shadow; it ends in a tear.",
+      "**Don't** use a saturated sticker color for decoration, emphasis or branding.",
+      "**Don't** set sentences, headlines or values in Silkscreen.",
+      "**Don't** put ink text directly on the ground."
+    ]
+  }
+}

@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · docs(repo): add contributor PWA design direction
+- **Qué hice:** registrar el diseño de la PWA de contribuyentes: contexto de producto, sistema visual "Tira térmica" y prototipo navegable con datos sintéticos (panel, carga, procesamiento, error, revisión, detalle, historial y módulos "En desarrollo").
+- **Archivos clave:** `PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`, `.impeccable/surfaces/`, `design/contributor-pwa/index.html`. Revisión de diseño independiente en dos rondas; la última corrección (sticker sobre la etiqueta sintética) solo se verificó midiendo a 390 px. Stack resuelto según `mvp-p0` Q10: React + Vite.
+- **Próximo paso:** llevar el diseño a la demo existente. Alexxe ya no forma parte del equipo; `docs/tareas/README.md` y `docs/equipo.md` siguen sin actualizar.
+
 ## 2026-11-15 · feat(demo): add local receipt review PWA
 - **Qué hice:** implementar una demo aislada de imagen sintética → OCR real → parser conservador → borrador editable, responsive y mobile-first. El servidor escucha solo en esta PC; no hay cámara, marketplace, pago, datos aceptados ni despliegue. La revisión mantiene validación fiscal pendiente y uso comercial bloqueado.
 - **Archivos clave:** `spikes/s3-extraction/demo/` (puente Python al worker existente, parser, ejemplos sintéticos, React/Vite, manifiesto e interfaz offline). RED/GREEN observado en parser, agrupación de fragmentos, carga HTTP, guardas de origen, edición y caché. Pruebas: 14 Python, 4 de frontend, build/typecheck, 31 del worker; suite del spike 235 (231 previas + 4 nuevas). Verificador independiente sin bloqueos y probe repetido por el padre. OCR real de los tres casos: legible correcto; campos desconocidos en defectuoso; sin importes inventados en incompleto. Vistas de 390/1366 px sin desborde; shell offline con servidor detenido y sin datos de tickets en caché.

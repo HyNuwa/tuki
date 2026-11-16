@@ -3,6 +3,8 @@
 **Última actualización:** 2026-11-15
 
 ## Current focus
+**PWA de contribuyentes (2026-11-15):** diseño "Tira térmica" registrado (`DESIGN.md`, `design/contributor-pwa/`) y aplicado a la demo `spikes/s3-extraction/demo/` (procedencia por valor, recorte del fragmento OCR, fuentes propias). Stack: React + Vite (`mvp-p0` Q10). Alexxe ya no forma parte del equipo; Maximiliano tiene todas las áreas. Próximo paso: Panel e Historial en la app. Bloqueos: ninguno.
+
 M2b S3 extraction/redaction experiment, branch `feat/m2b-s3-extraction`, locally based on completed/unpublished M1 `9a9d6d6`. Maximiliano coordinates the explicitly authorized work; Alexxe's departure is not assumed and Alexxe's personal folder is unchanged. The M1 2-of-2/key-holder requirements remain unchanged.
 
 **M2b preparation checkpoint (`efb6f13`):** target 100 distinct consented team receipts: 20 calibration + 80 held-out. Protocol, aggregate-only report skeleton and dated official-source research for three unapproved API candidates were prepared without receipt processing, model calls, paid requests, credential lookup or `.env` access at that checkpoint. Qualifying metrics remain not measured; M2b is not a viability PASS. Tracking: `odd/tasks/m2b-s3-extraction.md`; images/ground truth must remain outside the repo.
