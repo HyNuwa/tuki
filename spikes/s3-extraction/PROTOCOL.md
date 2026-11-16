@@ -1,6 +1,6 @@
 # S3 measurement protocol
 
-Status: preparation only; no receipt has been processed or sent externally. This is an experiment, not the M3 ingestion implementation. Normative scope: [M2b](../../odd/specs/m2-s3-extraction-spike.md).
+Status: procedure prepared; a separate partial local raw-OCR calibration has processed ten user-attested candidates, with aggregate evidence in [the report](../../reports/s3-extraction.md). The required Extractor/redaction experiment and held-out evaluation remain NOT RUN; no receipt has been sent to an external extraction service. This is an experiment, not the M3 ingestion implementation. Normative scope: [M2b](../../odd/specs/m2-s3-extraction-spike.md).
 
 ## Sample and evaluation split
 

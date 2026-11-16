@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · feat(demo): add local receipt review PWA
+- **Qué hice:** implementar una demo aislada de imagen sintética → OCR real → parser conservador → borrador editable, responsive y mobile-first. El servidor escucha solo en esta PC; no hay cámara, marketplace, pago, datos aceptados ni despliegue. La revisión mantiene validación fiscal pendiente y uso comercial bloqueado.
+- **Archivos clave:** `spikes/s3-extraction/demo/` (puente Python al worker existente, parser, ejemplos sintéticos, React/Vite, manifiesto e interfaz offline). RED/GREEN observado en parser, agrupación de fragmentos, carga HTTP, guardas de origen, edición y caché. Pruebas: 14 Python, 4 de frontend, build/typecheck, 31 del worker; suite del spike 235 (231 previas + 4 nuevas). Verificador independiente sin bloqueos y probe repetido por el padre. OCR real de los tres casos: legible correcto; campos desconocidos en defectuoso; sin importes inventados en incompleto. Vistas de 390/1366 px sin desborde; shell offline con servidor detenido y sin datos de tickets en caché.
+- **Próximo paso:** cerrar el commit y la evaluación/revisión nativa de esta unidad. Riesgos 2, 4 y 5 por frontera local de carga/caché, exclusión mutua del OCR y dependencias. Instalación PWA nativa y auditoría de vulnerabilidades no verificadas. Revertir elimina únicamente la demo y sus notas, no el worker/checker ni el corpus privado. Engram fuera de la demo por indicación del usuario; sin push, PR, LAN ni servicios externos de extracción.
+
 ## 2026-11-15 · docs(specs): close partial OCR evidence review
 - **Qué hice:** cerrar la revisión de `ef40329`: recheck privado independiente y repetición del padre aprobados; revisión nativa de riesgo, legibilidad y confiabilidad sin hallazgos, acknowledgement confirmado y autoridad consumida.
 - **Archivos clave:** reporte agregado, recuperación y estado. Corregí el conteo del próximo paso: tres registros argentinos completos de ítems/importes dejan una brecha de diecisiete para el piloto de veinte, además de completar/congelar verdad fiscal y privacidad. Solo lectura estructural aplicable; no se repitió OCR ni cambió código.
