@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuki · Presentación</title>
+<style>
+@font-face{font-family:"Schibsted Grotesk";src:url("fonts/schibsted-grotesk-latin.woff2") format("woff2");font-weight:400 900}
+@font-face{font-family:"Martian Mono";src:url("fonts/martian-mono-latin.woff2") format("woff2");font-weight:100 800}
+@font-face{font-family:"Silkscreen";src:url("fonts/silkscreen-latin.woff2") format("woff2")}
+:root{
+  --ground:#121210;--ground-line:#34342f;--on-ground:#fcfcf9;--on-ground-2:#b9b9ae;
+  --paper:#fcfcf9;--paper-3:#e6e6de;--ink:#121210;--ink-2:#45453f;--ink-3:#64645c;
+  --lilac:#c9b0f5;--lilac-deep:#9d7ae6;--yellow:#ffe14d;--cyan:#7fd3ef;--coral:#ff8a6b;--mint:#9be3b5;
+  --f-ui:"Schibsted Grotesk",system-ui,sans-serif;--f-mono:"Martian Mono",ui-monospace,monospace;--f-pix:"Silkscreen",var(--f-mono);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ground);color:var(--on-ground);font:400 18px/1.45 var(--f-ui);-webkit-font-smoothing:antialiased;overflow:hidden}
+.deck{height:100%;position:relative}
+.slide{position:absolute;inset:0;display:grid;place-items:center;padding:6vh 6vw 10vh;opacity:0;visibility:hidden;transition:opacity .35s ease}
+.slide.on{opacity:1;visibility:visible}
+.wrap{width:min(1180px,100%)}
+h1,h2,h3,p{margin:0}
+.kicker{font:400 14px/1 var(--f-pix);text-transform:uppercase;color:var(--on-ground-2);letter-spacing:.04em;margin-bottom:22px}
+h1{font:900 clamp(56px,10vw,150px)/.9 var(--f-ui);letter-spacing:-.045em}
+h2{font:900 clamp(38px,5.4vw,76px)/.98 var(--f-ui);letter-spacing:-.035em;max-width:16ch}
+.lede{font-size:clamp(18px,1.8vw,24px);color:var(--on-ground-2);max-width:44ch;margin-top:22px}
+.stamp{display:inline-block;border:3px solid var(--on-ground);border-radius:50%;padding:6px 34px 10px;transform:rotate(-4deg)}
+.tape{display:inline-block;background:var(--yellow);color:var(--ink);font:700 14px/1.25 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;padding:8px 14px;border:1px solid var(--ink);transform:rotate(-1.5deg)}
+.tape.ink{background:var(--on-ground)}
+.sticker{display:grid;place-items:center;text-align:center;width:150px;height:150px;border-radius:50%;background:var(--lilac);color:var(--ink);border:1px solid var(--ink);font:800 15px/1.05 var(--f-ui);text-transform:uppercase;padding:18px;transform:rotate(-9deg)}
+.paper{position:relative;background:var(--paper);color:var(--ink);padding:34px 36px;margin:12px 0}
+.paper::before,.paper::after{content:"";position:absolute;left:0;right:0;height:9px;background-size:14px 9px;background-repeat:repeat-x}
+.paper::before{top:-8px;background-image:radial-gradient(circle at 50% 0,transparent 5px,var(--paper) 5.5px)}
+.paper::after{bottom:-8px;background-image:radial-gradient(circle at 50% 9px,transparent 5px,var(--paper) 5.5px)}
+.grid{display:grid;gap:22px}
+.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{border:1px solid var(--ground-line);border-radius:22px;padding:24px}
+.card .n{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--ink);font:400 15px/1 var(--f-pix);margin-bottom:16px}
+.card h3{font:800 24px/1.1 var(--f-ui);letter-spacing:-.02em;margin-bottom:8px}
+.card p{color:var(--on-ground-2);font-size:17px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:40px}
+.flow .step{border:1px solid var(--on-ground);border-radius:999px;padding:12px 20px;font:600 18px/1 var(--f-ui)}
+.flow .step.hl{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+.flow .arr{font:400 22px/1 var(--f-mono);color:var(--on-ground-2)}
+.leader{display:flex;align-items:flex-end;gap:10px;padding:10px 0;font:500 18px/1.3 var(--f-mono)}
+.leader .k{font:600 14px/1.3 var(--f-mono);text-transform:uppercase;color:var(--ink-2);padding-bottom:3px}
+.leader .dots{flex:1;border-bottom:2px dotted var(--ink-3);margin-bottom:8px}
+.mark{display:inline-block;width:13px;height:13px;margin-bottom:6px;flex:none}
+.mark.e{background:var(--ink)}
+.mark.c{background:var(--lilac-deep);border:1px solid var(--ink);transform:rotate(45deg) scale(.92)}
+.mark.m{border:1.5px solid var(--ink)}
+.legend{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px;font:500 15px/1 var(--f-mono);color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:9px}
+.legend .mark{margin:0}
+.list{list-style:none;margin:28px 0 0;padding:0;border-top:1px solid var(--ground-line)}
+.list li{display:flex;gap:16px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--ground-line);font-size:20px}
+.list li b{font:700 13px/1 var(--f-mono);text-transform:uppercase;padding:6px 10px;border-radius:999px;color:var(--ink);flex:none;min-width:118px;text-align:center}
+.ok{background:var(--mint)}.wip{background:var(--yellow)}.next{background:var(--paper-3)}
+.no{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.no span{font:600 15px/1 var(--f-mono);padding:9px 14px;border:1px dashed var(--coral);color:var(--coral);border-radius:999px;text-decoration:line-through}
+.bar{position:fixed;left:6vw;right:6vw;bottom:4vh;display:flex;justify-content:space-between;align-items:center;font:500 13px/1 var(--f-mono);color:var(--on-ground-2);text-transform:uppercase;z-index:5}
+.dotsnav{display:flex;gap:8px}
+.dotsnav i{width:9px;height:9px;border-radius:50%;border:1px solid var(--on-ground-2)}
+.dotsnav i.on{background:var(--yellow);border-color:var(--yellow)}
+.mascot{width:64px;height:77px;color:var(--on-ground)}
+.row{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+@media (max-width:820px){.cols3,.cols2{grid-template-columns:minmax(0,1fr)}.sticker{width:110px;height:110px;font-size:12px}html,body{overflow:auto}.slide{position:relative;opacity:1;visibility:visible;min-height:100vh}.bar{display:none}}
+@media (prefers-reduced-motion:reduce){.slide{transition:none}}
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+
+  <section class="slide on" aria-label="Portada">
+    <div class="wrap">
+      <div class="row" style="margin-bottom:34px">
+        <svg class="mascot" viewBox="0 0 10 12" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h10v1H0zM0 1h1v11H0zM9 1h1v10H9zM2 2h2v2H2zM6 2h2v2H6zM3 5h4v1H3zM2 7h6v1H2zM2 9h4v1H2zM2 11h1v1H2zM4 11h1v1H4zM6 11h1v1H6zM8 11h2v1H8z"/></svg>
+        <span class="tape">Datos sintéticos · demo local</span>
+      </div>
+      <h1><span class="stamp">TUKI</span></h1>
+      <p class="lede">Del ticket de compra a datos verificables para agentes de IA, con la privacidad de quien contribuye protegida.</p>
+    </div>
+  </section>
+
+  <section class="slide" aria-label="Problema">
+    <div class="wrap">
+      <p class="kicker">01 · El problema</p>
+      <h2>Los agentes necesitan precios reales. Los tickets ya los tienen.</h2>
+      <div class="grid cols3" style="margin-top:44px">
+        <div class="card"><div class="n" style="background:var(--cyan)">A</div><h3>Datos del mundo real</h3><p>Lo que se paga en un comercio queda impreso en papel térmico, no en una API.</p></div>
+        <div class="card"><div class="n" style="background:var(--yellow)">B</div><h3>Difíciles de leer</h3><p>Papel borroso, cantidades ambiguas, totales que no cierran.</p></div>
+        <div class="card"><div class="n" style="background:var(--coral)">C</div><h3>Datos personales</h3><p>Un ticket puede identificar a una persona. Nada de eso debe llegar al comprador.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" aria-label="Cómo funciona">
+    <div class="wrap">
+      <p class="kicker">02 · Cómo funciona</p>
+      <h2>Contribuir, revisar, verificar, agregar.</h2>
+      <div class="flow">
+        <span class="step">Foto del ticket</span><span class="arr">→</span>
+        <span class="step hl">OCR real</span><span class="arr">→</span>
+        <span class="step hl">Borrador editable</span><span class="arr">→</span>
+        <span class="step">Validación fiscal</span><span class="arr">→</span>
+        <span class="step">Verificación 2 de 2</span><span class="arr">→</span>
+        <span class="step">Agregado para agentes</span>
+      </div>
+      <p class="lede" style="margin-top:34px">Los compradores reciben agregados, nunca imágenes ni datos personales. Los pagos y recompensas viven en contratos en Base, no en nuestra base de datos.</p>
+      <p class="lede" style="margin-top:14px;font-size:16px">En amarillo: lo que ya funciona hoy.</p>
+    </div>
+  </section>
+
+  <section class="slide" aria-label="Lo original es sagrado">
+    <div class="wrap grid cols2" style="align-items:center">
+      <div>
+        <p class="kicker">03 · Principio</p>
+        <h2>Lo que leyó el OCR no se toca.</h2>
+        <p class="lede">Cada valor muestra de dónde viene. Las correcciones se guardan al lado del original, y lo que no se pudo leer queda visible como pendiente.</p>
+      </div>
+      <div class="paper">
+        <div class="leader"><span class="k">Producto</span><span class="dots"></span><span>LECHE</span><span class="mark e"></span></div>
+        <div class="leader"><span class="k">Cantidad</span><span class="dots"></span><span>2</span><span class="mark c"></span></div>
+        <div class="leader"><span class="k">Precio unit.</span><span class="dots"></span><span style="color:var(--ink-3);font-style:italic">Por revisar</span><span class="mark m"></span></div>
+        <div class="leader"><span class="k">Importe</span><span class="dots"></span><span>2.500,00</span><span class="mark e"></span></div>
+        <div class="legend"><span><i class="mark e"></i>Extraído</span><span><i class="mark c"></i>Corregido</span><span><i class="mark m"></i>No detectado</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" aria-label="Honestidad">
+    <div class="wrap grid cols2" style="align-items:center">
+      <div>
+        <p class="kicker">04 · Honestidad</p>
+        <h2>Revisar no es aceptar.</h2>
+        <p class="lede">Una revisión completa termina en «Validación fiscal pendiente». La app nunca muestra estados que todavía no puede demostrar.</p>
+        <div class="no"><span>Aceptado</span><span>Verificado</span><span>Apto para agregación</span><span>Entregable</span><span>Recompensa aprobada</span></div>
+      </div>
+      <div style="display:grid;place-items:center"><div class="sticker" style="width:220px;height:220px;font-size:20px">Validación fiscal pendiente</div></div>
+    </div>
+  </section>
+
+  <section class="slide" aria-label="Estado">
+    <div class="wrap">
+      <p class="kicker">05 · Dónde estamos</p>
+      <h2>Lo que ya funciona y lo que sigue.</h2>
+      <ul class="list">
+        <li><b class="ok">Hecho</b>Contratos de reserva y captura probados en Base Sepolia con transacciones reales</li>
+        <li><b class="ok">Hecho</b>OCR local real, parser conservador y revisión editable con procedencia</li>
+        <li><b class="ok">Hecho</b>App de contribuyentes: API con PostgreSQL, historial, panel y diseño propio</li>
+        <li><b class="wip">En curso</b>Verificación independiente y almacenamiento privado de imágenes en R2</li>
+        <li><b class="next">Sigue</b>Staging público, login con wallet, extractor de visión y validación fiscal</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide" aria-label="Demo">
+    <div class="wrap">
+      <p class="kicker">06 · Demo</p>
+      <h1 style="font-size:clamp(56px,9vw,130px)">Del ticket a los datos.</h1>
+      <p class="lede">Tres tickets sintéticos: uno legible, uno con impresión defectuosa y uno incompleto.</p>
+      <div class="row" style="margin-top:34px"><span class="tape ink">Datos sintéticos — no representan compras reales</span><a href="app/" style="font:700 18px/1 var(--f-ui);color:var(--ink);background:var(--yellow);padding:14px 22px;border-radius:999px;text-decoration:none">Abrir el prototipo →</a></div>
+    </div>
+  </section>
+
+</main>
+<nav class="bar" aria-label="Navegación">
+  <span>Tuki · evidencia antes que confianza</span>
+  <span class="dotsnav" id="dots"></span>
+  <span id="count"></span>
+</nav>
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  const count = document.getElementById('count');
+  slides.forEach(() => dots.appendChild(document.createElement('i')));
+  let i = 0;
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('on', k === i));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+    count.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+  }
+  addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length - 1);
+    if (e.key === 'f') document.documentElement.requestFullscreen?.();
+  });
+  addEventListener('click', e => { if (!e.target.closest('a,button')) show(e.clientX > innerWidth / 3 ? i + 1 : i - 1); });
+  show(0);
+})();
+</script>
+</body>
+</html>
