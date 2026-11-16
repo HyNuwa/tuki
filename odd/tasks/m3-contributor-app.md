@@ -17,7 +17,7 @@ Objective: turn the local receipt-review demo into the real monorepo app (`apps/
 
 | ID | Specs | Route | Status | Commit |
 |---|---|---|---|---|
-| T1 | S1–S3 | Codex worker (Orca) | pending | — |
+| T1 | S1–S3 | Codex worker (Orca) | implemented; web build pending T3 | `135a21f` |
 | T2 | S4–S6 | Codex worker (Orca) | pending | — |
 | T3 | S7 | Codex worker (Orca) | pending | — |
 | T4 | S8 | parent, after authorization | pending | — |
@@ -26,3 +26,5 @@ Objective: turn the local receipt-review demo into the real monorepo app (`apps/
 
 - L1 (2026-11-15, user): "ya puse en .env asi que arranca el M3 completo si no tarda mucho" — and earlier "respondiendo a tu pregunta app real si". Mid-turn: "delega tareas a codex te recomiendo para ahorro de tokens".
 - L2: Full M3 is not short and is partly blocked (M2a not built; S3 Extractor provider, R2 and SIWE wallet undecided), so per the user's condition this phase covers the real app without those parts. Docker Desktop engine was not running on 2026-11-15; Testcontainers needs it.
+
+- L3 (2026-11-15): T1 committed as 135a21f. RED: absent domain module; GREEN: 10 tests and typecheck. Web build reports no matching project until T3. Root workspace excludes spikes. Docker engine unavailable; T2 integration will remain explicitly not run. Engram calls fail: Codex host session is not registered.

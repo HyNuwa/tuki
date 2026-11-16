@@ -50,3 +50,5 @@ M2b S3 extraction/redaction experiment, branch `feat/m2b-s3-extraction`, locally
 **Commit de demo local:** `410765a`; pruebas propias, ensayo sintético real y verificación independiente aprobados. T10/T11 completos; T12 funcional completo y evaluación/consentimiento de revisión nativa pendiente. T3 de viabilidad continúa parcial.
 
 **M3 app (2026-11-15):** T1 implementado con 10 pruebas y typecheck; siguiente API PostgreSQL y puente OCR. Docker no disponible (pipe dockerDesktopLinuxEngine inexistente), integración pendiente; sin despliegue. Engram bloqueado por host no registrado.
+
+**M3 T2 (2026-11-15):** API y persistencia implementadas. Docker ahora operativo; 6 integraciones reales PostgreSQL 16 + 2 pruebas puente, 10 dominio y 18 Python aprobadas; typecheck aprobado. Próximo paso: PWA T3. Puerto MediaStorage local, R2 fuera de alcance, .env intacto. Revisión independiente/native pendiente del coordinador.

@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · feat(api): persist contribution review and bridge local OCR
+- **Qué hice:** crear Hono + PostgreSQL 16/Drizzle, migración, carga normalizada/dedupe, evidencia inmutable, revisión con procedencia, historial, panel y reintento; reutilizar parser/normalización/worker Python mediante CLI con salida acotada y errores estables. Agregué puerto MediaStorage local para futura integración R2, sin leer .env ni contactar servicios.
+- **Archivos clave:** `apps/api/`, `spikes/s3-extraction/demo/extract_cli.py`, `spikes/s3-extraction/demo/tests/test_extract_cli.py`, lock raíz.
+- **Próximo paso:** T3, PWA React. RED observado por API/CLI ausentes; GREEN: dominio 10, API 8 (6 integración con PostgreSQL 16 real vía Testcontainers), Python 18, typecheck. Docker fue habilitado por el usuario durante la tarea; la integración real pasó. Build web aún no aplicable. Riesgos 2/4/5: privacidad, exclusión OCR y dependencias; revisión independiente queda a cargo del coordinador.
+
+
 ## 2026-11-15 · feat(domain): bootstrap workspace and receipt review domain
 - **Qué hice:** crear workspace pnpm raíz y portar dinero atómico, procedencia y revisión pura desde la demo; agregar etiquetas exactas y advertencias aritméticas sin corrección automática. RED observado por módulo inexistente; GREEN: 10 pruebas y typecheck. Build web aún no aplicable: paquete de T3 inexistente.
 - **Archivos clave:** `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `tsconfig.base.json`, `packages/domain/`.
