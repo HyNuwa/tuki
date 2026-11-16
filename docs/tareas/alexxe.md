@@ -13,3 +13,19 @@
 | 5 | INT-01 en Base Sepolia | [M6](../../odd/specs/m6-integral-validation.md) | M2a | Pendiente |
 
 S3 va antes que M2a porque puede frenar el MVP: conviene saberlo primero.
+
+### M2b coordination note — 2026-11-15
+
+The user explicitly authorized Maximiliano to coordinate/start M2b and choose its sample size. Preparation targets 100 distinct consented team receipts (20 calibration, 80 held-out); protocol/report preparation and public retention research are tracked in `odd/tasks/m2b-s3-extraction.md`. No receipt processing, provider choice, external upload or spending is implied. This additive note does not rewrite Alexxe's original ownership rows, assume departure, edit Alexxe's personal folder or remove cross-review.
+
+The user subsequently approved a paired M2b/M3 Extractor extension with printed line totals and explicit discounts. Revision 2 is tracked in the same feature document and shared contract; both specs must change together. Actual adapter implementation, real-data/provider approval and cross-review are not implied by this specification work.
+
+The current execution plan also authorizes Maximiliano to implement a synthetic-only local monetary checker inside `spikes/s3-extraction/`, without root scaffolding, S0/M1 changes, production ingestion, external extraction calls or real-image processing. This additive coordination keeps original ownership and cross-review intact; the paired contract is delivered separately from executable tooling.
+
+### Local Python OCR coordination — 2026-11-15
+
+The user explicitly authorized Maximiliano to implement and test an isolated local CPU PaddleOCR worker, including dependency/model downloads, under S10/T7-T9 in `odd/tasks/m2b-s3-extraction.md`. This is not production ingestion or permission to deploy/send receipts to Fluence. Original ownership/cross-review remains; Alexxe's personal folder and production apps are untouched.
+
+### Same-PC receipt review demo — 2026-11-15
+
+The user authorized a mobile-first responsive PWA for synthetic/test image selection, real local OCR, a conservative parser and editable drafts, under S13/S14 and T10-T12 in the existing M2b task file. Implementation stays isolated in `spikes/s3-extraction/demo/`, follows parent Q10's React/Vite stack and reuses the unchanged Python OCR CLI. Fiscal validation remains pending and commercial eligibility false, including after manual review. This does not implement the production contributor PWA, M3 acceptance, a marketplace, payment, camera, LAN access, a tunnel or deployment. Original ownership and cross-review remain unchanged.

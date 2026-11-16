@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "Tuki — Revisión de tickets",
+  "short_name": "Tuki",
+  "lang": "es",
+  "description": "OCR local y datos revisables. Sin validación fiscal ni uso comercial.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#121210",
+  "theme_color": "#121210",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
