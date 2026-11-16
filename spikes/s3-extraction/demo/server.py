@@ -159,9 +159,9 @@ class Handler(BaseHTTPRequestHandler):
                     raise DemoFailure("not_found", 404)
                 return self.send_bytes(200, sample_png(case), "image/png")
             candidate = (self.server.dist / (path.lstrip("/") or "index.html")).resolve()
-            if not candidate.is_relative_to(self.server.dist) or not candidate.is_file() or candidate.suffix not in {".html", ".js", ".css", ".svg", ".png", ".webmanifest"}:
+            if not candidate.is_relative_to(self.server.dist) or not candidate.is_file() or candidate.suffix not in {".html", ".js", ".css", ".svg", ".png", ".webmanifest", ".woff2"}:
                 raise DemoFailure("not_found", 404)
-            content_type = "application/manifest+json" if candidate.suffix == ".webmanifest" else mimetypes.guess_type(candidate.name)[0] or "application/octet-stream"
+            content_type = {".webmanifest": "application/manifest+json", ".woff2": "font/woff2"}.get(candidate.suffix) or mimetypes.guess_type(candidate.name)[0] or "application/octet-stream"
             self.send_bytes(200, candidate.read_bytes(), content_type)
         except DemoFailure as error:
             self.send_json(error.status, {"status": "error", "code": error.code})

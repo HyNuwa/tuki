@@ -114,6 +114,31 @@ export function reviewSnapshot(review: Review) {
   };
 }
 
+export type Provenance = "extracted" | "corrected" | "missing";
+
+/**
+ * Where a visible value comes from, comparing the editor state with the
+ * review created from the parser draft. Clearing an extracted value counts as
+ * a manual correction; values of manually added items are never "extracted".
+ */
+export function provenance(
+  initial: Review,
+  current: Review,
+  itemId: string | null,
+  field: ItemField | "total",
+): Provenance {
+  const read = (review: Review): string | undefined => {
+    if (itemId === null || field === "total") return review.total;
+    const item = review.items.find((row) => row.id === itemId);
+    return item ? item[field as ItemField] : undefined;
+  };
+  const now = (read(current) ?? "").trim();
+  const before = read(initial)?.trim();
+  if (before === undefined) return now ? "corrected" : "missing";
+  if (now === before) return now ? "extracted" : "missing";
+  return "corrected";
+}
+
 export function missingFields(review: Review): number {
   return (
     (parseMoney(review.total) === null ? 1 : 0) +

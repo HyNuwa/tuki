@@ -2,6 +2,11 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · feat(demo): apply thermal strip design to review PWA
+- **Qué hice:** aplicar la dirección "Tira térmica" a la demo de revisión de tickets sin cambiar API, parser, errores, privacidad ni caché offline. Cada valor muestra su procedencia (extraído, corregido, no detectado) con contadores; enfocar un campo resalta su fragmento OCR y fija un recorte arriba del formulario; carga por arrastrar y soltar. Fuentes propias en WOFF2 porque el CSP del servidor es `default-src 'self'`.
+- **Archivos clave:** `spikes/s3-extraction/demo/src/` (`main.tsx`, `style.css`, `review.ts` con `provenance()`, `fonts/`), `server.py` (sirve `.woff2` como `font/woff2`; otros tipos siguen bloqueados), pruebas, `DESIGN.md`, README y manifiesto. RED/GREEN observado: 3 pruebas de procedencia y 1 de fuentes. Pruebas: 7 Vitest, 15 Python, typecheck y build. OCR real de "Impresión defectuosa" e "Incompleto" en una segunda instancia local (:8766); 390 px sin desborde. Instalación PWA nativa y teléfono físico no verificados.
+- **Próximo paso:** sumar Panel e Historial del prototipo a la app. Riesgo 3 acotado: el shell sirve un tipo de archivo más, con prueba que mantiene bloqueados los demás.
+
 ## 2026-11-15 · docs(repo): add contributor PWA design direction
 - **Qué hice:** registrar el diseño de la PWA de contribuyentes: contexto de producto, sistema visual "Tira térmica" y prototipo navegable con datos sintéticos (panel, carga, procesamiento, error, revisión, detalle, historial y módulos "En desarrollo").
 - **Archivos clave:** `PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`, `.impeccable/surfaces/`, `design/contributor-pwa/index.html`. Revisión de diseño independiente en dos rondas; la última corrección (sticker sobre la etiqueta sintética) solo se verificó midiendo a 390 px. Stack resuelto según `mvp-p0` Q10: React + Vite.

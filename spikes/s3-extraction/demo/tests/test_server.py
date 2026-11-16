@@ -105,6 +105,34 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(status, 500)
             self.assertNotIn(b"private path", value)
 
+    def test_shell_serves_self_hosted_fonts_but_not_other_file_types(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as root:
+            dist = Path(root)
+            (dist / "assets").mkdir()
+            (dist / "index.html").write_text("<!doctype html>", encoding="utf-8")
+            (dist / "assets" / "face.woff2").write_bytes(b"wOF2font")
+            (dist / "assets" / "notes.txt").write_text("secret", encoding="utf-8")
+            server = create_server(port=0, recognize=lambda path: {}, dist=dist)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                host = f"127.0.0.1:{server.server_port}"
+                connection = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=5)
+                connection.request("GET", "/assets/face.woff2", headers={"Host": host})
+                response = connection.getresponse()
+                self.assertEqual((response.status, response.getheader("Content-Type"), response.read()),
+                                 (200, "font/woff2", b"wOF2font"))
+                connection.request("GET", "/assets/notes.txt", headers={"Host": host})
+                response = connection.getresponse()
+                response.read()
+                self.assertEqual(response.status, 404)
+                connection.close()
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=2)
+
     def setUp(self):
         self.inputs = []
 

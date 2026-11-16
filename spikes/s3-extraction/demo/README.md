@@ -48,6 +48,7 @@ Source region IDs remain attached to parsed rows. Manual rows have no fabricated
 - `POST /api/extract`: raw image bytes, matching image `Content-Type`, `X-Tuki-Demo: 1`, same-origin request. Response contains normalized preview, actual OCR regions, draft and elapsed time.
 - Host/origin checks reject foreign web origins and DNS-rebinding hostnames; no permissive CORS. One OCR child at a time; concurrent extraction gets `429 ocr_busy`. Child timeout: 120 seconds. Errors contain stable codes only, no exception text or paths.
 - Decode and normalize in memory before writing a metadata-free PNG to a newly owned per-request temporary directory outside Git. The original upload/EXIF/GPS is never written. That request deletes only its own temporary directory on completion/failure. Process crashes/forced termination can leave temporary files; this is not secure deletion or a production retention policy.
+- The static shell serves only `.html`, `.js`, `.css`, `.svg`, `.png`, `.webmanifest` and self-hosted `.woff2` fonts from `dist/`.
 - Images, OCR, edits and saved reviews are never stored in localStorage, IndexedDB, service-worker caches, application logs or the repository. The process still holds data in memory during processing. Do not use this demo for personal-data receipts or claim redaction safety.
 
 ## PWA and offline behavior

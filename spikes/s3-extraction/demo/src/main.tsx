@@ -1,14 +1,17 @@
-import { StrictMode, useEffect, useRef, useState } from "react";
+import { StrictMode, useEffect, useRef, useState, type DragEvent } from "react";
 import { createRoot } from "react-dom/client";
 import {
   createReview,
   missingFields,
   parseMoney,
   parseQuantity,
+  provenance,
   reviewSnapshot,
   updateItem,
   type Extraction,
   type ItemField,
+  type Provenance,
+  type Region,
   type Review,
 } from "./review";
 import "./style.css";
@@ -17,7 +20,13 @@ type Screen =
   | { kind: "empty" }
   | { kind: "selected"; file: File; preview: string; label: string }
   | { kind: "processing"; file: File; preview: string; label: string }
-  | { kind: "review"; extraction: Extraction; review: Review; label: string };
+  | {
+      kind: "review";
+      extraction: Extraction;
+      initial: Review;
+      review: Review;
+      label: string;
+    };
 type InstallEvent = Event & { prompt(): Promise<void> };
 const cases = [
   {
@@ -54,33 +63,123 @@ const messages: Record<string, string> = {
   ocr_unavailable:
     "El OCR local no está disponible. Revisa el proceso y las rutas de los modelos.",
 };
+const numberFields = [
+  ["quantity", "Cantidad"],
+  ["unitPrice", "Precio unit."],
+  ["lineTotal", "Importe"],
+] as const;
+const originLabel: Record<Provenance, string> = {
+  extracted: "Extraído automáticamente",
+  corrected: "Corregido manualmente",
+  missing: "No detectado",
+};
 
 function Icon({
   kind,
 }: {
-  kind: "upload" | "file" | "arrow" | "check" | "close";
+  kind: "upload" | "file" | "arrow" | "check" | "close" | "plus" | "alert";
 }) {
   const paths = {
-    upload: "M12 16V4m-4 4 4-4 4 4M5 15v5h14v-5",
-    file: "M7 3h7l4 4v14H6V3h1m7 0v5h5M9 12h6m-6 4h4",
-    arrow: "m9 5 7 7-7 7",
-    check: "m5 12 4 4L19 6",
-    close: "m6 6 12 12M6 18 18 6",
+    upload: "M12 15V4M7 9l5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4",
+    file: "M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21zM9 8h6M9 12h6M9 16h3",
+    arrow: "M5 12h14M13 6l6 6-6 6",
+    check: "M5 12.5l4.5 4.5L19 7.5",
+    close: "M6 6l12 12M18 6L6 18",
+    plus: "M12 5v14M5 12h14",
+    alert: "M12 3.5l9.5 16.5h-19zM12 10v4.5M12 17.2v.01",
   };
   return (
     <svg
-      width="20"
-      height="20"
+      className="icon"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.7"
+      strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
       <path d={paths[kind]} />
     </svg>
+  );
+}
+
+const mascotRows = [
+  "##########",
+  "#........#",
+  "#.##..##.#",
+  "#.##..##.#",
+  "#........#",
+  "#..####..#",
+  "#........#",
+  "#.######.#",
+  "#........#",
+  "#.####...#",
+  "#........#",
+  "#.#.#.#.##",
+];
+function Mascot({ className = "mascot" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 10 12"
+      fill="currentColor"
+      shapeRendering="crispEdges"
+      aria-hidden="true"
+    >
+      {mascotRows.flatMap((row, y) =>
+        [...row].map((cell, x) =>
+          cell === "#" ? (
+            <rect key={`${x}-${y}`} x={x} y={y} width="1.02" height="1.02" />
+          ) : null,
+        ),
+      )}
+    </svg>
+  );
+}
+
+function Mark({ origin }: { origin: Provenance }) {
+  return (
+    <span
+      className="mark"
+      data-origin={origin}
+      role="img"
+      aria-label={originLabel[origin]}
+      title={originLabel[origin]}
+    />
+  );
+}
+
+/** A crop of the processed image around one OCR region, drawn from its real coordinates. */
+function RegionPeek({
+  image,
+  region,
+  size,
+}: {
+  image: string;
+  region: Region;
+  size: { width: number; height: number };
+}) {
+  const xs = region.polygon.map(([x]) => x);
+  const ys = region.polygon.map(([, y]) => y);
+  const pad = 18;
+  const x = Math.min(...xs) - pad;
+  const y = Math.min(...ys) - pad;
+  const w = Math.max(...xs) - Math.min(...xs) + pad * 2;
+  const h = Math.max(...ys) - Math.min(...ys) + pad * 2;
+  return (
+    <div className="peek" aria-hidden="true">
+      <span className="peek-cap">
+        Fragmento {region.id} · «{region.text}»
+      </span>
+      <svg viewBox={`${x} ${y} ${w} ${h}`} preserveAspectRatio="xMidYMid meet">
+        <image href={image} width={size.width} height={size.height} />
+        <polygon
+          className="region selected"
+          points={region.polygon.map((point) => point.join(",")).join(" ")}
+        />
+      </svg>
+    </div>
   );
 }
 
@@ -96,6 +195,7 @@ function App() {
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [install, setInstall] = useState<InstallEvent | null>(null);
   const [exampleLoading, setExampleLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const preview = useRef<string | null>(null);
   const nextItem = useRef(0);
@@ -106,6 +206,9 @@ function App() {
     (screen.kind === "selected" || screen.kind === "processing"
       ? screen.preview
       : null);
+  const active =
+    result?.extraction.ocr.regions.find((region) => region.id === activeRegion) ??
+    null;
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -151,6 +254,14 @@ function App() {
     setActiveRegion(null);
   }
 
+  function onDrop(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    setDragging(false);
+    if (busy) return;
+    const file = event.dataTransfer.files[0];
+    if (file) select(file);
+  }
+
   async function example(id: string, label: string) {
     setExampleLoading(true);
     setError("");
@@ -191,10 +302,12 @@ function App() {
             "No se pudo procesar el ticket. Prueba otra imagen.",
         );
       const extraction = data as Extraction;
+      const initial = createReview(extraction.draft);
       setScreen({
         kind: "review",
         extraction,
-        review: createReview(extraction.draft),
+        initial,
+        review: initial,
         label: selected.label,
       });
       if (preview.current) URL.revokeObjectURL(preview.current);
@@ -210,33 +323,54 @@ function App() {
     }
   }
 
-  function editItem(id: string, field: ItemField, value: string) {
+  function setReview(review: Review) {
     if (!result) return;
-    setScreen({
-      ...result,
-      review: updateItem(result.review, id, field, value),
-    });
+    setScreen({ ...result, review });
     setNotice("");
   }
 
+  function editItem(id: string, field: ItemField, value: string) {
+    if (!result) return;
+    setReview(updateItem(result.review, id, field, value));
+  }
+
   const fieldsMissing = result ? missingFields(result.review) : 0;
+  const origin = (itemId: string | null, field: ItemField | "total") =>
+    result
+      ? provenance(result.initial, result.review, itemId, field)
+      : "missing";
+  const counts = result
+    ? (["extracted", "corrected", "missing"] as const).map(
+        (kind) =>
+          [
+            kind,
+            result.review.items.reduce(
+              (sum, item) =>
+                sum +
+                (["description", "quantity", "unitPrice", "lineTotal"] as const)
+                  .filter((field) => origin(item.id, field) === kind).length,
+              origin(null, "total") === kind ? 1 : 0,
+            ),
+          ] as const,
+      )
+    : [];
+
   return (
     <>
       <a className="skip" href="#workspace">
         Ir al área de revisión
       </a>
-      <header className="app-header">
+      <header className="top">
         <a className="brand" href="/" aria-label="Tuki, inicio">
-          <img src="/icon.svg" alt="" width="30" height="30" />
-          tuki<span>revisión de tickets</span>
+          <Mascot />
+          <span className="stamp">TUKI</span>
+          <span className="brand-sub">revisión de tickets</span>
         </a>
         <div className="header-actions">
-          <span className="local-status">
-            <span /> Solo en esta PC
-          </span>
+          <span className="chip-session">Solo en esta PC</span>
           {install ? (
             <button
-              className="quiet"
+              className="btn sm on-ground"
               onClick={() => {
                 void install.prompt();
                 setInstall(null);
@@ -246,7 +380,7 @@ function App() {
             </button>
           ) : (
             <details className="install-help">
-              <summary>Instalar PWA</summary>
+              <summary className="btn sm on-ground">Instalar PWA</summary>
               <p>
                 Si tu navegador lo permite, usa «Instalar aplicación» en su
                 menú. La extracción requiere que el proceso local siga activo.
@@ -257,37 +391,37 @@ function App() {
       </header>
       <main>
         <div className="intro">
-          <div>
-            <h1>Del ticket a los datos.</h1>
-            <p>
-              OCR real. Un borrador transparente. La revisión queda en tus
-              manos.
-            </p>
-          </div>
-          <span className="demo-label">Demo local · sin valor comercial</span>
+          <h1>Del ticket a los datos.</h1>
+          <p className="lede">
+            OCR real. Un borrador transparente. La revisión queda en tus manos.
+          </p>
+          <span className="tape">Demo local · sin valor comercial</span>
         </div>
         <ol className="steps" aria-label="Etapas del proceso">
           <li className={screen.kind !== "empty" ? "current" : ""}>
-            Seleccionar imagen
+            <span className="step-n">1</span>Seleccionar imagen
           </li>
           <li
             className={screen.kind === "processing" || result ? "current" : ""}
           >
-            Extraer texto
+            <span className="step-n">2</span>Extraer texto
           </li>
-          <li className={result ? "current" : ""}>Revisar datos</li>
+          <li className={result ? "current" : ""}>
+            <span className="step-n">3</span>Revisar datos
+          </li>
         </ol>
-        <div className="privacy-note">
-          <Icon kind="file" />
-          <p>
+        <p className="privacy-note">
+          <Icon kind="alert" />
+          <span>
             Usa solo imágenes sintéticas o de prueba{" "}
             <strong>sin datos personales</strong>. Las imágenes y los cambios no
             se conservan al recargar.
-          </p>
-        </div>
+          </span>
+        </p>
         {error && (
           <div className="error" role="alert">
-            {error}
+            <Icon kind="alert" />
+            <span>{error}</span>
           </div>
         )}
         <section
@@ -299,7 +433,11 @@ function App() {
             <div className="pane-heading">
               <h2>Ticket original</h2>
               {screen.kind !== "empty" && (
-                <button className="quiet" disabled={busy} onClick={reset}>
+                <button
+                  className="btn sm on-ground"
+                  disabled={busy}
+                  onClick={reset}
+                >
                   Limpiar
                 </button>
               )}
@@ -307,7 +445,7 @@ function App() {
             {image ? (
               <>
                 <div className="evidence-toolbar">
-                  <div className="tabs" aria-label="Tipo de evidencia">
+                  <div className="seg" aria-label="Tipo de evidencia">
                     <button
                       aria-pressed={evidence === "image"}
                       onClick={() => setEvidence("image")}
@@ -371,6 +509,9 @@ function App() {
                         alt="Imagen de prueba seleccionada antes del OCR"
                       />
                     )}
+                    {screen.kind === "processing" && (
+                      <span className="scanbar" aria-hidden="true" />
+                    )}
                   </div>
                 ) : (
                   <div className="ocr-text">
@@ -409,21 +550,29 @@ function App() {
                 </p>
               </>
             ) : (
-              <div className="upload-empty">
-                <div className="upload-symbol">
-                  <Icon kind="upload" />
-                </div>
+              <div
+                className={dragging ? "upload-empty over" : "upload-empty"}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  if (!busy) setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={onDrop}
+              >
+                <Mascot className="mascot big" />
                 <h3>Empieza con una imagen.</h3>
                 <p>
-                  Selecciona un ticket de prueba para ver su texto y convertirlo
-                  en datos revisables.
+                  Arrastra un ticket de prueba hasta aquí o selecciónalo para
+                  ver su texto y convertirlo en datos revisables.
                 </p>
                 <button
-                  className="primary"
+                  className="btn primary"
                   disabled={busy}
                   onClick={() => input.current?.click()}
                 >
-                  <Icon kind="upload" />
+                  <span className="ic">
+                    <Icon kind="upload" />
+                  </span>
                   Seleccionar imagen
                 </button>
                 <span className="small">
@@ -447,12 +596,17 @@ function App() {
             />
             {screen.kind === "selected" && (
               <div className="extract-actions">
-                <button className="primary" onClick={() => void extract()}>
+                <button
+                  className="btn primary on-ground"
+                  onClick={() => void extract()}
+                >
+                  <span className="ic">
+                    <Icon kind="arrow" />
+                  </span>
                   Extraer datos
-                  <Icon kind="arrow" />
                 </button>
                 <button
-                  className="quiet"
+                  className="btn on-ground"
                   onClick={() => input.current?.click()}
                 >
                   Cambiar imagen
@@ -461,7 +615,9 @@ function App() {
             )}
             {screen.kind === "processing" && (
               <div className="processing" role="status">
-                <span className="spinner" />
+                <span className="chip" data-state="processing">
+                  Procesando
+                </span>
                 <div>
                   <strong>El OCR está leyendo la imagen</strong>
                   <p>Procesamiento real en CPU. Puede tardar unos segundos.</p>
@@ -487,86 +643,117 @@ function App() {
                   </button>
                 ))}
               </div>
+              <p className="small on-ground-note">
+                Los ejemplos son datos sintéticos: no representan compras
+                reales.
+              </p>
             </div>
           </div>
-          <div className="review-pane">
+
+          <div className="review-pane paper tear-t tear-b">
+            <span className="sticker">Validación fiscal pendiente</span>
             <div className="pane-heading">
               <h2>Datos para revisar</h2>
-              <span className="draft-tag">Borrador</span>
+              <span className="chip" data-state="draft">
+                Borrador
+              </span>
             </div>
-            <div className="fiscal-note">
-              <span className="pending-dot" />
-              <div>
-                <strong>Validación fiscal pendiente</strong>
-                <p>
-                  Este ticket no está aceptado y no puede alimentar un dataset
-                  comercial.
-                </p>
-              </div>
-            </div>
+            <p className="fiscal-note">
+              <strong>Validación fiscal pendiente.</strong> Este ticket no está
+              aceptado y no puede alimentar un dataset comercial.
+            </p>
             {result ? (
               <>
-                <div className="review-summary" role="status">
+                {active && image && (
+                  <RegionPeek
+                    image={image}
+                    region={active}
+                    size={result.extraction.ocr.image}
+                  />
+                )}
+                <div
+                  className={fieldsMissing ? "summary warn" : "summary"}
+                  role="status"
+                >
+                  <Icon kind={fieldsMissing ? "alert" : "check"} />
                   <p>
                     {fieldsMissing
                       ? `${fieldsMissing} campos pendientes o inválidos. Completa solo lo que puedas comprobar.`
                       : "Campos completos. Comprueba cada dato contra la imagen."}
                   </p>
-                  <span>ARS</span>
+                  <span className="currency">ARS</span>
                 </div>
+                <div className="legend" aria-label="Procedencia de los valores">
+                  {counts.map(([kind, count]) => (
+                    <span key={kind}>
+                      <Mark origin={kind} />
+                      {count}{" "}
+                      {kind === "extracted"
+                        ? "extraídos"
+                        : kind === "corrected"
+                          ? "corregidos"
+                          : "no detectados"}
+                    </span>
+                  ))}
+                </div>
+                <div className="wave" aria-hidden="true" />
                 <div className="item-list">
-                  {result.review.items.map((item, index) => (
-                    <fieldset className="item-editor" key={item.id}>
-                      <legend>Producto {index + 1}</legend>
-                      <div className="item-top">
-                        <label>
-                          Producto
-                          <input
-                            aria-label={`Producto ${index + 1}`}
-                            maxLength={240}
-                            value={item.description}
-                            onChange={(event) =>
-                              editItem(
-                                item.id,
-                                "description",
-                                event.target.value,
-                              )
-                            }
-                            placeholder="Sin identificar"
-                          />
-                        </label>
-                        <button
-                          className="remove"
-                          aria-label={`Eliminar producto ${index + 1}`}
-                          onClick={() => {
-                            setScreen({
-                              ...result,
-                              review: {
+                  {result.review.items.map((item, index) => {
+                    const n = String(index + 1).padStart(2, "0");
+                    const focusSource = () =>
+                      setActiveRegion(item.sourceRegionIds[0] ?? null);
+                    return (
+                      <fieldset className="item" key={item.id}>
+                        <legend className="visually-hidden">
+                          Producto {index + 1}
+                        </legend>
+                        <div className="item-head">
+                          <span className="item-n">{n}</span>
+                          <label className="leader wide">
+                            <span className="k">Producto</span>
+                            <input
+                              className="v"
+                              aria-label={`Producto ${index + 1}`}
+                              maxLength={240}
+                              value={item.description}
+                              onFocus={focusSource}
+                              onChange={(event) =>
+                                editItem(
+                                  item.id,
+                                  "description",
+                                  event.target.value,
+                                )
+                              }
+                              placeholder="Sin identificar"
+                            />
+                            <Mark origin={origin(item.id, "description")} />
+                          </label>
+                          <button
+                            className="icon-btn"
+                            aria-label={`Eliminar producto ${index + 1}`}
+                            onClick={() =>
+                              setReview({
                                 ...result.review,
                                 items: result.review.items.filter(
                                   (row) => row.id !== item.id,
                                 ),
-                              },
-                            });
-                            setNotice("");
-                          }}
-                        >
-                          <Icon kind="close" />
-                        </button>
-                      </div>
-                      <div className="item-numbers">
-                        {(["quantity", "unitPrice", "lineTotal"] as const).map(
-                          (field) => (
-                            <label key={field}>
-                              {field === "quantity"
-                                ? "Cantidad"
-                                : field === "unitPrice"
-                                  ? "Precio unitario"
-                                  : "Importe"}
+                              })
+                            }
+                          >
+                            <Icon kind="close" />
+                          </button>
+                        </div>
+                        <div className="item-numbers">
+                          {numberFields.map(([field, label]) => (
+                            <label className="leader" key={field}>
+                              <span className="k">{label}</span>
+                              <span className="dots" />
                               <input
+                                className="v num"
                                 aria-label={`${field === "quantity" ? "Cantidad" : field === "unitPrice" ? "Precio unitario" : "Importe"} ${index + 1}`}
                                 inputMode="decimal"
                                 maxLength={30}
+                                size={Math.max(9, item[field].length + 1)}
                                 value={item[field]}
                                 aria-invalid={
                                   item[field] !== "" &&
@@ -575,31 +762,37 @@ function App() {
                                     : parseMoney(item[field])) === null
                                 }
                                 placeholder="Por revisar"
+                                onFocus={focusSource}
                                 onChange={(event) =>
                                   editItem(item.id, field, event.target.value)
                                 }
                               />
+                              <Mark origin={origin(item.id, field)} />
                             </label>
-                          ),
+                          ))}
+                        </div>
+                        {item.sourceRegionIds.length > 0 ? (
+                          <button
+                            className="source-link"
+                            onClick={() => {
+                              setActiveRegion(item.sourceRegionIds[0]);
+                              setEvidence("image");
+                            }}
+                          >
+                            Ver fragmento de origen <Icon kind="arrow" />
+                          </button>
+                        ) : (
+                          <p className="source-none">
+                            Agregado manualmente · sin fragmento de origen
+                          </p>
                         )}
-                      </div>
-                      {item.sourceRegionIds.length > 0 && (
-                        <button
-                          className="source-link"
-                          onClick={() => {
-                            setActiveRegion(item.sourceRegionIds[0]);
-                            setEvidence("image");
-                          }}
-                        >
-                          Ver fragmento de origen <Icon kind="arrow" />
-                        </button>
-                      )}
-                    </fieldset>
-                  ))}
+                      </fieldset>
+                    );
+                  })}
                 </div>
                 {result.review.items.length === 0 && (
                   <div className="no-items">
-                    <Icon kind="file" />
+                    <Mascot className="mascot" />
                     <h3>No hay productos identificables.</h3>
                     <p>
                       No completamos los datos que faltan. Puedes revisar el
@@ -609,53 +802,53 @@ function App() {
                   </div>
                 )}
                 <button
-                  className="add-item"
-                  onClick={() => {
-                    setScreen({
-                      ...result,
-                      review: {
-                        ...result.review,
-                        items: [
-                          ...result.review.items,
-                          {
-                            id: `manual-${nextItem.current++}`,
-                            description: "",
-                            quantity: "",
-                            unitPrice: "",
-                            lineTotal: "",
-                            sourceRegionIds: [],
-                          },
-                        ],
-                      },
-                    });
-                    setNotice("");
-                  }}
+                  className="btn sm add-item"
+                  onClick={() =>
+                    setReview({
+                      ...result.review,
+                      items: [
+                        ...result.review.items,
+                        {
+                          id: `manual-${nextItem.current++}`,
+                          description: "",
+                          quantity: "",
+                          unitPrice: "",
+                          lineTotal: "",
+                          sourceRegionIds: [],
+                        },
+                      ],
+                    })
+                  }
                 >
-                  + Añadir producto manualmente
+                  <Icon kind="plus" />
+                  Añadir producto manualmente
                 </button>
-                <div className="total">
-                  <label htmlFor="receipt-total">
-                    Total del ticket<span>ARS · separador decimal: coma</span>
-                  </label>
+                <div className="wave" aria-hidden="true" />
+                <label className="leader big total" htmlFor="receipt-total">
+                  <span className="k">
+                    Total del ticket
+                    <small>ARS · separador decimal: coma</small>
+                  </span>
+                  <span className="dots" />
                   <input
                     id="receipt-total"
+                    className="v num"
                     inputMode="decimal"
                     maxLength={30}
+                    size={Math.max(9, result.review.total.length + 1)}
                     value={result.review.total}
                     aria-invalid={
                       result.review.total !== "" &&
                       parseMoney(result.review.total) === null
                     }
                     placeholder="Por revisar"
-                    onChange={(event) => {
-                      setScreen({
-                        ...result,
-                        review: { ...result.review, total: event.target.value },
-                      });
-                      setNotice("");
-                    }}
+                    onFocus={() => setActiveRegion(null)}
+                    onChange={(event) =>
+                      setReview({ ...result.review, total: event.target.value })
+                    }
                   />
-                </div>
+                  <Mark origin={origin(null, "total")} />
+                </label>
                 <details className="unresolved">
                   <summary>
                     Texto sin clasificar (
@@ -672,7 +865,7 @@ function App() {
                   )}
                 </details>
                 <button
-                  className="primary save-review"
+                  className="btn primary save-review"
                   onClick={() => {
                     const snapshot = reviewSnapshot(result.review);
                     setSaved(snapshot);
@@ -681,7 +874,9 @@ function App() {
                     );
                   }}
                 >
-                  <Icon kind="check" />
+                  <span className="ic">
+                    <Icon kind="check" />
+                  </span>
                   Conservar borrador en esta sesión
                 </button>
                 {notice && (
@@ -703,16 +898,20 @@ function App() {
             ) : (
               <div className="review-empty">
                 <div className="empty-lines" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
+                  {["Producto", "Cantidad", "Importe"].map((label) => (
+                    <span className="leader" key={label}>
+                      <span className="k">{label}</span>
+                      <span className="dots" />
+                      <span className="mark" data-origin="missing" />
+                    </span>
+                  ))}
                 </div>
                 <h3>Aquí aparecerá el primer borrador.</h3>
                 <p>
                   Los productos e importes detectados serán editables. Lo que no
                   se pueda leer quedará pendiente.
                 </p>
-                <span className="review-rule">Extraer no es verificar.</span>
+                <span className="tape ink">Extraer no es verificar.</span>
               </div>
             )}
           </div>
@@ -722,7 +921,7 @@ function App() {
             <h2>Un dato revisable todavía no es un producto.</h2>
             <p>El catálogo comercial queda fuera de esta demo.</p>
           </div>
-          <span>Cobertura insuficiente</span>
+          <span className="tape ink">Cobertura insuficiente</span>
         </aside>
         <footer>
           <span>Tuki · evidencia antes que confianza</span>

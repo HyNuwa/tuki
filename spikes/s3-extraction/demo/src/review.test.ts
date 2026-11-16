@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createReview, updateItem, reviewSnapshot, type Draft } from "./review";
+import {
+  createReview,
+  provenance,
+  updateItem,
+  reviewSnapshot,
+  type Draft,
+} from "./review";
 
 const draft: Draft = {
   schemaVersion: "tuki-demo-draft/1",
@@ -50,5 +56,34 @@ describe("editable review boundary", () => {
     const review = createReview(draft);
     const saved = reviewSnapshot({ ...review, total: "abc" });
     expect(saved.totalAtomic).toBeNull();
+  });
+});
+
+describe("value provenance", () => {
+  it("marks unchanged parser values as extracted and empty ones as not detected", () => {
+    const review = createReview(draft);
+    expect(provenance(review, review, "item-0", "lineTotal")).toBe("extracted");
+    expect(provenance(review, review, "item-0", "quantity")).toBe("missing");
+    expect(provenance(review, review, null, "total")).toBe("missing");
+  });
+  it("marks any manual change as corrected, including clearing an extracted value", () => {
+    const initial = createReview(draft);
+    const typed = updateItem(initial, "item-0", "quantity", "2");
+    expect(provenance(initial, typed, "item-0", "quantity")).toBe("corrected");
+    const cleared = updateItem(initial, "item-0", "lineTotal", "");
+    expect(provenance(initial, cleared, "item-0", "lineTotal")).toBe("corrected");
+    expect(provenance(initial, { ...initial, total: "2.500,00" }, null, "total")).toBe("corrected");
+  });
+  it("treats values of manually added items as corrected, never extracted", () => {
+    const initial = createReview(draft);
+    const added = {
+      ...initial,
+      items: [
+        ...initial.items,
+        { id: "manual-0", description: "PAN", quantity: "", unitPrice: "", lineTotal: "", sourceRegionIds: [] },
+      ],
+    };
+    expect(provenance(initial, added, "manual-0", "description")).toBe("corrected");
+    expect(provenance(initial, added, "manual-0", "quantity")).toBe("missing");
   });
 });
