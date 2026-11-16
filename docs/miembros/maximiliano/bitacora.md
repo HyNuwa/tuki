@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · feat(domain): bootstrap workspace and receipt review domain
+- **Qué hice:** crear workspace pnpm raíz y portar dinero atómico, procedencia y revisión pura desde la demo; agregar etiquetas exactas y advertencias aritméticas sin corrección automática. RED observado por módulo inexistente; GREEN: 10 pruebas y typecheck. Build web aún no aplicable: paquete de T3 inexistente.
+- **Archivos clave:** `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `tsconfig.base.json`, `packages/domain/`.
+- **Próximo paso:** implementar API y persistencia PostgreSQL en T2. Riesgo 5: bootstrap y dependencias fijadas.
+
+
 ## 2026-11-15 · feat(demo): apply thermal strip design to review PWA
 - **Qué hice:** aplicar la dirección "Tira térmica" a la demo de revisión de tickets sin cambiar API, parser, errores, privacidad ni caché offline. Cada valor muestra su procedencia (extraído, corregido, no detectado) con contadores; enfocar un campo resalta su fragmento OCR y fija un recorte arriba del formulario; carga por arrastrar y soltar. Fuentes propias en WOFF2 porque el CSP del servidor es `default-src 'self'`.
 - **Archivos clave:** `spikes/s3-extraction/demo/src/` (`main.tsx`, `style.css`, `review.ts` con `provenance()`, `fonts/`), `server.py` (sirve `.woff2` como `font/woff2`; otros tipos siguen bloqueados), pruebas, `DESIGN.md`, README y manifiesto. RED/GREEN observado: 3 pruebas de procedencia y 1 de fuentes. Pruebas: 7 Vitest, 15 Python, typecheck y build. OCR real de "Impresión defectuosa" e "Incompleto" en una segunda instancia local (:8766); 390 px sin desborde. Instalación PWA nativa y teléfono físico no verificados.
