@@ -4,8 +4,8 @@
 
 | Fase | Tarea | Spec | Depende de | Estado |
 |---|---|---|---|---|
-| 1 | Gate de contratos W1/W2: M1-AC0 a M1-AC16 | [M1](../../odd/specs/m1-contracts-gate.md) | Foundry, RPC, USDC de faucet | Pendiente |
-| 1 | Sincronizar M1 §3 y M2a §7 con Alexxe | [README](README.md#interfaces-compartidas-cambian-de-a-dos) | — | Pendiente |
+| 1 | Gate de contratos W1/W2: M1-AC0 a M1-AC16 | [M1](../../odd/specs/m1-contracts-gate.md) | Foundry, RPC, USDC de faucet | PASS / viable: AC0–AC16 plus §5 live unresolved-dispute rejection and payer-only recovery. 134 fork tests, 18 successful live transactions; zero final locks/liabilities. Terms fix `f1a30b8`, AC15 `60db02d`, INT-02 `39352af`, dispute follow-up `94756a9`; high-risk native reviews acknowledged. All hashes/gas/accounting in M1 §9; `maxLeavesPerRoot = 256`. Product/custody follow-ups remain explicit; no push/PR. |
+| 1 | Sincronizar M1 §3 y M2a §7 con Alexxe | [README](README.md#interfaces-compartidas-cambian-de-a-dos) | — | Paired terms-binding update in `f1a30b8`, authorized by Maximiliano on 2026-11-14 under his development coordination. Independent/native review complete; 2-of-2 requirement unchanged. |
 | 2 | Pasar el prototipo a los contratos finales | [M4](../../odd/specs/m4-verifier-epochs-claims.md) §5 | M1 viable | Pendiente |
 | 2 | `apps/verifier`: dos procesos con claves separadas (M4-AC1, AC2) | M4 | M1, M3 de Alexxe | Pendiente |
 | 3 | Relayer de raíces y claims, conciliación `unknown` (M4-AC4 a AC6) | M4 | — | Pendiente |

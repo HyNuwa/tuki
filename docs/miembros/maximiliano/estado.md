@@ -1,9 +1,12 @@
 # Estado · Maximiliano
 
-**Última actualización:** 2026-11-14
+**Última actualización:** 2026-11-15
 
-## Foco vigente
-Specs de implementación del MVP P0 escritas ([odd/specs/](../../../odd/specs/README.md)) y flujo de equipo armado. Próximo: **M1, gate de contratos** ([m1-contracts-gate.md](../../../odd/specs/m1-contracts-gate.md)).
+## Current focus
+M1 contract gate, branch `feat/m1-contracts-gate`. Maximiliano owns development coordination; Alexxe's departure is not assumed. The 2-of-2 threshold and separate verifier key-holder requirement remain unchanged.
 
-**Próximo paso:** instalar Foundry, conseguir RPC de Base Sepolia y USDC de faucet; correr M1-AC0 (ABI desplegado de `AuthCaptureEscrow` v1.1 y collector).
-**Bloqueos:** Foundry sin instalar; valor de `preApprovalExpiry` [Pending] (M1 §2).
+**Completed:** payer-authenticated Task terms in `f1a30b8`, with paired M1/M2a specs, 123 passing fork tests, independent baseline comparison and native risk/readability/reliability review without findings. Exact acknowledgement closed that review. AC15's separate work unit now has independent 32-run / 1600-call coverage with no reverts and a full suite of 124 passing tests; negative controls confirm monitor sensitivity. Production contracts are unchanged by AC15. AC15 is committed as `60db02d`; native assessment is medium / under_budget (`review_due: false`), so no second native review was started.
+**Live result:** AC16 passes its three §4 live paths on Base Sepolia: 13 successful transactions from reviewed source `39352af`. Capture, recipient claim and direct payer reclaim/release are confirmed; claim/reclaim needed only the payer key. At block 58950831, the vault has 20.20 USDC free, zero locks and zero committed liabilities; payer 19.50 USDC, fee receiver 0.30 USDC. Full source suite: 132 PASS; four native lenses: no findings and exact acknowledgement. Public addresses, all hashes and gas measurements are in M1 §9. No private values or full operational reports are in the repo.
+**Additional exit proof complete:** source `94756a9` has 134 passing tests, independent verification and acknowledged four-lens native review without findings. Five additional live transactions confirm a disputed Task's authorization, payer delivery/dispute and direct payer reclaim/release after real expiry; no Tuki signing occurred after opening. At block 58964144 a keyless read-only probe returned exact `DisputeUnresolved`. Final block 58967043: 20.20 USDC free reserve, zero locks/committed liabilities, payer 19.50 USDC, fee receiver 0.30 USDC; the full 40 USDC are accounted for. All 18 live receipts are successful. M1 AC0–AC16 and the additional §5 live path pass; W1/W2 compatibility is viable. Public evidence is in M1 §9; private state remains outside the repo at `%TEMP%/tuki-int02-dispute-live-6081yk5o`.
+**Next step:** user-controlled review/delivery planning; no push or PR is authorized. Do not repeat any confirmed live phase. Keep product and custody follow-ups explicit before later production milestones.
+**Pending follow-ups:** product `preApprovalExpiry`, precise capture-delta/unsolicited-transfer semantics and physical verifier independence; none was silently selected or claimed proven. Existing credentials were authorized and used without changing `.env`; no fresh-key blocker. `maxLeavesPerRoot = 256`. No mainnet operation. Engram writes are unavailable; evidence is recorded locally.
