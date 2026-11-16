@@ -1,5 +1,8 @@
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { Extraction } from "@tuki/domain";
 
 export type NormalizedImage = { image: Uint8Array; width: number; height: number; exif: { hasCameraExif: boolean; softwareTagPresent: boolean; captureTimeConsistent: boolean } };
@@ -13,43 +16,57 @@ const safeCodes = new Set(["invalid_image", "unsupported_image", "upload_limit",
 export const bridgeCode = (error: unknown): string => error instanceof Error && safeCodes.has(error.message) ? error.message : "ocr_unavailable";
 
 export function pythonRunner(config: Config): Runner {
-  return (mode, bytes) => new Promise((resolve, reject) => {
-    const child = spawn(config.python, ["-B", fileURLToPath(new URL("../../../../spikes/s3-extraction/demo/extract_cli.py", import.meta.url)), mode], {
-      env: { ...process.env, OCR_MODELS_DIR: config.modelsDir, OCR_CACHE_DIR: config.cacheDir }, windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"],
-    });
-    let output = Buffer.alloc(0), invalid = false, timedOut = false;
-    let termination: Promise<void> = Promise.resolve();
-    const terminateTree = () => {
-      termination = new Promise<void>(done => {
-        if (!child.pid) return done();
-        if (process.platform === "win32") {
-          const killer = spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
-          killer.once("error", () => { child.kill(); done(); });
-          killer.once("close", () => done());
-        } else { try { process.kill(-child.pid, "SIGKILL"); } catch { child.kill(); } done(); }
+  return async (mode, bytes) => {
+    // The surviving API process owns the cleanup boundary, not the child that
+    // a timeout may terminate before Python can leave its context manager.
+    let requestDirectory: string;
+    try { requestDirectory = await mkdtemp(join(tmpdir(), "tuki-api-request-")); }
+    catch { throw new Error("ocr_unavailable"); }
+    try {
+      return await new Promise((resolve, reject) => {
+        const child = spawn(config.python, ["-B", fileURLToPath(new URL("../../../../spikes/s3-extraction/demo/extract_cli.py", import.meta.url)), mode], {
+          env: { ...process.env, OCR_MODELS_DIR: config.modelsDir, OCR_CACHE_DIR: config.cacheDir, OCR_REQUEST_DIR: requestDirectory }, windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"],
+        });
+        let output = Buffer.alloc(0), invalid = false, timedOut = false;
+        let termination: Promise<void> = Promise.resolve();
+        const terminateTree = () => {
+          termination = new Promise<void>(done => {
+            if (!child.pid) return done();
+            if (process.platform === "win32") {
+              const killer = spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
+              killer.once("error", () => { child.kill(); done(); });
+              killer.once("close", () => done());
+            } else { try { process.kill(-child.pid, "SIGKILL"); } catch { child.kill(); } done(); }
+          });
+        };
+        const timer = setTimeout(() => { timedOut = true; terminateTree(); }, 120_000);
+        child.stdout.on("data", (chunk: Buffer) => {
+          if (output.length + chunk.length > 24 * 1024 * 1024) { invalid = true; terminateTree(); }
+          else output = Buffer.concat([output, chunk]);
+        });
+        child.stderr.on("data", () => { invalid = true; });
+        child.stdin.on("error", () => {});
+        child.once("error", () => { clearTimeout(timer); reject(new Error("ocr_unavailable")); });
+        child.once("close", async code => {
+          clearTimeout(timer);
+          await termination;
+          if (timedOut) return reject(new Error("ocr_timeout"));
+          if (invalid) return reject(new Error("ocr_unavailable"));
+          try {
+            const value = JSON.parse(output.toString("utf8"));
+            if (code !== 0) return reject(new Error(safeCodes.has(value.code) ? value.code : "ocr_unavailable"));
+            resolve(value);
+          } catch { reject(new Error("ocr_unavailable")); }
+        });
+        child.stdin.end(bytes);
       });
-    };
-    const timer = setTimeout(() => { timedOut = true; terminateTree(); }, 120_000);
-    child.stdout.on("data", (chunk: Buffer) => {
-      if (output.length + chunk.length > 24 * 1024 * 1024) { invalid = true; terminateTree(); }
-      else output = Buffer.concat([output, chunk]);
-    });
-    child.stderr.on("data", () => { invalid = true; });
-    child.stdin.on("error", () => {});
-    child.once("error", () => { clearTimeout(timer); reject(new Error("ocr_unavailable")); });
-    child.once("close", async code => {
-      clearTimeout(timer);
-      await termination;
-      if (timedOut) return reject(new Error("ocr_timeout"));
-      if (invalid) return reject(new Error("ocr_unavailable"));
-      try {
-        const value = JSON.parse(output.toString("utf8"));
-        if (code !== 0) return reject(new Error(safeCodes.has(value.code) ? value.code : "ocr_unavailable"));
-        resolve(value);
-      } catch { reject(new Error("ocr_unavailable")); }
-    });
-    child.stdin.end(bytes);
-  });
+    } finally {
+      // Only remove the exact freshly created directory owned by this call,
+      // after close and any process-tree termination have completed.
+      try { await rm(requestDirectory, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }); }
+      catch { throw new Error("ocr_unavailable"); }
+    }
+  };
 }
 
 /** One extraction slot for this API process, released on every outcome. */

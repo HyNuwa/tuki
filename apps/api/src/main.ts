@@ -1,18 +1,19 @@
 import { serve } from "@hono/node-server";
-import { resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createApp } from "./app.js";
 import { connect } from "./db/database.js";
 import { createPythonBridge } from "./ingestion/bridge.js";
 import { localMediaStorage } from "./storage/media.js";
+import { outsideRepositoryStorage } from "./storage/directory.js";
 
 const { DATABASE_URL, STORAGE_DIR, OCR_PYTHON, OCR_MODELS_DIR, OCR_CACHE_DIR } = process.env;
 if (!DATABASE_URL || !STORAGE_DIR || !OCR_PYTHON || !OCR_MODELS_DIR || !OCR_CACHE_DIR) {
   process.stderr.write("configuration_missing\n"); process.exit(1);
 }
 const root = fileURLToPath(new URL("../../../", import.meta.url));
-const storage = resolve(STORAGE_DIR), location = relative(root, storage);
-if (!location || (!location.startsWith("..") && !isAbsolute(location))) {
+let storage: string;
+try { storage = await outsideRepositoryStorage(root, STORAGE_DIR); }
+catch {
   process.stderr.write("storage_outside_repository_required\n"); process.exit(1);
 }
 const { db, client } = connect(DATABASE_URL);

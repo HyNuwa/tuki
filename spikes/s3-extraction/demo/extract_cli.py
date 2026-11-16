@@ -45,7 +45,10 @@ def main():
             if len(data) > 16 * 1024 * 1024:
                 raise DemoFailure("image_limit")
             image, size = normalize_image(data)
-            with tempfile.TemporaryDirectory(prefix="tuki-api-ocr-") as temporary:
+            # API invocations nest all evidence below the surviving parent's
+            # owned directory, which it removes even after a forced tree kill.
+            # Standalone CLI use retains Python's ordinary context cleanup.
+            with tempfile.TemporaryDirectory(prefix="tuki-api-ocr-", dir=os.environ.get("OCR_REQUEST_DIR")) as temporary:
                 path = Path(temporary) / "input.png"
                 path.write_bytes(image)
                 raw = worker_recognizer(Path(os.environ["OCR_MODELS_DIR"]), Path(os.environ["OCR_CACHE_DIR"]))(path)

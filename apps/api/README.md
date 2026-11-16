@@ -7,7 +7,7 @@ Hono on loopback port 8787, PostgreSQL **16**, Drizzle migrations and the existi
 Set environment variables in the terminal; do not commit them. The app does not load `.env` automatically.
 
 - `DATABASE_URL`: a local PostgreSQL 16 connection URI.
-- `STORAGE_DIR`: absolute directory **outside the repository**, for normalized PNG evidence.
+- `STORAGE_DIR`: absolute directory **outside the repository**, for normalized PNG evidence. Startup canonicalizes the path through existing filesystem ancestors, including symlinks/junctions, and rejects physical repository descendants (also names such as `..media`). Nonexistent outside directories are allowed; unresolved/dangling aliases fail closed.
 - `OCR_PYTHON`: existing private Python environment executable.
 - `OCR_MODELS_DIR`, `OCR_CACHE_DIR`: existing private worker models/cache directories.
 
@@ -19,7 +19,7 @@ pnpm --filter @tuki/api dev
 pnpm --filter @tuki/contributor-web dev
 ```
 
-The browser uses relative `/api/v1/...`; Vite removes `/api` when forwarding to the API. Migrations are explicit, never run automatically on application startup. One API process owns the OCR slot. The worker timeout is 120 seconds; the bridge kills its process tree on timeout. CPU OCR is synchronous per upload, but its persisted `processing` state is visible to concurrent history/detail requests.
+The browser uses relative `/api/v1/...`; Vite removes `/api` when forwarding to the API. Migrations are explicit, never run automatically on application startup. One API process owns the OCR slot. The worker timeout is 120 seconds; the bridge kills its process tree on timeout, then removes its own request directory in a parent-side `finally`. Python creates normalized evidence only below that parent-owned directory; cleanup does not depend on the killed Python context manager. This protects ordinary success/failure/timeouts, not an OS crash or termination of the API process itself. CPU OCR is synchronous per upload, but its persisted `processing` state is visible to concurrent history/detail requests.
 
 ## Public routes
 

@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-15 · fix(api): clean OCR timeouts and canonicalize storage paths
+- **Qué hice:** corregir juntos B1 (S5) y B2 (S6) del verificador independiente. La API ahora crea y elimina su propio directorio temporal después de terminar el árbol del proceso; Python solo anida evidencia dentro de ese directorio. El guard de STORAGE_DIR usa rutas físicas y límite por componente, resolviendo ancestros existentes y junctions; los alias rotos fallan de forma cerrada.
+- **Archivos clave:** `apps/api/src/ingestion/bridge.ts`, `src/storage/directory.ts`, `src/main.ts`, pruebas de timeout/arranque, `spikes/s3-extraction/demo/extract_cli.py` y su prueba CLI. No se modificó ni borró el scratch del verificador.
+- **Próximo paso:** recheck independiente limitado a B1/B2 por el coordinador. RED observado: timeout dejó `tuki-api-ocr-*`; `..media` y junction hacia adentro llegaron a listen con exit 0. GREEN: ambos regresores pasan; suite completa 25 Vitest (10 dominio, 10 API, 5 web; PostgreSQL16 real), typecheck y 19 Python pasan. Riesgos 2/4: contención física y limpieza tras terminación. Sin push, R2, .env ni trabajo remoto.
+
+
 ## 2026-11-15 · feat(web): add contributor PWA with persisted review flow
 - **Qué hice:** portar Tira térmica y fuentes propias a la PWA real: panel, carga/arrastre/vista previa, procesamiento, error/reintento, revisión con procedencia y recorte OCR fijo, detalle, historial filtrado y once módulos sin funcionalidad simulada. API relativa /api, caché solo del shell, ejemplos sintéticos procesados por OCR real.
 - **Archivos clave:** `apps/contributor-web/`, lock raíz y seguimiento M3. RED inicial por App ausente; segundo RED reprodujo el bloqueo de completar tras guardar: comparar JSON crudo confundía orden de claves con cambios. GREEN compara valores de campos en orden canónico y conserva el orden de líneas.
