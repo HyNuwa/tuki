@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · docs(specs): adopt automatic ticket pipeline spec
+- **Qué hice:** guardar la spec del dueño del producto `odd/specs/ticket-pipeline.md` (PP-OCRv6 como evidencia + GLM-OCR con esquema fijo, anclaje, puntaje y estados Aceptado/Rechazado/Error de procesamiento, sin revisión humana), indexarla y alinear `PRODUCT.md`, que reemplaza el flujo de revisión manual.
+- **Archivos clave:** `odd/specs/ticket-pipeline.md`, `odd/specs/README.md`, `PRODUCT.md`.
+- **Próximo paso:** alinear el resto de la documentación normativa, rehacer M3 como pipeline automático y confirmar los supuestos de la sección 11 con las 15 fotos. La comparación Qwen/LFM/Laya se detuvo.
+
+
 ## 2026-11-15 · fix(api): clean OCR timeouts and canonicalize storage paths
 - **Qué hice:** corregir juntos B1 (S5) y B2 (S6) del verificador independiente. La API ahora crea y elimina su propio directorio temporal después de terminar el árbol del proceso; Python solo anida evidencia dentro de ese directorio. El guard de STORAGE_DIR usa rutas físicas y límite por componente, resolviendo ancestros existentes y junctions; los alias rotos fallan de forma cerrada.
 - **Archivos clave:** `apps/api/src/ingestion/bridge.ts`, `src/storage/directory.ts`, `src/main.ts`, pruebas de timeout/arranque, `spikes/s3-extraction/demo/extract_cli.py` y su prueba CLI. No se modificó ni borró el scratch del verificador.

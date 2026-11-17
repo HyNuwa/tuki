@@ -11,6 +11,7 @@
 | [`m4-verifier-epochs-claims.md`](m4-verifier-epochs-claims.md) | 4 — verifiers, epochs, roots, claims | Maximiliano (contracts, verifier, relayer) · Alexxe (epoch build, PWA) | M1 exit, M3 | — |
 | [`m5-aggregation-provenance-poc-mcp-demo.md`](m5-aggregation-provenance-poc-mcp-demo.md) | 5 — aggregation, provenance, PoC, MCP, demo client | Maximiliano (delivery, capture, PoC) · Alexxe (aggregation, MCP, demo) | M2a, M3, M4 | partly after M2a |
 | [`m6-integral-validation.md`](m6-integral-validation.md) | 6 — INT-01, INT-02, final demo | Maximiliano (INT-02) · Alexxe (INT-01) | M1–M5 | — |
+| [`ticket-pipeline.md`](ticket-pipeline.md) | 3 — ticket pipeline (PP-OCRv6 + GLM-OCR, automatic score); supersedes the manual-review flow of M3 | Maximiliano | M3 | — |
 
 ```text
 M1 ─────────────┐
