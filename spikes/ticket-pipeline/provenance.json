@@ -233,5 +233,73 @@
     "projector_sha256": "sha256:713115ee2f749a4c03627c29ccf71900ed63f219b0c79b562eac15d6d08bcb7b",
     "quantization": "Q4_K_M",
     "tool": "llama-quantize.exe bundled with Ollama v0.40.16"
-  }
+  },
+  "ollama-model-provenance-q8_0.json": {
+    "manifest_sha256": "6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f",
+    "source": "https://registry.ollama.ai/v2/library/glm-ocr/manifests/q8_0",
+    "manifest": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "config": {
+        "mediaType": "application/vnd.docker.container.image.v1+json",
+        "digest": "sha256:ed01de6ff6852a225f6a9ee58bf38076e8c6b7e3a69e0a942986900c9338e625",
+        "size": 174
+      },
+      "layers": [
+        {
+          "mediaType": "application/vnd.ollama.image.model",
+          "digest": "sha256:573c8850da0126266ba1e63a0ad8253a1257ad82f99295820fc84cfa43bead97",
+          "size": 950669120,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.projector",
+          "digest": "sha256:713115ee2f749a4c03627c29ccf71900ed63f219b0c79b562eac15d6d08bcb7b",
+          "size": 869018176,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.template",
+          "digest": "sha256:b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315",
+          "size": 13,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.params",
+          "digest": "sha256:ae40a217c1c4002e9358f0f6597a349acaace0cfb95dc53db7ce646d57a56271",
+          "size": 18,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        }
+      ],
+      "runner": "llamacpp",
+      "format": "gguf"
+    },
+    "config": {
+      "model_format": "gguf",
+      "model_family": "glm4",
+      "model_families": [
+        "glm4"
+      ],
+      "model_type": "891.14M",
+      "file_type": "Q8_0",
+      "renderer": "glm-ocr",
+      "parser": "glm-ocr",
+      "requires": "0.30.0"
+    },
+    "tag": "q8_0"
+  },
+  "constrained_retry_runtime_models": [
+    {
+      "name": "glm-ocr:q8_0",
+      "digest": "6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f",
+      "size": 1819687501,
+      "quantization_level": "Q8_0"
+    },
+    {
+      "name": "tuki-glm-ocr-q4km:latest",
+      "digest": "5b1c7ee47a0eab894fb974a3ad635f6b43eeeb2d5728c5a42c5855ea633720c1",
+      "size": 1417765435,
+      "quantization_level": "Q4_K_M"
+    }
+  ]
 }

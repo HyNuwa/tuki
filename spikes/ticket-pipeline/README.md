@@ -115,3 +115,82 @@ S10 investigated; **the model-dependent gate is not cleared**. Every section-11 
 Final checks: standalone decoder unittest command exits 0 (2 tests); `uv pip check --python $py` exits 0 (86 compatible packages); AST parsing covers all 9 Python scripts. No repository-wide suite is relevant to this isolated spike, and no existing runtime/API/web suite was run or modified. The wheel-reconstruction helper has only structural/syntax review, not an end-to-end fresh installation proof. Parent owns independent item-2/item-5 review, commits and any cleanup.
 
 Risk: items 2 and 5 (local private-photo processing; isolated model/runtime dependencies). Independent verification and git/commits belong to the coordinator; no helper worker was launched.
+
+## Owner-approved constrained-output retry (2026-11-17)
+
+The owner authorized a new decoding configuration to separate formatting failures from reading/extraction quality. The prompt file is **unchanged**; the new versioned `ticket-v1-format.schema.json` is passed in Ollama's `format` field, with temperature 0 and the same CPU/context/output limits. Every object disallows additional properties and requires all its keys; every scalar is a string. In particular `"12.345,00"` remains a literal string, never a JSON number. [Ollama documents schema-constrained vision output](https://docs.ollama.com/capabilities/structured-outputs).
+
+The [official library publishes `glm-ocr:q8_0`](https://ollama.com/library/glm-ocr/tags): manifest SHA-256 `6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f`, decoder SHA-256 `573c8850da0126266ba1e63a0ad8253a1257ad82f99295820fc84cfa43bead97` (950,669,120 bytes). Its BF16 projector is byte-identical to the prior Q4_K_M run (869,018,176 bytes). **No Q8 quantization was built locally.** The current local Q4_K_M tag is `tuki-glm-ocr-q4km:latest`, digest `5b1c7ee47a0eab894fb974a3ad635f6b43eeeb2d5728c5a42c5855ea633720c1`; its already-existing decoder is 548,747,072 bytes. Full source/size/digest records are in `provenance.json`. The registry's tag-list API returned HTTP 404; availability was instead verified by the official tags page and successful digest-verified `q8_0` manifest/blob acquisition.
+
+### Exact reproduction
+
+With the earlier `$b`, `$py` and locally configured `$privateCorpus`:
+
+```powershell
+& $py -B spikes/ticket-pipeline/acquire_ollama_model.py --tag q8_0
+& $py -B -m unittest discover -s spikes/ticket-pipeline -p 'test_*.py' -v
+# Separate process: prepare exact-image PP-OCRv6 small evidence, then exit it.
+& $py -B spikes/ticket-pipeline/quality_retry.py --prepare-ocr --private-root $privateCorpus
+# Serial Q4_K_M -> unload -> published Q8_0; temporary server stopped in finally.
+& $py -B spikes/ticket-pipeline/quality_retry.py --private-root $privateCorpus
+# Recompute final metrics from retained responses; no model or server starts.
+& $py -B spikes/ticket-pipeline/quality_retry.py --audit-only --private-root $privateCorpus
+```
+
+No package installation is added. The 5 GiB guard runs before each acquired artifact and every measured image. Raw retry responses, per-image diagnostics and PP-OCR text are retained **only** below the external spike root (`retry-private-Q4_K_M/`, `retry-private-Q8_0/`, `retry-small-evidence-private.json`) for local audit. Only aggregated real-receipt metrics are copied into the public results; no source path, image hash, receipt identifier, text or monetary value is copied. The old OCR runtime and annotations remain read-only.
+
+### Truth and metric definitions (fixed before measuring)
+
+- Synthetic expected descriptions are `LECHE`, then `PAN`, for all three images. Legible/degraded expected line amounts are `2.500,00` and `850,00`, total `3.350,00`; the incomplete case expects blank amounts/total because the printed amounts are absent or `???`. Thus the six synthetic amount labels include **two known-empty absence checks**, not six positive monetary readings. Dates are absent (three blank-label checks). `TUKI / PRUEBA` is the expected printed heading proxy for synthetic `razon_social`, **not** a claim that this demo has a fiscal legal name.
+- Exactly **three complete private Argentine annotations contain five items** and totals in ARS atomic units, scale 2. They contain **no structured date or merchant-name labels**; private `fecha`/`razon_social` therefore have zero evaluated labels, not invented empty truths or accuracy percentages. The coordinator explicitly approved reporting those two metrics as not verifiable and prohibited post-hoc annotations. Other private images are used for JSON, latency, memory and numeric-presence metrics only.
+- `descripcion` is strict string equality (no case/whitespace/accent repair). Per-item field accuracy is positional, preserving the spec's printed order. Synthetic amount accuracy is literal string equality. Private amount/total accuracy compares the unchanged model string, interpreted as Argentine comma-decimal text **or an unambiguous one/two-digit dot decimal**, to the **existing atomic-unit annotation**; that is exact monetary-value equality, not unmeasurable exact printed-format equality. Three trailing digits after a dot remain a thousands group. Raw strings, including Argentine comma-decimal strings, are never rewritten.
+- Item recovery is one-to-one exact description **and** amount matching, independent of ordering; duplicates cannot recover a label twice. Unmatched predictions are reported as `unmatched_or_spurious_items`: a misspelled real description also enters that count, so it is **not** a proven hallucination count. `summary_rows_as_items` separately counts descriptions beginning with the whole word TOTAL/SUBTOTAL. It is a heuristic, not complete semantic classification.
+- Numeric presence evaluates every nonempty `precio_unitario`, item/tax `importe`, subtotal, discounts and total from schema-valid responses against the **same image's** new PP-OCRv6-small text. Each OCR token candidate and model value loses non-alphanumerics, then must match **exactly** (no digit substring or whole-document concatenation). This prevents `1234500` matching `11234500`. Duplicate amount fields count separately; empty fields are reported separately. Invalid outputs have unevaluable amounts rather than an invented presence rate. This is an intentionally conservative, token-based **E7 approximation**, without boxes, occurrence disambiguation, normalization validity or semantic field association; a high presence rate does not establish correct items.
+- JSON/schema validity uses every image. Field/recovery denominators include all labeled images even when output is invalid; invalid outputs get zero correct, not silently excluded. Rates are numerator/denominator counts. Latency is one pass per image, including first-call model loading; p50/max are cohort distributions. Peak RSS samples server descendants plus the client every 50 ms and can miss shorter peaks/double-count shared pages; it is not full-worker or VM memory proof.
+
+### Retry checks
+
+New metric test RED: `ModuleNotFoundError: No module named 'retry_metrics'`; GREEN after implementation. A second observed RED exposed a measurement-only bug: comma-only parsing rejected an unambiguous dot-decimal total despite atomic annotations having no printed-format labels. The synthetic regression now passes; cached responses were re-audited with the corrected scorer, **without another model call, string repair or annotation change**. Initial interim total counts were 2/3 for each variant; corrected final value-exact totals are 3/3. Original external response records remain unchanged and the audited aggregate has `metric_revision: 2`.
+
+Five new metric tests plus two existing decoder tests pass, covering exact numeric tokens versus digit suffixes, positional/full-pair metrics, summary-row extras, atomic comparison without changing literal strings, missing header labels and duplicate recovery exclusion. No production parser, prompt, acceptance threshold or score weight changed.
+
+### Final retry results (audited metric revision 2)
+
+| Variant / cohort | JSON + schema valid | p50 / max s per image | Peak sampled family RSS bytes |
+|---|---:|---:|---:|
+| Q4_K_M synthetic | 3/3 | 42.609 / 45.334 | 2,636,587,008 |
+| Q4_K_M private | 10/10 | 31.570 / 93.018 | 3,390,291,968 |
+| Published Q8_0 synthetic | 3/3 | 45.507 / 46.728 | 2,930,348,032 |
+| Published Q8_0 private | 10/10 | 29.597 / 86.395 | 4,055,535,616 |
+
+Field-exact numerators/denominators (private monetary comparisons use existing atomic labels; private quality covers only the three complete annotations):
+
+| Field | Q4 synthetic | Q8 synthetic | Q4 complete private | Q8 complete private |
+|---|---:|---:|---:|---:|
+| Total | 3/3 | 3/3 | 3/3 | 3/3 |
+| Each item descripcion (positional) | 0/6 | 0/6 | 0/5 | 0/5 |
+| Each item importe (positional) | 2/6 | 2/6 | 1/5 | 1/5 |
+| Fecha | 3/3 | 3/3 | Not verifiable: 0 labels | Not verifiable: 0 labels |
+| Razon social (synthetic heading proxy) | 0/3 | 0/3 | Not verifiable: 0 labels | Not verifiable: 0 labels |
+
+The synthetic total denominator contains one known-blank check; fecha contains three known-blank checks. The 2/6 synthetic item-amount successes are the incomplete image's two blank checks: **0/4 positive synthetic item-amount labels matched** for either variant. The retry scores six visible synthetic item descriptions, unlike the historical first pass's four usable monetary items, so those coverage denominators are not interchangeable.
+
+| Variant / quality cohort | Recovered description+amount pairs | Predicted items | Unmatched predictions | TOTAL/SUBTOTAL rows as items |
+|---|---:|---:|---:|---:|
+| Q4 synthetic | 0/6 | 7 | 7 | 2 |
+| Q8 synthetic | 0/6 | 6 | 6 | 1 |
+| Q4 complete private (3 photos) | 0/5 | 14 | 14 | 3 |
+| Q8 complete private (3 photos) | 0/5 | 8 | 8 | 2 |
+
+Numeric literal presence, using every nonempty modeled amount from all images in each cohort:
+
+| Variant / cohort | Exact token-presence matches | Empty amount fields |
+|---|---:|---:|
+| Q4 synthetic | 8/8 (100%) | 18 |
+| Q8 synthetic | 8/8 (100%) | 16 |
+| Q4 private (10 photos) | 95/96 (98.96%) | 49 |
+| Q8 private (10 photos) | 82/84 (97.62%) | 34 |
+
+**Conclusion:** constraining format fixed JSON/schema validity, **not item extraction**. Q8 reduced extra summary rows but did not improve exact labeled descriptions, item amounts or pair recovery in this set. High numeric presence coexists with wrong/misclassified item structure; it cannot be used alone as evidence that a ticket is correct. Both private-cohort sampled family-RSS peaks exceed 3 GiB; RSS sharing and the PC/VM difference preclude claiming a precise physical-memory requirement or inevitable VM OOM. No 40-item or deployment-VM test was added. No generation hit the 4096-token cap in this retry.
+
+The temporary server and all owned model runners were stopped after both variants, and absence was checked. All ten source receipt hashes remained unchanged. Final proof: model run exit 0; offline `--audit-only` exit 0; 7 tests pass; strict-schema/all-string and 12-script AST checks pass; public artifacts exclude actual private paths, receipt IDs and image hashes. Scratch remains under the same external root for parent cleanup. The gate in ASSUMPTIONS remains **not cleared**; completing this measurement is not approval to implement a production workaround.

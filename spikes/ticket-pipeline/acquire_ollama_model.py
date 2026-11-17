@@ -4,14 +4,19 @@ Registry download explicitly authorized by the coordinator on 2026-11-17.
 An existing captured manifest is immutable: reruns do not silently follow latest.
 """
 import hashlib
+import argparse
 import json
 import shutil
 from acquire import BASE, disk_guard, get
 
 
 def main():
-    captured = BASE / "ollama-glm-manifest.json"
-    url = "https://registry.ollama.ai/v2/library/glm-ocr/manifests/latest"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--tag", choices=["latest", "q8_0"], default="latest")
+    args = parser.parse_args()
+    suffix = "" if args.tag == "latest" else "-" + args.tag
+    captured = BASE / ("ollama-glm-manifest" + suffix + ".json")
+    url = "https://registry.ollama.ai/v2/library/glm-ocr/manifests/" + args.tag
     if not captured.exists():
         with get(url) as response:
             captured.write_bytes(response.read())
@@ -39,13 +44,14 @@ def main():
             if hashlib.file_digest(stream, "sha256").hexdigest() != digest.split(":")[1]:
                 raise RuntimeError("ollama_layer_hash_mismatch")
         print(layer["mediaType"], layer["size"], digest, flush=True)
-    destination = directory / "manifests/registry.ollama.ai/library/glm-ocr/latest"
+    destination = directory / "manifests/registry.ollama.ai/library/glm-ocr" / args.tag
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_bytes(raw)
     config = json.loads((blobs / manifest["config"]["digest"].replace(":", "-")).read_bytes())
     record = {"manifest_sha256": hashlib.sha256(raw).hexdigest(), "source": url,
               "manifest": manifest, "config": config}
-    (BASE / "ollama-model-provenance.json").write_text(json.dumps(record, indent=2))
+    record["tag"] = args.tag
+    (BASE / ("ollama-model-provenance" + suffix + ".json")).write_text(json.dumps(record, indent=2))
     print("manifest", record["manifest_sha256"], "config", config)
 
 

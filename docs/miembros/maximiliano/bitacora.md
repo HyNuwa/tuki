@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · test(repo): measure GLM-OCR with schema-constrained output
+- **Qué hice:** reintento aprobado de T6 con el esquema `ticket.v1` forzado en el campo `format` de Ollama, temperatura 0 y el mismo prompt. Q4_K_M y Q8_0 publicados: JSON válido 13/13 en ambos, total correcto 3/3 en los tickets privados anotados, pero ítems 0/5 pares descripción+importe (1/5 importes) y 0/6 en sintéticos; Q4 emite 3 filas TOTAL/SUBTOTAL como ítems. Latencia p50 ~30 s, máx ~90 s; RSS pico 3,4 GB (Q4) y 4,1 GB (Q8).
+- **Archivos clave:** `spikes/ticket-pipeline/quality_retry.py`, `retry_metrics.py` y su prueba, `ticket-v1-format.schema.json`, `ASSUMPTIONS.md` (filas 1, 2 y 4), `measurements.json`.
+- **Próximo paso:** decisión del dueño: GLM-OCR no completa los ítems y Q8 no entra en el presupuesto de 3 GB de la VM.
+
+
 ## 2026-11-17 · test(repo): record ticket pipeline assumption spike
 - **Qué hice:** spike T6 de los supuestos de la sección 11 de `odd/specs/ticket-pipeline.md`, local y solo CPU. GLM-OCR Q4_K_M vía Ollama (distribución recomendada por el autor): 0/13 respuestas JSON válidas con el prompt exacto (decimales con coma sin comillas, importes vacíos, TOTAL como ítem); p50 73 s y máximo 211 s por imagen en esta PC; RSS pico ~2,5 GB. Referencia BF16 abortada a los 680 s sin resultados. PP-OCRv6 cubre español (confirmado); small p50 13 s vs medium 55 s; las cajas son por palabra, no por carácter. Formato QR de ARCA confirmado; 0 QR decodificados en 10 fotos privadas.
 - **Archivos clave:** `spikes/ticket-pipeline/ASSUMPTIONS.md`, `README.md`, `measurements.json` (solo agregados), `arca_qr.py` y su prueba sintética.
