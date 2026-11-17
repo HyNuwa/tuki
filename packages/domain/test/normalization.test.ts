@@ -68,3 +68,19 @@ describe("Argentina module", () => {
     expect(argentina.contiene_importe("CUIT 30-00000000-7")).toBe(false);
   });
 });
+
+it.each([
+  ["SYNTHETIC BREAD (21,00)", "SYNTHETIC BREAD"],
+  ["SYNTHETIC BREAD (10,50%)", "SYNTHETIC BREAD"],
+  ["SYNTHETIC BREAD (5.00 %)", "SYNTHETIC BREAD"],
+  ["SYNTHETIC BREAD (21,00) (10,50)", "SYNTHETIC BREAD (21,00)"],
+  ["SYNTHETIC BREAD (ROJO)", "SYNTHETIC BREAD (ROJO)"],
+  ["SYNTHETIC BREAD (100,00)", "SYNTHETIC BREAD (100,00)"],
+  ["(21,00) SYNTHETIC BREAD", "(21,00) SYNTHETIC BREAD"],
+])("strips exactly one trailing VAT token from item description %s", (raw, expected) => {
+  const input = ticket(); input.items[0]!.descripcion = raw;
+  input.items[0]!.importe = "";
+  const result = normalizeTicket(input, argentina);
+  expect(result.campos["items.0.descripcion"]).toEqual({ raw, valor: expected });
+  expect(result.campos["items.0.importe"]).toEqual({ raw: "", valor: null });
+});

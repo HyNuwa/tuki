@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · feat(domain): strip VAT rate suffix and observe stages
+- **Qué hice:** E6 quita del `valor` de cada descripción una única alícuota de IVA final como `(21,00)`; el `raw` queda literal y es lo que se ancla en E7, porque la línea OCR trae la misma alícuota. Observador opcional de etapas E6–E9 (no-op por defecto, reloj inyectado) para que la API mida cada etapa sin duplicar lógica.
+- **Archivos clave:** `packages/domain/src/normalize.ts`, `pipeline.ts`, `test/vat-pipeline.test.ts`, `test/instrumentation.test.ts`, `test/normalization.test.ts`.
+- **Próximo paso:** commit de T8 en la API y verificación independiente.
+
+
 ## 2026-11-17 · test(repo): rescore items with VAT cleanup and anchoring
 - **Qué hice:** T6e, re-puntaje offline de las 120 salidas guardadas tras la revisión local del dueño (sin texto privado en el repo). La limpieza diagnóstica E6 ahora quita la alícuota de IVA `(NN,NN)` del final de la descripción; un anclaje diagnóstico E7 toma el importe de la evidencia OCR solo si el modelo lo dejó vacío. Mejor GLM: descripciones privadas 4/5 (E7 ≥0,85); pares 1/5 solo con el campo, 2/5 con evidencia; de los 2 importes anclados evaluados, 1 es incorrecto. Qwen 0.8B: 0/5 (copia el encabezado del comercio en cada ítem).
 - **Archivos clave:** `spikes/ticket-pipeline/retry_metrics.py` y su prueba, `collect_extended.py`, `README.md`, `ASSUMPTIONS.md`, `measurements.json`.

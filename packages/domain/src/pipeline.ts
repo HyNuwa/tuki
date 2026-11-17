@@ -18,19 +18,31 @@ export type PipelineInput = ValidationContext & { ticket_id: string; pais: strin
 export type PipelineResult = ScoreResult & { ticket_id: string; pais: string; moneda: string; versiones: PipelineInput["versions"] & { esquema: "ticket.v1"; modulo_pais: string }; campos: AnchoredTicket["campos"]; items: Record<string, AnchoredTicket["campos"][string]>[]; validaciones: ValidationResult["validaciones"]; metadatos: { id_fiscal: AnchoredTicket["id_fiscal"]; id_fiscal_valido: boolean | null; qr: ValidationContext["qr"]; qr_coincide: boolean | null }; marcas: string[]; texto_no_interpretado: OcrLine[]; dataset: DatasetRecord | null };
 export function processingError(ticketId: string, country: string, reason: ProcessingErrorReason): ProcessingError { return { ticket_id: ticketId, pais: country, estado: "Error de procesamiento", motivo: reason, puntaje: null, dataset: null }; }
 export const countryModules: Readonly<Record<string, CountryModule>> = Object.freeze({ [argentina.codigo]: argentina });
+export type PipelineInstrumentation = {
+  now(): number;
+  observe(event: { stage: "E6" | "E7" | "E8" | "E9"; phase: "start" | "end"; at: number }): void;
+};
 
 /** Pure assembly boundary. The caller owns E0-E5, artifact persistence and retries. */
-export async function processTicket(input: PipelineInput, countries: Readonly<Record<string, CountryModule>> = countryModules, config: PipelineConfig = defaultPipelineConfig): Promise<PipelineResult | ProcessingError> {
+export async function processTicket(input: PipelineInput, countries: Readonly<Record<string, CountryModule>> = countryModules, config: PipelineConfig = defaultPipelineConfig, instrumentation?: PipelineInstrumentation): Promise<PipelineResult | ProcessingError> {
   if (!Object.hasOwn(countries, input.pais)) return processingError(input.ticket_id, input.pais, "pais_no_soportado");
   const country = countries[input.pais]!;
   const schema = typeof input.extraction === "string" ? parseTicketJson(input.extraction) : validateTicketV1(input.extraction);
   if (!schema.success) return processingError(input.ticket_id, input.pais, "extraccion_invalida");
-  const anchored = anchorTicket(normalizeTicket(schema.data, country), input.lines, country, input.geometry, config.anchoring);
+  const mark = (stage: "E6" | "E7" | "E8" | "E9", phase: "start" | "end") => {
+    if (instrumentation) instrumentation.observe({ stage, phase, at: instrumentation.now() });
+  };
+  mark("E6", "start");
+  const normalized = normalizeTicket(schema.data, country);
+  mark("E6", "end"); mark("E7", "start");
+  const anchored = anchorTicket(normalized, input.lines, country, input.geometry, config.anchoring);
+  mark("E7", "end"); mark("E8", "start");
   const validation = validateTicket(anchored, country, input, config);
+  mark("E8", "end"); mark("E9", "start");
   const score = scoreTicket(validation, input.lines, country, config);
   const dataset = await createDatasetRecord(input.ticket_id, validation, score, country, input.hmacKey);
   const { ticket } = validation;
-  return {
+  const result: PipelineResult = {
     ...score, ticket_id: input.ticket_id, pais: ticket.pais, moneda: ticket.moneda,
     versiones: { ...input.versions, esquema: "ticket.v1", modulo_pais: `${country.codigo} ${country.version}` },
     campos: ticket.campos,
@@ -39,4 +51,6 @@ export async function processTicket(input: PipelineInput, countries: Readonly<Re
     metadatos: { id_fiscal: ticket.id_fiscal, id_fiscal_valido: validation.id_fiscal_valido, qr: input.qr ?? null, qr_coincide: validation.qr_coincide },
     marcas: dataset?.marcas ?? validation.marcas, texto_no_interpretado: ticket.texto_no_interpretado, dataset,
   };
+  mark("E9", "end");
+  return result;
 }
