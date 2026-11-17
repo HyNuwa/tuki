@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · feat(api): run tickets through the automatic pipeline
+- **Qué hice:** T8. La API reemplaza la revisión manual por el pipeline automático de `odd/specs/ticket-pipeline.md`: subida con país declarado e imagen original inmutable con SHA-256; cola `jobs` en Postgres con `FOR UPDATE SKIP LOCKED`, concurrencia 1, timeout y hasta 2 reintentos de infraestructura; E1–E4 en el worker Python (filtros, preproceso, QR de ARCA, PP-OCRv6); E5 con GLM-OCR Q4_K_M vía Ollama por HTTP local, esquema forzado y salida cruda guardada por intento; E6–E9 con el dominio; persistencia de artefactos, versiones, duraciones por etapa y RAM; tabla de dataset aparte con rol lector propio; purga a 30 días (también de los datos de revisión manual anteriores). Migración aditiva `0001_automatic_pipeline.sql`. API de solo lectura para T9; endpoints de revisión retirados.
+- **Archivos clave:** `apps/api/src/ingestion/` (`queue.ts`, `pipeline.ts`, `ollama.ts`, `retention.ts`, `memory.ts`), `apps/api/src/db/schema.ts`, `apps/api/drizzle/0001_automatic_pipeline.sql`, `spikes/s3-extraction/ocr-worker/pipeline_worker.py`, informe `odd/tasks/m3-t8-api-report.md`.
+- **Próximo paso:** verificación independiente (riesgos 1–4) y T9 (web de solo lectura). Pendientes: RAM en la VM, calidad con fotos reales, HEIC.
+
+
 ## 2026-11-17 · feat(domain): strip VAT rate suffix and observe stages
 - **Qué hice:** E6 quita del `valor` de cada descripción una única alícuota de IVA final como `(21,00)`; el `raw` queda literal y es lo que se ancla en E7, porque la línea OCR trae la misma alícuota. Observador opcional de etapas E6–E9 (no-op por defecto, reloj inyectado) para que la API mida cada etapa sin duplicar lógica.
 - **Archivos clave:** `packages/domain/src/normalize.ts`, `pipeline.ts`, `test/vat-pipeline.test.ts`, `test/instrumentation.test.ts`, `test/normalization.test.ts`.

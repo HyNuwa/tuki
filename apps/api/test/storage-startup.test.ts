@@ -21,6 +21,9 @@ vi.mock("../src/db/database.js", () => ({ connect: boundaries.connect }));
 vi.mock("../src/app.js", () => ({ createApp: boundaries.createApp }));
 vi.mock("../src/ingestion/bridge.js", () => ({ createPythonBridge: boundaries.createPythonBridge }));
 vi.mock("../src/storage/media.js", () => ({ localMediaStorage: boundaries.localMediaStorage }));
+vi.mock("../src/ingestion/ollama.js", () => ({ createOllamaExtractor: async () => ({ versions: {} }) }));
+vi.mock("../src/ingestion/retention.js", () => ({ purgeExpired: async () => 0 }));
+vi.mock("../src/ingestion/queue.js", () => ({ createQueueWorker: () => ({ runNext: () => new Promise(() => {}) }) }));
 
 class StartupExit extends Error {
   constructor(readonly code: string | number | null | undefined) { super("startup_exit"); }
@@ -34,10 +37,11 @@ it("B2 startup rejects physical in-repository storage including dotdot names and
     vi.stubEnv("STORAGE_DIR", storage);
     vi.stubEnv("DATABASE_URL", "postgres://synthetic:synthetic@127.0.0.1:1/synthetic");
     for (const name of ["OCR_PYTHON", "OCR_MODELS_DIR", "OCR_CACHE_DIR"]) vi.stubEnv(name, "synthetic");
+    vi.stubEnv("DATASET_HMAC_KEY", "synthetic-test-key-not-a-secret-value");
     boundaries.serve.mockClear(); boundaries.connect.mockClear();
     boundaries.localMediaStorage.mockClear();
     let code: StartupExit["code"] = 0, stderr = "";
-    const previousListeners = process.listeners("SIGINT");
+    const previousListeners = [...process.listeners("SIGINT"), ...process.listeners("SIGTERM")];
     const exit = vi.spyOn(process, "exit").mockImplementation(value => { throw new StartupExit(value); });
     const errorOutput = vi.spyOn(process.stderr, "write").mockImplementation(chunk => { stderr += String(chunk); return true; });
     try {
@@ -52,6 +56,9 @@ it("B2 startup rejects physical in-repository storage including dotdot names and
       exit.mockRestore(); errorOutput.mockRestore();
       for (const listener of process.listeners("SIGINT")) {
         if (!previousListeners.includes(listener)) process.removeListener("SIGINT", listener);
+      }
+      for (const listener of process.listeners("SIGTERM")) {
+        if (!previousListeners.includes(listener)) process.removeListener("SIGTERM", listener);
       }
       vi.unstubAllEnvs();
     }
