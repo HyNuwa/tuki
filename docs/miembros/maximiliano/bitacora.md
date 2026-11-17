@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · test(repo): record ticket pipeline assumption spike
+- **Qué hice:** spike T6 de los supuestos de la sección 11 de `odd/specs/ticket-pipeline.md`, local y solo CPU. GLM-OCR Q4_K_M vía Ollama (distribución recomendada por el autor): 0/13 respuestas JSON válidas con el prompt exacto (decimales con coma sin comillas, importes vacíos, TOTAL como ítem); p50 73 s y máximo 211 s por imagen en esta PC; RSS pico ~2,5 GB. Referencia BF16 abortada a los 680 s sin resultados. PP-OCRv6 cubre español (confirmado); small p50 13 s vs medium 55 s; las cajas son por palabra, no por carácter. Formato QR de ARCA confirmado; 0 QR decodificados en 10 fotos privadas.
+- **Archivos clave:** `spikes/ticket-pipeline/ASSUMPTIONS.md`, `README.md`, `measurements.json` (solo agregados), `arca_qr.py` y su prueba sintética.
+- **Próximo paso:** decisión del dueño sobre cómo seguir con GLM-OCR, porque el supuesto 2 falló y el 4 no se cumple en esta PC. Scratch fuera del repo: `C:/Users/Usuario/AppData/Local/tuki-pipeline-spike/`.
+
+
 ## 2026-11-17 · feat(domain): add automatic ticket pipeline core
 - **Qué hice:** reemplazar el dominio de revisión manual por el núcleo puro de `odd/specs/ticket-pipeline.md` §5–§8 y §12: esquema `ticket.v1` estricto, normalización E6 con decimales exactos, anclaje E7 con desempates y texto no interpretado, validaciones V1–V8, subpuntajes configurables con tope 0,50, estados Aceptado/Rechazado/Error de procesamiento, registro del dataset con `comercio_id` HMAC por clave recibida, privacidad por `tipo_emisor` y filtro final de datos personales; módulo de país AR con lector del QR de ARCA.
 - **Archivos clave:** `packages/domain/src/` (`pipeline.ts`, `anchor.ts`, `validate.ts`, `score.ts`, `dataset.ts`, `countries/ar.ts`), `packages/domain/test/`, informe `odd/tasks/m3-t7-domain-report.md`.

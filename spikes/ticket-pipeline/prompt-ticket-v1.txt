@@ -1,0 +1,36 @@
+请按下列JSON格式输出图中信息:
+{
+  "comercio": {
+    "razon_social": "",
+    "id_fiscal": "",
+    "domicilio": ""
+  },
+  "comprobante": {
+    "tipo": "",
+    "letra": "",
+    "punto_venta": "",
+    "numero": "",
+    "fecha": "",
+    "hora": "",
+    "codigo_autorizacion": ""
+  },
+  "items": [
+    {
+      "descripcion": "",
+      "cantidad": "",
+      "precio_unitario": "",
+      "importe": ""
+    }
+  ],
+  "totales": {
+    "subtotal": "",
+    "descuentos": "",
+    "impuestos": [
+      { "nombre": "", "importe": "" }
+    ],
+    "total": ""
+  },
+  "pago": {
+    "forma": ""
+  }
+}
