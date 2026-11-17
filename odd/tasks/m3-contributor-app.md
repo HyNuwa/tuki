@@ -29,7 +29,7 @@ Objective: turn the local receipt-review demo into the real monorepo app (`apps/
 | T3 | S7 | Codex worker (Orca) | complete; final checks passed | `f7bd55b` |
 | T4 | S8 | parent, after authorization | pending | — |
 | T6 | S10 | Codex worker (Orca), parallel | pending | — |
-| T7 | S9, S11 | Codex worker (Orca), parallel | pending | — |
+| T7 | S9, S11 | Codex worker (Orca), parallel | complete; independent verification pending | see L14 |
 | T8 | S9, S12 | Codex worker, after T6 and T7 | pending | — |
 | T9 | S9, S13 | Codex worker, after T8 | pending | — |
 | T10 | S14 | Codex worker (Orca), parallel | pending | — |
@@ -54,3 +54,4 @@ Objective: turn the local receipt-review demo into the real monorepo app (`apps/
 - L12 (2026-11-15, boundaries): No dependency changes, new technology, .env reads, R2, helper workers, remote work, push or PR. Tests create owned scratch only under the OS temp directory with prefixes tuki-timeout-test-*, tuki-storage-startup-test-* and tuki-cli-owner-test-*; they remove their own scratch after assertions. API request directories use tuki-api-request-* and the regression asserts the temporary root is empty after timeout. No pre-existing scratch or unrelated worktree changes were deleted or staged. Documentation explains the parent cleanup and canonical path boundary; API-process/OS crashes are not claimed to guarantee cleanup.
 
 - L13 (2026-11-17, user): "\"C:\Users\Usuario\Downloads\Spec pipeline de tickets con PP-OCRv6 + GLM-OCR (3).md\" guarda la spec y eso haremos", then "haz el commit y los cambios necesarios para q la documentacion se alinee con la nueva spec y si lo dem M3 se cambia a automatico ahora como especifica la spec". Spec committed as `279f0ca` (`odd/specs/ticket-pipeline.md`, PRODUCT.md aligned). T1–T3 manual-review behavior is superseded by S9; their commits stay as history. The Qwen/LFM/Laya bake-off was stopped. Parallel units T6 (spike), T7 (domain) and T10 (docs) share the tree with disjoint surfaces; the parent owns git and commits each unit.
+- L14 (2026-11-17): T7 delivered by Codex worker; parent reran `pnpm --filter @tuki/domain test` = 144 passed (9 files). `pnpm -r typecheck` fails in apps/api and apps/contributor-web by design (removed manual-review exports); exact diagnostics in `odd/tasks/m3-t7-domain-report.md`, fixed by T8/T9. Risk: items 2 (dataset privacy, HMAC) and 3 (removed shared exports).

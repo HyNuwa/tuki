@@ -3,7 +3,7 @@
 **Última actualización:** 2026-11-17
 
 ## Current focus
-**Pipeline automático de tickets (2026-11-17):** spec `odd/specs/ticket-pipeline.md` adoptada por decisión del dueño; M3 pasa de revisión manual a puntaje automático (Aceptado/Rechazado/Error de procesamiento). Próximo paso: alinear documentación, confirmar supuestos de la sección 11 (GLM-OCR en español y CPU, PP-OCRv6, QR ARCA) y rehacer M3. Bloqueos: ninguno.
+**Pipeline automático de tickets (2026-11-17):** spec `odd/specs/ticket-pipeline.md` adoptada; núcleo puro del dominio (T7) implementado con 144 pruebas. API y web aún usan el dominio anterior y no compilan hasta T8/T9. En curso: spike de supuestos (T6) y alineación de documentación (T10). Bloqueos: disco casi lleno (~6 GB libres).
 
 **PWA de contribuyentes (2026-11-15):** diseño "Tira térmica" registrado (`DESIGN.md`, `design/contributor-pwa/`) y aplicado a la demo `spikes/s3-extraction/demo/` (procedencia por valor, recorte del fragmento OCR, fuentes propias). Stack: React + Vite (`mvp-p0` Q10). Alexxe ya no forma parte del equipo; Maximiliano tiene todas las áreas. Próximo paso: Panel e Historial en la app. Bloqueos: ninguno.
 

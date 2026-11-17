@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · feat(domain): add automatic ticket pipeline core
+- **Qué hice:** reemplazar el dominio de revisión manual por el núcleo puro de `odd/specs/ticket-pipeline.md` §5–§8 y §12: esquema `ticket.v1` estricto, normalización E6 con decimales exactos, anclaje E7 con desempates y texto no interpretado, validaciones V1–V8, subpuntajes configurables con tope 0,50, estados Aceptado/Rechazado/Error de procesamiento, registro del dataset con `comercio_id` HMAC por clave recibida, privacidad por `tipo_emisor` y filtro final de datos personales; módulo de país AR con lector del QR de ARCA.
+- **Archivos clave:** `packages/domain/src/` (`pipeline.ts`, `anchor.ts`, `validate.ts`, `score.ts`, `dataset.ts`, `countries/ar.ts`), `packages/domain/test/`, informe `odd/tasks/m3-t7-domain-report.md`.
+- **Próximo paso:** T8 (API) y T9 (web) migran los consumidores que hoy no compilan contra el dominio nuevo (diagnósticos exactos en el informe). RED/GREEN por etapa; 144 pruebas sintéticas y typecheck del dominio aprobados. Riesgos 2 y 3: privacidad del dataset y retiro de exportaciones de revisión manual; verificación independiente pendiente.
+
+
 ## 2026-11-17 · test(api): run storage startup checks in process
 - **Qué hice:** estabilizar la regresión B2 de `STORAGE_DIR`, que pasaba sola (~19-24 s) pero excedía 30 s en la suite completa. Ahora ejerce el arranque real y la validación canónica en proceso, con base, OCR y listener simulados; conserva los cuatro casos (`..media`, junction hacia el repo, directorio interno rechazado, externo aceptado).
 - **Archivos clave:** `apps/api/test/storage-startup.test.ts`.
