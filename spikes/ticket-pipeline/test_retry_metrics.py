@@ -5,6 +5,78 @@ from retry_metrics import amount_present, score_fields
 
 
 class RetryMetricTests(unittest.TestCase):
+    def test_clean_whole_line_keeps_model_fields_and_separates_line_amount(self):
+        from retry_metrics import clean_item
+        milk = {"descripcion": "2 x 1.250,00 LECHE 2.500,00", "cantidad": "2",
+                "precio_unitario": "1.250,00", "importe": "2.500,00"}
+        cleaned = clean_item(milk)
+        self.assertEqual(cleaned["descripcion"], "LECHE")
+        self.assertEqual(cleaned["importe_from_line"], "")
+        self.assertEqual(milk["descripcion"], "2 x 1.250,00 LECHE 2.500,00")
+        milk["importe"] = ""
+        fallback = clean_item(milk)
+        self.assertEqual(fallback["descripcion"], "LECHE")
+        self.assertEqual(fallback["importe_from_line"], "2.500,00")
+        self.assertEqual(milk["importe"], "")
+
+    def test_cleanup_operators_fallback_and_product_digits(self):
+        from retry_metrics import clean_item
+        for line in ("1 X 850,00 PAN 850,00", "1*850,00 PAN 850,00", "1x850,00PAN 850,00"):
+            with self.subTest(line=line):
+                item = {"descripcion": line, "cantidad": "", "precio_unitario": "", "importe": "850,00"}
+                self.assertEqual(clean_item(item)["descripcion"], "PAN")
+        for description in ("PAN", "COCA 1.5L", "COCA 1.5L 900,00"):
+            item = {"descripcion": description, "importe": "850,00"}
+            self.assertEqual(clean_item(item)["descripcion"], description)
+        own = {"descripcion": "2*10 PAN 20", "cantidad": "2", "precio_unitario": "10", "importe": "20"}
+        self.assertEqual(clean_item(own)["descripcion"], "PAN")
+
+    def test_cleaned_scores_keep_raw_and_amount_fallback_separate(self):
+        from retry_metrics import score_cleaned
+        truth = {"items": [{"descripcion": "LECHE", "importe": "2.500,00"}]}
+        result = {"items": [{"descripcion": "2 x 1.250,00 LECHE 2.500,00", "cantidad": "2",
+                             "precio_unitario": "1.250,00", "importe": ""}]}
+        measured = score_cleaned(result, truth)
+        self.assertEqual(score_fields(result, truth)["items_recovered"], 0)
+        self.assertEqual(measured["description_strict"]["correct"], 1)
+        self.assertEqual(measured["description_similarity_085"]["correct"], 1)
+        self.assertEqual(measured["pairs_field_importe"], 0)
+        self.assertEqual(measured["pairs_importe_from_line"], 1)
+        self.assertEqual(measured["pairs_field_or_line_importe"], 1)
+        self.assertEqual(measured["taxonomy"]["whole_line_in_descripcion"], 1)
+
+    def test_cleaned_matching_is_one_to_one_and_taxonomy_counts_summary_separately(self):
+        from retry_metrics import score_cleaned
+        truth = {"items": [{"descripcion": x, "importe": "1,00"} for x in ("PAN", "LECHE", "COCA 1.5L")]}
+        result = {"items": [{"descripcion": x, "importe": "1,00"} for x in ("PAN", "XYZ", "TOTAL")]}
+        measured = score_cleaned(result, truth)
+        self.assertEqual(measured["taxonomy"], {"matched": 1, "whole_line_in_descripcion": 0,
+                         "description_misread": 1, "item_missing": 1, "summary_row_emitted": 1})
+        duplicated = {"items": [{"descripcion": "PAN", "importe": "1,00"}] * 2}
+        one = {"items": truth["items"][:1]}
+        self.assertEqual(score_cleaned(duplicated, one)["pairs_field_importe"], 1)
+
+    def test_one_to_one_matching_can_reassign_an_ambiguous_candidate(self):
+        from retry_metrics import _item_matching
+        expected = [{"descripcion": "PAN"}, {"descripcion": "LECHE"}]
+        predicted = [{"descripcion": "PAN"}, {"descripcion": "OTHER"}]
+        edges = {(0, 0), (0, 1), (1, 0)}
+        measured = _item_matching(expected, predicted, lambda i, j: (i, j) in edges)
+        self.assertEqual(measured, {0: 1, 1: 0})
+
+    def test_e7_similarity_and_fuzzy_pairs_are_reported_beside_strict(self):
+        from retry_metrics import score_fuzzy
+        result = {"items": [{"descripcion": "MILK WHOLE 1 L", "importe": "1,00"}]}
+        truth = {"items": [{"descripcion": "MILK WHOLE 1L", "importe": "1,00"}]}
+        measured = score_fuzzy(result, truth)
+        self.assertEqual(measured["description_similarity_085"]["correct"], 1)
+        self.assertEqual(measured["items_recovered_similarity_085"], 1)
+
+    def test_similarity_boundary_and_spec_text_folding(self):
+        from retry_metrics import text_similarity
+        self.assertEqual(text_similarity("  CAFÉ   ENTERO ", "cafe entero"), 1)
+        self.assertAlmostEqual(text_similarity("ABCDEFGHIJKLMNOPQRST", "xxxDEFGHIJKLMNOPQRST"), .85)
+        self.assertLess(text_similarity("ABCDEFGHIJKLMNOPQRST", "xxxxEFGHIJKLMNOPQRST"), .85)
     def test_amount_presence_is_exact_not_digit_substring(self):
         self.assertTrue(amount_present("12.345,00", ["TOTAL $ 12.345,00"]))
         self.assertTrue(amount_present("12345.00", ["TOTAL $ 12.345,00"]))

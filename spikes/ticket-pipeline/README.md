@@ -1,5 +1,7 @@
 # CPU ticket-pipeline assumption spike (T6 / S10)
 
+Latest result: [offline rescoring (T6d)](#offline-rescoring-t6d) separates field decomposition from recognition across 120 saved predictions, without running a model. Synthetic cleaned descriptions improve; private cleaned descriptions/pairs remain 0/5. Historical raw tables below retain their original evidence, not their superseded recognition diagnosis.
+
 See [ASSUMPTIONS.md](ASSUMPTIONS.md) for all twelve verdicts and their limitations.
 This isolated research code is **not** an API worker, a privacy filter, a fiscal validator or an acceptance engine. No production threshold, pipeline, country module or existing OCR installation is changed.
 
@@ -194,3 +196,179 @@ Numeric literal presence, using every nonempty modeled amount from all images in
 **Conclusion:** constraining format fixed JSON/schema validity, **not item extraction**. Q8 reduced extra summary rows but did not improve exact labeled descriptions, item amounts or pair recovery in this set. High numeric presence coexists with wrong/misclassified item structure; it cannot be used alone as evidence that a ticket is correct. Both private-cohort sampled family-RSS peaks exceed 3 GiB; RSS sharing and the PC/VM difference preclude claiming a precise physical-memory requirement or inevitable VM OOM. No 40-item or deployment-VM test was added. No generation hit the 4096-token cap in this retry.
 
 The temporary server and all owned model runners were stopped after both variants, and absence was checked. All ten source receipt hashes remained unchanged. Final proof: model run exit 0; offline `--audit-only` exit 0; 7 tests pass; strict-schema/all-string and 12-script AST checks pass; public artifacts exclude actual private paths, receipt IDs and image hashes. Scratch remains under the same external root for parent cleanup. The gate in ASSUMPTIONS remains **not cleared**; completing this measurement is not approval to implement a production workaround.
+
+## Extended A/B/C comparison
+
+**Historical raw-only comparison; interpretation superseded by [T6d offline rescoring](#offline-rescoring-t6d).** The zero raw scores below measure structured field decomposition, not necessarily character misreading. Bounded cleanup recovers synthetic descriptions and pairs; it leaves all private cleaned scores at zero. The current recommendation is based on both views, not raw-only NO-GO reasoning.
+
+Owner-approved on 2026-11-17; no production change. Fixed denominators remain 3 synthetic images (6 visible items) and 10 private candidates, with field/item quality only on the same 3 complete private annotations (5 items). Date/name private labels remain unavailable; no post-hoc labels were added. All private raw responses, OCR and image variants stay external.
+
+### Design and sources
+
+| Step | Configuration | Purpose |
+|---|---|---|
+| A | `qwen3.5:0.8b-q8_0`, OCR text only, `think:false`, schema forced, temperature 0, context 8192 | Test structured parsing without image recognition. Every PP-small line is prefixed `L0001:` etc in reading order; the input contains **no image**. |
+| B1 | GLM published Q8_0 then existing Q4_K_M, context **16384** instead of 8192 | Double the input/output headroom without changing pixels/prompt; record runtime input-token maxima and truncation logs, rather than assume context was the cause. |
+| B2 | Each GLM quantization at context 8192 with E2 prototype | EXIF orientation, largest convex quadrilateral (at least 20% image area), perspective crop; Hough-line median deskew within ±10°, expanded canvas to avoid clipping. If no contour qualifies, EXIF-only fallback as the spec requires. These are recorded spike heuristics, not calibrated production thresholds. |
+| B3 | Each GLM quantization at context 8192, long edge **1600 px** (Lanczos) | Isolate input-resolution change from E2/context; both up/down-sampling are possible, internal model resizing remains runtime-controlled. |
+| C | Official HF GLM-OCR BF16, Transformers CPU, only the 3 synthetic + 3 complete private images | Reference only. No per-image time cap; whole step killed at 5400 seconds. Same semantic JSON schema enforced via LM Format Enforcer 0.11.3; different grammar implementation/backend means this is not a perfectly precision-only comparison. |
+
+[Qwen's official 0.8B card](https://huggingface.co/Qwen/Qwen3.5-0.8B) identifies the source model; the [Ollama library](https://ollama.com/library/qwen3.5/tags) publishes `0.8b-q8_0` (manifest `7c00f78aed0fd757e9ba2f2720896768fd22da24b7fb6fe17096bb1e85bb2d25`). The default `0.8b` is also Q8_0, with an MTP draft, **not Q4_K_M**. No official Qwen-org GGUF repository appeared in the author-scoped HF listing and explicit registry `0.8b-q4_K_M` returned HTTP 404. Thus A measures the published non-MTP Q8_0 only; it does not invent a second quantization. Full layer SHA-256/sizes are recorded in provenance. No Qwen PyTorch inference or local conversion is performed.
+
+The C-only [LM Format Enforcer integration](https://github.com/noamgat/lm-format-enforcer) constrains token choices, not model weights or returned values. Pins added: `lm-format-enforcer==0.11.3`, `interegular==0.3.3`; each small download had a separate disk check. The environment now has 88 exact package pins; historical 86-package checks above describe the earlier run.
+
+### Reproduce serially
+
+Use the same external `$b`, `$py`, locally assigned `$privateCorpus`, and cache/temp environment from the quick path. Keep at least 5 GiB free. Each model run starts/stops its own portable server; preprocessing/OCR exits before a model is loaded.
+
+```powershell
+& $py -B spikes/ticket-pipeline/acquire_ollama_model.py --family qwen3.5 --tag 0.8b-q8_0
+& $py -B spikes/ticket-pipeline/quality_retry.py --prepare-ocr --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/extended_spike.py a --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/extended_spike.py ctx --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/extended_spike.py prepare-e2 --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/extended_spike.py e2 --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/extended_spike.py prepare-res --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/extended_spike.py res --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/bf16_reference.py --private-root $privateCorpus
+& $py -B spikes/ticket-pipeline/collect_extended.py --private-root $privateCorpus
+```
+
+The versioned Qwen prompt is `prompt-qwen-text-v1.txt`; GLM prompt/schema are unchanged. The existing strict scorer is retained; alongside it, normalized Levenshtein similarity uses `1 - distance/max(lengths)`, after uppercase/accent removal/space collapse, with threshold ≥0.85. Fuzzy description and description+amount pair counts are additional metrics, never substitutes for strict equality. Its synthetic test was observed RED (missing `score_fuzzy`) before GREEN.
+
+OCR latency is timed in the separate PP-small process. LLM latency includes first-call loading; report both rather than conceal OCR time inside Qwen latency. New runs record the model child's Windows high-water working set separately from sampled router/client-family RSS. Historical GLM baselines only recorded family RSS; their missing model-only RSS is not backfilled from estimates. C's latency cohort has only 3 private images, unlike A/B's 10, and is explicitly marked as a different performance denominator.
+
+All runtime/encoding failures are retained externally and the next authorized stage continues. The C supervisor enforces the 90-minute **whole-step** limit, including startup, and preserves completed-image aggregates; no per-image time limit is passed to generation. Source images/annotations are never changed.
+
+### Historical raw comparison
+
+Private field quality uses the same 3 complete photos / 5 items throughout. JSON validity covers every executed image. `S/F` denotes strict / similarity≥0.85 counts; the amount must also match for a recovered pair. Historical baseline model-only RSS is unavailable, not zero.
+
+| Configuration | JSON/schema | Private total value | Private item importe | Private description S/F | Private pairs S/F | Summary rows as items | LLM private p50/max s | Model-process peak RSS bytes |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| GLM Q4 baseline | 13/13 | 3/3 | 1/5 | 0/5 / 0/5 | 0/5 / 0/5 | 3 | 31.570 / 93.018 | Not recorded (family: 3,390,291,968) |
+| GLM Q8 baseline | 13/13 | 3/3 | 1/5 | 0/5 / 0/5 | 0/5 / 0/5 | 2 | 29.597 / 86.395 | Not recorded (family: 4,055,535,616) |
+| GLM representative tied lever: context 16384, Q8 | 13/13 | 3/3 | 1/5 | 0/5 / 0/5 | 0/5 / 0/5 | 2 | 27.840 / 84.248 | 3,986,186,240 |
+| Official GLM BF16 reference | 6/6 | 3/3 | 1/5 | 0/5 / 0/5 | 0/5 / 0/5 | 2 | 165.273 / 265.793 (**3 private**, not 10) | 2,780,557,312 |
+| Qwen 0.8B published Q8, OCR text only | 12/13 | 2/3 | 2/5 | 0/5 / 0/5 | 0/5 / 0/5 | 0 | 20.330 / 169.913 | 2,259,070,976 |
+
+**There is no quality-winning GLM lever.** The context-Q8 row is a representative tie, not evidence of improvement or a statistically selected winner. Every completed GLM condition ties at zero strict/fuzzy recovered pairs and zero exact/fuzzy descriptions; larger resolution actually reduced item-amount matches to 0/5. Qwen avoided summary rows but generated many other unmatched descriptions and one output hit the 4096-token cap, leaving JSON incomplete. Its logged thinking output was zero characters and no image decode occurred.
+
+| Condition / private photos executed | Total | Item importe | Summary rows | Amount presence | LLM p50/max s | Model-process RSS bytes |
+|---|---:|---:|---:|---:|---:|---:|
+| Context 16384, Q4 / 10 | 3/3 | 1/5 | 3 | 95/96 | 24.622 / 77.576 | 4,274,143,232 |
+| Context 16384, Q8 / 10 | 3/3 | 1/5 | 2 | 82/84 | 27.840 / 84.248 | 3,986,186,240 |
+| E2 prototype, Q4 / 10 | 3/3 | 1/5 | 3 | 96/97 | 27.792 / 94.904 | 3,742,089,216 |
+| E2 prototype, Q8 / 10 | 3/3 | 1/5 | 2 | 77/81 | 29.036 / 88.688 | 3,612,602,368 |
+| Long edge 1600, Q4 / **7 of 10** | 3/3 | 0/5 | 2 | 32/33 | 133.223 / 246.534 | 3,930,443,776 |
+| Long edge 1600, Q8 / 10 | 3/3 | 0/5 | 2 | 82/86 | 119.963 / 220.885 | 4,599,996,416 |
+
+All rows above have private description and pair S/F counts 0/5 / 0/5. The partial resolution-Q4 run had completed all three quality-labeled photos, so its 3-total/5-item quality denominators remain intact; its latency, JSON and presence denominators are **not** the full ten-photo cohort. It produced 10/10 schema-valid executed predictions (3 synthetic + 7 private), then stopped with `RuntimeError: disk_under_5_GiB`; the remaining three private images were not run. The owned runtime stopped and disk recovered before C. No reserve was lowered and no worker scratch deletion was used to continue.
+
+### OCR, synthetic fields and token checks
+
+| PP-small phase | Synthetic p50/max s | Private p50/max s |
+|---|---:|---:|
+| Original images / Qwen input | 3.433 / 3.632 | 7.214 / 11.436 |
+| E2 prototype | 3.116 / 3.552 | 5.980 / 9.893 |
+| Long edge 1600 | 6.387 / 6.626 | 9.654 / 12.244 |
+
+Every LLM cohort's complete metrics are in `measurements.json` → `extended_comparison` → `preparation` / `experiments`. The exact-image cache ties OCR evidence to the sent view. Do not add cohort medians to claim a measured end-to-end median; OCR and LLM timings are separate as requested.
+
+For all GLM lever configurations and BF16, synthetic description S/F is 0/6 / 0/6, recovered pair S/F is 0/6 / 0/6, item importe is 2/6 (only known-blank checks), fecha is 3/3 (all absence checks), and heading-proxy razon_social is 0/3. Totals are 3/3 except resolution-Q8 at 2/3. Qwen synthetic totals are 2/3, item importe 5/6, descriptions/pairs S/F 0/6 / 0/6, fecha 0/3 and heading 0/3. Synthetic numeric presence is 8/8 for GLM/BF16 except resolution-Q8 at 8/9; Qwen is 14/21. Private numeric presence is 56/83 for Qwen; BF16 is 17/17 on the **three complete** photos only. No private fecha/razon_social accuracy is fabricated (0 labels).
+
+Both 16384-context runs recorded maximum **2202 runtime input tokens**, maximum input+output of 2812 (Q4) / 2489 (Q8), 19 completed image-decode batches, and zero nonzero-truncation release flags. These observed prompts fit even the original 8192 window: increased context did not rescue extraction. This confirms no context-token truncation in those runs, **not** that the vision encoder retained every source pixel. Its own resampling is separate.
+
+E2 detected **no qualifying contour in 13 images**, all took the specified EXIF-only fallback, and none of the 13 originals had nonidentity EXIF orientation. Consequently successful contour crop/deskew is **not exercised by this corpus**; it would be wrong to conclude that successful deskew cannot help. Resolution changed the submitted raster but did not improve pair recovery and greatly increased latency.
+
+### BF16 completion and bounded correction
+
+The first C setup failed because LM Format Enforcer 0.11.3 imports `PreTrainedTokenizerBase` from the Transformers-4 module location. Installed Transformers 5.3.0 was present; its error claiming Transformers was missing was misleading. A capability probe confirmed the correct type in `transformers.tokenization_utils_base`; the script aliases that same class in the child process only, with **no installed-file modification**. The one corrected attempt retained the original absolute 90-minute deadline rather than restarting its budget.
+
+The official BF16 file hash was verified before loading. All six requested predictions then completed, with no image time cap and no output-cap hit: corrected-run elapsed 1658.531 s; whole step including original setup/correction elapsed **1934.319 s**, below 5400 s. A continuous C disk monitor could terminate the owned process tree below 5 GiB; it did not need to. Synthetic BF16 LLM p50/max was 344.288/373.209 s. The reference reproduced the same raw field-decomposition failures without quantization, so quantization alone cannot be assumed to explain them. Different image processors and grammar implementations still prevent a perfectly isolated backend comparison.
+
+**Historical resource/architecture conclusion:** Qwen is lower-memory/faster here, but its text input is not an independent image read; one JSON output is incomplete and numeric token presence is 56/83. Resampling adds latency without creating optical detail; BF16 is reference-only. These resource observations remain valid. The former recognition inference from zero raw descriptions/pairs is superseded by the cleaned results below; do not use raw-only counts to claim that these models cannot read Spanish.
+
+### Extended verification and retained state
+
+94 LLM predictions completed: A 13; B 75 of the planned 78 (three resolution-Q4 private predictions blocked by the disk guard); C 6. Each experiment's counts remain explicit rather than treating unrun images as invalid JSON or successful extractions. No Qwen Q4 experiment was required after the published-variant checks found only Q8. The C setup error, compatibility probe and bounded corrected attempt are documented above; no later failure was hidden as a model-quality verdict.
+
+New similarity test RED: missing `score_fuzzy`; GREEN after implementation. Nine total synthetic parser/metric tests pass, including the exact 0.85 boundary, accent/case/space folding, duplicate exclusion and literal-money preservation. Final checks passed: 15 Python ASTs, JSON/whitespace, 88-package dependency consistency, 94-result/count/deadline invariants, source consent/image hashes, Qwen/GLM weight hashes and the public-artifact private-path/hash/ID scan. The baseline's absent model-only RSS is JSON `null`, never a fabricated zero. All model processes and portable servers are stopped. Original receipts and annotations are unchanged; retained private experiment directories and logs are only below `C:/Users/Usuario/AppData/Local/tuki-pipeline-spike/` for parent cleanup. No `.env`, git operation, deployment or remote inference was used.
+
+Risk: items 2, 4 and 5 (private inputs; process lifetime/disk-watchdog ordering; isolated model/runtime dependencies). Parent owns independent verification and commits. Engram persistence remains blocked by its unregistered-host-session error; these local files are the recovery record.
+
+## Offline rescoring (T6d)
+
+**Recognition and field decomposition are different measurements.** The prior raw-only NO-GO diagnosis overstated the recognition evidence. On the synthetic images, bounded cleanup changes GLM description scores from 0/6 to **3/6** and Qwen text from 0/6 to **4/6**; those improvements are decomposition failures, not character-reading failures. On the three complete private receipts, however, **cleaned descriptions and pairs are still 0/5 under every configuration**, including BF16. No threshold, prompt, annotation or model output was changed.
+
+All **120 saved outputs** were rescored offline: 26 historical Q4/Q8 retry outputs, 88 extended A/B outputs and 6 BF16 outputs. The partial resolution-Q4 run remains 10 executed / 13 planned; three private images remain unrun. Qwen's incomplete JSON remains invalid and in its denominator. No model, OCR, Ollama, Docker, download or installation was run for T6d. Timings and RSS below/above are retained measurements, not newly measured inference.
+
+### Bounded cleanup and metric definitions
+
+`clean_item` is an owner-requested **E6-style diagnostic view**, not a claim that the existing spec already implements generic receipt-line parsing. It preserves every raw field and never computes an amount. It strips only:
+
+1. A leading quantity, `x`/`X`/`*`, unit price, with optional spaces. The item's own literal quantity/unit strings or a generic numeric quantity and two-decimal money token are accepted; there are no product-specific rules.
+2. A trailing token exactly equal to the item's `importe`. When `importe` is empty, a trailing two-decimal money token may instead be recorded as **`importe_from_line`**, a separate diagnostic; the original `importe` stays empty. Mismatching amounts and internal product digits (for example the synthetic `COCA 1.5L`) are not stripped.
+
+For the safe synthetic example `2 x 1.250,00 LECHE 2.500,00`, this yields `LECHE`. With empty importe, `2.500,00` is counted only in the line-derived diagnostic, never added to strict/raw field scores. Whitespace at description edges is trimmed; product spelling and internal separators are not normalized by cleanup. This margin-only rule does **not** remove arbitrary product codes, extra interior columns, tax annotations or other unmatched text. A below-threshold residual may therefore still represent field decomposition rather than optical misreading.
+
+Strict raw/cleaned descriptions are **positional**, as in the retry; E7 uses the unchanged normalized edit similarity **>=0.85**. Cleaned pair recovery is maximum one-to-one matching of descriptions >=0.85 plus amount equality, so duplicates cannot recover one label twice. `field + line` below means field-only recovery plus **additional** pairs unlocked by a literal line-derived amount; the sum is the combined one-to-one count. Private monetary truth remains the original atomic-value annotations (not printed-format truth). Two of the six synthetic amount labels are known-blank absence checks, not positive amount detections. Private date/name labels remain unavailable (0 evaluated).
+
+### New final comparison (all saved configurations)
+
+In these results, **strict and E7 description counts happen to be identical** in both raw and cleaned views; the two metrics are independently retained in JSON. Each `raw -> cleaned` cell therefore gives both strict and E7 counts. Raw strict **and** raw E7 pair recovery remains 0/6 synthetic and 0/5 private for every row. JSON and schema numerators coincide; denominators include all executed images. All private field-quality columns use the same 3 complete receipts / 5 expected items, not all ten photos.
+
+| Configuration | JSON/schema | Synthetic total | Synthetic description raw -> cleaned (strict = E7) | Synthetic cleaned pairs field + line | Private total | Private description raw -> cleaned (strict = E7) | Private cleaned pairs field + line |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| GLM Q4 retry | 13/13 | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| GLM Q8 retry | 13/13 | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| GLM context 16384 Q4 | 13/13 | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| GLM context 16384 Q8 (representative tie) | 13/13 | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| GLM E2 Q4 | 13/13 | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| GLM E2 Q8 | 13/13 | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| GLM resolution 1600 Q4 (**partial**) | 10/10 executed | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| GLM resolution 1600 Q8 | 13/13 | 2/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| Official GLM BF16 | 6/6 | 3/3 | 0/6 -> 3/6 | 0 + 3 / 6 | 3/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+| Qwen Q8 text | 12/13 | 2/3 | 0/6 -> 4/6 | 4 + 0 / 6 | 2/3 | 0/5 -> 0/5 | 0 + 0 / 5 |
+
+The GLM line-assisted synthetic pairs are **not** strict field-amount recovery: the model left those importe fields empty. Qwen's four synthetic pairs use its actual importe fields. Order-independent cleaned-description recovery also equals the displayed positional counts here, so reordering does not account for the remaining private zeros. Full separate counters, every field, unchanged amount-presence/latency/RSS and per-configuration taxonomy are in `measurements.json` -> `offline_rescoring`. The earlier resource/OCR tables remain valid; historical baseline model-only RSS remains null, not zero.
+
+### Private residual taxonomy under the representative tied configuration
+
+There is **no best private-quality configuration**: all cleaned description/pair counts tie at zero. The previously reported GLM context-16384 Q8 row is retained as the representative, not selected as a statistical winner. The same taxonomy is recorded for every configuration in JSON.
+
+| Category | Count |
+|---|---:|
+| matched (raw and cleaned description >=0.85) | 0 |
+| whole-line-in-descripcion (cleaned >=0.85, raw <0.85, margin removal) | 0 |
+| description_misread (residual description mismatch <0.85) | 5 |
+| item_missing (no remaining non-summary prediction) | 0 |
+| summary_row_emitted (extra TOTAL/SUBTOTAL rows) | 2 |
+
+The first four categories partition the five expected descriptions; summary extras are separate and must not be added to that denominator. Matching is one-to-one. After recognized descriptions are assigned, remaining nonempty non-summary predictions are provisionally aligned to remaining labels; shortages count as missing. Thus **`description_misread` is the requested diagnostic category name, not proof of five optical misreads**. Unremoved line structure, wrong item assignment and genuine recognition errors remain confounded. Likewise zero missing by this count does not establish complete semantic item recovery. Summary detection is limited to TOTAL/SUBTOTAL prefixes after cleanup. This taxonomy uses counts only; it publishes no receipt text or values.
+
+### Revised recommendation
+
+- **Recognition:** synthetic evidence demonstrates recognizable product text hidden by whole-line descriptions. Do not claim universal Spanish-reading failure, blame quantization alone, or select a replacement model based on the former raw-only zeros. Private recognition quality cannot be cleanly isolated from residual decomposition with these labels and this bounded rule.
+- **Field decomposition:** even after the authorized cleanup, every tested path still recovers **0/5 private descriptions and 0/5 private description+amount pairs**. The current structured path is therefore not supported for automatic acceptance on the measured set. High numeric token presence cannot repair wrong item structure or establish occurrence/semantic anchoring. Synthetic cleanup improvement is not private quality proof.
+- **Next decision:** keep the production gate uncleared; if the owner continues, investigate residual field alignment/decomposition with literal preservation and fixed expected labels before attributing failures to OCR or buying a larger model. Keep the independent image/OCR architecture, thresholds and annotations unchanged. Larger context/resolution and BF16 have no observed private cleaned-quality benefit; resource tradeoffs remain as measured. No production cleanup or alternate parser is installed by this spike.
+
+### T6d reproduction and checks
+
+Use the already-installed `$py`, `$b` and locally assigned `$privateCorpus` from the earlier reproduction section. **Do not run the model acquisition/inference commands above** to reproduce this step. The collector reads saved responses and validates source consent/hashes; its only repository write is the aggregate `offline_rescoring` measurement block. It does not rewrite provenance or historical measurement blocks.
+
+```powershell
+C:/Python312/python.exe -B -m unittest discover -s spikes/ticket-pipeline -p test_retry_metrics.py -v
+& $py -B spikes/ticket-pipeline/collect_extended.py --private-root $privateCorpus
+C:/Python312/python.exe -B -m json.tool spikes/ticket-pipeline/measurements.json > $null
+# Retained local audit script from this run, outside the repository:
+& $py -B "$b/t6d-validate.py" $privateCorpus
+```
+
+Observed RED: the first cleanup test failed with `ImportError: cannot import name 'clean_item'`; the four new cleanup/scoring rules then failed with missing `clean_item`/`score_cleaned` (11 tests, 4 errors, exit 1). After implementation and a matching-reassignment regression test: **12 metric tests pass**, exit 0. The full synthetic parser/metric suite passes **14 tests**, exit 0. No pytest installation was needed; this is the existing unittest runner.
+
+Collector: exit 0, **120 saved responses rescored**, 3 unrun preserved. JSON tool: exit 0. The retained `t6d-validate.py` audit exits 0: all historical raw/amount/JSON/timing/RSS counters unchanged; pair/taxonomy denominators valid; JSON, 3 changed Python ASTs and whitespace valid; public artifacts exclude actual private source paths, hashes, IDs and complete raw responses; response/prompt/provenance/annotation bytes unchanged across rescoring. The audit actively refuses `subprocess.Popen` and socket connections while invoking the collector, so its passing run cannot launch a model, server, Docker or remote request. Private inputs are read-only. The audit script remains in the external scratch directory for the coordinator to inspect, not in the public source tree.
+
+Exact retained scratch root: `C:/Users/Usuario/AppData/Local/tuki-pipeline-spike/`; new local audit helper: `t6d-validate.py`. No scratch cleanup, git operation, runtime/dependency change, model run or remote inference was performed. Engram writes are prohibited while the runtime identity is unregistered; local artifacts are the recovery record.
+
+Risk: item 2 (local access to private receipts/annotations while publishing only aggregates). Independent verification and commits remain the coordinator's responsibility.

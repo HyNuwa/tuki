@@ -56,11 +56,19 @@ def prepare_ocr(entries):
         use_doc_orientation_classify=False, use_doc_unwarping=False,
         use_textline_orientation=False, device="cpu", cpu_threads=4, enable_mkldnn=False)
     evidence = {}
+    timings = []
     for case in entries:
+        started = time.perf_counter()
         prediction = engine.predict(str(case["path"]))[0].json["res"]
+        timings.append({"cohort": case["cohort"], "latency_s": time.perf_counter() - started,
+                        "rss": psutil.Process().memory_info().peak_wset})
         evidence[case["sha256"]] = prediction["rec_texts"]
         print(case["cohort"], len(evidence), flush=True)
     (BASE / "retry-small-evidence-private.json").write_text(json.dumps(evidence), encoding="utf-8")
+    summary = {c: {"images": len(xs), "latency_p50_s": statistics.median(x["latency_s"] for x in xs),
+                   "latency_max_s": max(x["latency_s"] for x in xs), "peak_rss_bytes": max(x["rss"] for x in xs)}
+               for c in ("synthetic", "private") if (xs := [x for x in timings if x["cohort"] == c])}
+    (BASE / "extended-ocr-timings.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
 
 def aggregate(rows):

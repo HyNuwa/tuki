@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · test(repo): compare Qwen text and GLM-OCR levers
+- **Qué hice:** T6c/T6d del spike. (A) Qwen3.5-0.8B Q8 publicado, solo texto de PP-OCRv6 small con `line_id`, razonamiento apagado y esquema forzado: JSON 12/13, total privado 2/3, p50 20 s, RSS 2,3 GB. (B) GLM-OCR Q4/Q8 con contexto 16384 (sin truncamiento, máx. 2202 tokens), prototipo E2 (cayó a solo EXIF en las 13 imágenes) y lado largo 1600 px (Q4 parcial, 7/10 privadas, por la guarda de disco): ninguna mejora. (C) BF16 oficial en CPU, 6 imágenes: reproduce las fallas (p50 privado 165 s, RSS 2,8 GB). Re-puntaje offline: los modelos copian la línea entera (`2 x 1.250,00 LECHE 2.500,00`) en `descripcion`; con limpieza determinística las descripciones sintéticas suben a 3/6 (GLM) y 4/6 (Qwen), pero los pares privados siguen en 0/5 en todas las variantes.
+- **Archivos clave:** `spikes/ticket-pipeline/extended_spike.py`, `bf16_reference.py`, `collect_extended.py`, `prompt-qwen-text-v1.txt`, `retry_metrics.py` y su prueba, `README.md`, `ASSUMPTIONS.md`, `measurements.json`.
+- **Próximo paso:** decisión del dueño sobre la extracción de ítems (E5); T8 sigue bloqueado.
+
+
 ## 2026-11-17 · test(repo): measure GLM-OCR with schema-constrained output
 - **Qué hice:** reintento aprobado de T6 con el esquema `ticket.v1` forzado en el campo `format` de Ollama, temperatura 0 y el mismo prompt. Q4_K_M y Q8_0 publicados: JSON válido 13/13 en ambos, total correcto 3/3 en los tickets privados anotados, pero ítems 0/5 pares descripción+importe (1/5 importes) y 0/6 en sintéticos; Q4 emite 3 filas TOTAL/SUBTOTAL como ítems. Latencia p50 ~30 s, máx ~90 s; RSS pico 3,4 GB (Q4) y 4,1 GB (Q8).
 - **Archivos clave:** `spikes/ticket-pipeline/quality_retry.py`, `retry_metrics.py` y su prueba, `ticket-v1-format.schema.json`, `ASSUMPTIONS.md` (filas 1, 2 y 4), `measurements.json`.
