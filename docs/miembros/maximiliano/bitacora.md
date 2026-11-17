@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · test(api): run storage startup checks in process
+- **Qué hice:** estabilizar la regresión B2 de `STORAGE_DIR`, que pasaba sola (~19-24 s) pero excedía 30 s en la suite completa. Ahora ejerce el arranque real y la validación canónica en proceso, con base, OCR y listener simulados; conserva los cuatro casos (`..media`, junction hacia el repo, directorio interno rechazado, externo aceptado).
+- **Archivos clave:** `apps/api/test/storage-startup.test.ts`.
+- **Próximo paso:** repetir las 6 integraciones PostgreSQL cuando Docker Desktop vuelva a estar disponible (hoy omitidas: el pipe del motor no existe). Los 4 tests sin base de la API pasan y el typecheck también.
+
+
 ## 2026-11-17 · docs(specs): adopt automatic ticket pipeline spec
 - **Qué hice:** guardar la spec del dueño del producto `odd/specs/ticket-pipeline.md` (PP-OCRv6 como evidencia + GLM-OCR con esquema fijo, anclaje, puntaje y estados Aceptado/Rechazado/Error de procesamiento, sin revisión humana), indexarla y alinear `PRODUCT.md`, que reemplaza el flujo de revisión manual.
 - **Archivos clave:** `odd/specs/ticket-pipeline.md`, `odd/specs/README.md`, `PRODUCT.md`.
