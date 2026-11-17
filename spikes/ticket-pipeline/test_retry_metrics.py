@@ -5,6 +5,71 @@ from retry_metrics import amount_present, score_fields
 
 
 class RetryMetricTests(unittest.TestCase):
+    def test_cleanup_strips_one_vat_rate_on_either_side_of_amount_only(self):
+        from retry_metrics import clean_item
+        cases = (("LECHE (21,00)", "LECHE"),
+                 ("LECHE (21,00) 2.500,00", "LECHE"),
+                 ("LECHE 2.500,00 ( 27.00 % )", "LECHE"),
+                 ("PAN (10,5)", "PAN (10,5)"),
+                 ("SET X3 (ROJO)", "SET X3 (ROJO)"),
+                 ("LECHE (21,00) (27,00)", "LECHE (21,00)"))
+        for raw, expected in cases:
+            with self.subTest(raw=raw):
+                item = {"descripcion": raw, "importe": ""}
+                self.assertEqual(clean_item(item)["descripcion"], expected)
+                self.assertEqual(item, {"descripcion": raw, "importe": ""})
+
+    def test_evidence_anchor_same_or_next_line_and_rejects_summary_or_missing_description(self):
+        from retry_metrics import anchor_importe
+        item = {"descripcion": "LECHE (21,00)", "importe": ""}
+        examples = ((["LECHE (21,00) 2.500,00"], "2.500,00"),
+                    (["LECHE", "2.500,00"], "2.500,00"),
+                    (["LECHE", "SUBTOTAL 2.500,00", "2.500,00"], ""),
+                    (["PAN", "2.500,00"], ""))
+        for lines, expected in examples:
+            with self.subTest(lines=lines):
+                self.assertEqual(anchor_importe(item, lines)["importe_from_evidence"], expected)
+                self.assertEqual(item["importe"], "")
+        self.assertEqual(anchor_importe({**item, "importe": "1,00"}, ["LECHE", "2.500,00"])["importe_from_evidence"], "")
+
+    def test_evidence_anchor_chooses_best_description_then_first_literal_amount(self):
+        from retry_metrics import anchor_importe
+        item = {"descripcion": "LECHE", "importe": ""}
+        self.assertEqual(anchor_importe(item, ["LECHE 2.500,00 9.000,00"])["importe_from_evidence"], "2.500,00")
+        lines = ["LECHX", "9.000,00", "LECHE", "2.500,00"]
+        self.assertEqual(anchor_importe(item, lines)["importe_from_evidence"], "2.500,00")
+        for word in ("TOTAL", "IVA", "DESCUENTO"):
+            self.assertEqual(anchor_importe(item, ["LECHE", word + " 9.000,00"])["importe_from_evidence"], "")
+
+    def test_evidence_pair_recovery_counts_wrong_fills_without_changing_strict_fields(self):
+        from retry_metrics import score_cleaned
+        result = {"items": [{"descripcion": "LECHE (21,00)", "importe": ""},
+                            {"descripcion": "PAN (10,50)", "importe": ""}]}
+        truth = {"money_atomic": True, "items": [{"descripcion": "LECHE", "importe": "250000"},
+                                                {"descripcion": "PAN", "importe": "85000"}]}
+        measured = score_cleaned(result, truth, ["LECHE", "2.500,00", "PAN", "999,00"])
+        self.assertEqual(measured["description_strict"]["correct"], 2)
+        self.assertEqual(measured["pairs_field_importe"], 0)
+        self.assertEqual(measured["pairs_field_or_line_importe"], 0)
+        self.assertEqual(measured["pairs_field_or_line_or_evidence_importe"], 1)
+        self.assertEqual(measured["evidence_fills"], 2)
+        self.assertEqual(measured["evidence_fills_evaluated"], 2)
+        self.assertEqual(measured["evidence_fills_correct"], 1)
+        self.assertEqual(measured["evidence_fills_wrong"], 1)
+        self.assertEqual(measured["evidence_fills_unevaluated"], 0)
+        self.assertEqual(measured["taxonomy"]["whole_line_in_descripcion"], 2)
+        self.assertEqual(result["items"][0]["importe"], "")
+
+    def test_evidence_fill_without_matching_label_stays_explicitly_unevaluated(self):
+        from retry_metrics import score_cleaned
+        result = {"items": [{"descripcion": "LECHE", "importe": ""}]}
+        truth = {"items": [{"descripcion": "LECHE 1 LITRO", "importe": "2.500,00"}]}
+        measured = score_cleaned(result, truth, ["LECHE", "2.500,00"])
+        self.assertEqual(measured["evidence_fills_unevaluated"], 1)
+        self.assertEqual(measured["evidence_fills_wrong"], 0)
+        self.assertEqual(measured["pairs_field_or_line_or_evidence_importe"], 0)
+
+
     def test_clean_whole_line_keeps_model_fields_and_separates_line_amount(self):
         from retry_metrics import clean_item
         milk = {"descripcion": "2 x 1.250,00 LECHE 2.500,00", "cantidad": "2",

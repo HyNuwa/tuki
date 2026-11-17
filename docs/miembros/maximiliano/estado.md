@@ -3,7 +3,7 @@
 **Última actualización:** 2026-11-17
 
 ## Current focus
-**Pipeline automático de tickets (2026-11-17):** spec `odd/specs/ticket-pipeline.md` adoptada; núcleo puro del dominio (T7) implementado con 144 pruebas. API y web aún usan el dominio anterior y no compilan hasta T8/T9. Spike T6 cerrado (T6c/T6d): ninguna variante de GLM-OCR (Q4, Q8, BF16, palancas) ni Qwen3.5-0.8B sobre texto OCR recupera pares ítem privados (0/5); totales sí. Próximo paso: decisión del dueño sobre la extracción de ítems (E5), que bloquea T8. En curso: alineación de documentación (T10). Bloqueos: disco casi lleno (~6 GB libres).
+**Pipeline automático de tickets (2026-11-17):** spec `odd/specs/ticket-pipeline.md` adoptada; núcleo puro del dominio (T7) implementado con 144 pruebas. API y web aún usan el dominio anterior y no compilan hasta T8/T9. Spike T6 cerrado (T6c–T6e): GLM-OCR lee 4/5 descripciones privadas tras quitar la alícuota de IVA, pero los importes de ítems en varias líneas fallan (pares 1/5, 2/5 con anclaje OCR, 1 anclaje incorrecto); Qwen3.5-0.8B 0/5. RAM de GLM Q4 (3,4–4,3 GB) abierta. Próximo paso: decisión del dueño sobre la extracción de ítems (E5), que bloquea T8. En curso: alineación de documentación (T10). Bloqueos: disco casi lleno (~6 GB libres).
 
 **PWA de contribuyentes (2026-11-15):** diseño "Tira térmica" registrado (`DESIGN.md`, `design/contributor-pwa/`) y aplicado a la demo `spikes/s3-extraction/demo/` (procedencia por valor, recorte del fragmento OCR, fuentes propias). Stack: React + Vite (`mvp-p0` Q10). Alexxe ya no forma parte del equipo; Maximiliano tiene todas las áreas. Próximo paso: Panel e Historial en la app. Bloqueos: ninguno.
 

@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-17 · test(repo): rescore items with VAT cleanup and anchoring
+- **Qué hice:** T6e, re-puntaje offline de las 120 salidas guardadas tras la revisión local del dueño (sin texto privado en el repo). La limpieza diagnóstica E6 ahora quita la alícuota de IVA `(NN,NN)` del final de la descripción; un anclaje diagnóstico E7 toma el importe de la evidencia OCR solo si el modelo lo dejó vacío. Mejor GLM: descripciones privadas 4/5 (E7 ≥0,85); pares 1/5 solo con el campo, 2/5 con evidencia; de los 2 importes anclados evaluados, 1 es incorrecto. Qwen 0.8B: 0/5 (copia el encabezado del comercio en cada ítem).
+- **Archivos clave:** `spikes/ticket-pipeline/retry_metrics.py` y su prueba, `collect_extended.py`, `README.md`, `ASSUMPTIONS.md`, `measurements.json`.
+- **Próximo paso:** decisión del dueño sobre E5: GLM lee bien las descripciones pero no los importes en ítems de varias líneas; RAM de Q4 (3,4–4,3 GB) sigue abierta frente al objetivo de 3 GB.
+
+
 ## 2026-11-17 · test(repo): compare Qwen text and GLM-OCR levers
 - **Qué hice:** T6c/T6d del spike. (A) Qwen3.5-0.8B Q8 publicado, solo texto de PP-OCRv6 small con `line_id`, razonamiento apagado y esquema forzado: JSON 12/13, total privado 2/3, p50 20 s, RSS 2,3 GB. (B) GLM-OCR Q4/Q8 con contexto 16384 (sin truncamiento, máx. 2202 tokens), prototipo E2 (cayó a solo EXIF en las 13 imágenes) y lado largo 1600 px (Q4 parcial, 7/10 privadas, por la guarda de disco): ninguna mejora. (C) BF16 oficial en CPU, 6 imágenes: reproduce las fallas (p50 privado 165 s, RSS 2,8 GB). Re-puntaje offline: los modelos copian la línea entera (`2 x 1.250,00 LECHE 2.500,00`) en `descripcion`; con limpieza determinística las descripciones sintéticas suben a 3/6 (GLM) y 4/6 (Qwen), pero los pares privados siguen en 0/5 en todas las variantes.
 - **Archivos clave:** `spikes/ticket-pipeline/extended_spike.py`, `bf16_reference.py`, `collect_extended.py`, `prompt-qwen-text-v1.txt`, `retry_metrics.py` y su prueba, `README.md`, `ASSUMPTIONS.md`, `measurements.json`.

@@ -1,6 +1,6 @@
 # CPU ticket-pipeline assumption spike (T6 / S10)
 
-Latest result: [offline rescoring (T6d)](#offline-rescoring-t6d) separates field decomposition from recognition across 120 saved predictions, without running a model. Synthetic cleaned descriptions improve; private cleaned descriptions/pairs remain 0/5. Historical raw tables below retain their original evidence, not their superseded recognition diagnosis.
+Latest result: [second offline rescoring (T6e)](#second-offline-rescoring-t6e) removes a bounded VAT-rate suffix and tests a separate OCR-evidence amount candidate on 120 saved predictions. Representative GLM private descriptions are **3/5 strict, 4/5 E7**, with **1/5 field-only pairs, 2/5 evidence-assisted pairs and 1 wrong evidence fill out of 2 evaluated**. The 3 GB RAM target remains open. Historical T6d/raw tables are retained, not current conclusions.
 
 See [ASSUMPTIONS.md](ASSUMPTIONS.md) for all twelve verdicts and their limitations.
 This isolated research code is **not** an API worker, a privacy filter, a fiscal validator or an acceptance engine. No production threshold, pipeline, country module or existing OCR installation is changed.
@@ -299,6 +299,8 @@ Risk: items 2, 4 and 5 (private inputs; process lifetime/disk-watchdog ordering;
 
 ## Offline rescoring (T6d)
 
+**Historical bounded-cleanup result, superseded by [T6e](#second-offline-rescoring-t6e).** T6d did not strip VAT-rate suffixes or inspect the next OCR line. Its private zero scores are preserved as the result of that narrower rule, not current recognition evidence.
+
 **Recognition and field decomposition are different measurements.** The prior raw-only NO-GO diagnosis overstated the recognition evidence. On the synthetic images, bounded cleanup changes GLM description scores from 0/6 to **3/6** and Qwen text from 0/6 to **4/6**; those improvements are decomposition failures, not character-reading failures. On the three complete private receipts, however, **cleaned descriptions and pairs are still 0/5 under every configuration**, including BF16. No threshold, prompt, annotation or model output was changed.
 
 All **120 saved outputs** were rescored offline: 26 historical Q4/Q8 retry outputs, 88 extended A/B outputs and 6 BF16 outputs. The partial resolution-Q4 run remains 10 executed / 13 planned; three private images remain unrun. Qwen's incomplete JSON remains invalid and in its denominator. No model, OCR, Ollama, Docker, download or installation was run for T6d. Timings and RSS below/above are retained measurements, not newly measured inference.
@@ -314,7 +316,7 @@ For the safe synthetic example `2 x 1.250,00 LECHE 2.500,00`, this yields `LECHE
 
 Strict raw/cleaned descriptions are **positional**, as in the retry; E7 uses the unchanged normalized edit similarity **>=0.85**. Cleaned pair recovery is maximum one-to-one matching of descriptions >=0.85 plus amount equality, so duplicates cannot recover one label twice. `field + line` below means field-only recovery plus **additional** pairs unlocked by a literal line-derived amount; the sum is the combined one-to-one count. Private monetary truth remains the original atomic-value annotations (not printed-format truth). Two of the six synthetic amount labels are known-blank absence checks, not positive amount detections. Private date/name labels remain unavailable (0 evaluated).
 
-### New final comparison (all saved configurations)
+### T6d comparison (historical, all saved configurations)
 
 In these results, **strict and E7 description counts happen to be identical** in both raw and cleaned views; the two metrics are independently retained in JSON. Each `raw -> cleaned` cell therefore gives both strict and E7 counts. Raw strict **and** raw E7 pair recovery remains 0/6 synthetic and 0/5 private for every row. JSON and schema numerators coincide; denominators include all executed images. All private field-quality columns use the same 3 complete receipts / 5 expected items, not all ten photos.
 
@@ -347,7 +349,7 @@ There is **no best private-quality configuration**: all cleaned description/pair
 
 The first four categories partition the five expected descriptions; summary extras are separate and must not be added to that denominator. Matching is one-to-one. After recognized descriptions are assigned, remaining nonempty non-summary predictions are provisionally aligned to remaining labels; shortages count as missing. Thus **`description_misread` is the requested diagnostic category name, not proof of five optical misreads**. Unremoved line structure, wrong item assignment and genuine recognition errors remain confounded. Likewise zero missing by this count does not establish complete semantic item recovery. Summary detection is limited to TOTAL/SUBTOTAL prefixes after cleanup. This taxonomy uses counts only; it publishes no receipt text or values.
 
-### Revised recommendation
+### T6d recommendation (historical)
 
 - **Recognition:** synthetic evidence demonstrates recognizable product text hidden by whole-line descriptions. Do not claim universal Spanish-reading failure, blame quantization alone, or select a replacement model based on the former raw-only zeros. Private recognition quality cannot be cleanly isolated from residual decomposition with these labels and this bounded rule.
 - **Field decomposition:** even after the authorized cleanup, every tested path still recovers **0/5 private descriptions and 0/5 private description+amount pairs**. The current structured path is therefore not supported for automatic acceptance on the measured set. High numeric token presence cannot repair wrong item structure or establish occurrence/semantic anchoring. Synthetic cleanup improvement is not private quality proof.
@@ -372,3 +374,97 @@ Collector: exit 0, **120 saved responses rescored**, 3 unrun preserved. JSON too
 Exact retained scratch root: `C:/Users/Usuario/AppData/Local/tuki-pipeline-spike/`; new local audit helper: `t6d-validate.py`. No scratch cleanup, git operation, runtime/dependency change, model run or remote inference was performed. Engram writes are prohibited while the runtime identity is unregistered; local artifacts are the recovery record.
 
 Risk: item 2 (local access to private receipts/annotations while publishing only aggregates). Independent verification and commits remain the coordinator's responsibility.
+
+## Second offline rescoring (T6e)
+
+**Most inspected GLM description failures were field contamination, not evidence of unreadable Spanish.** After the authorized VAT-suffix cleanup, baseline/context/E2/BF16 GLM private descriptions score **3/5 strict and 4/5 E7 >=0.85**. Field-only item recovery is **1/5**; adding a separate OCR-evidence candidate raises it to **2/5**, but **1 of the 2 evaluated evidence fills is wrong**. This is not a safe automatic repair. Qwen text remains 0/5 private descriptions/pairs. The separate **3 GB RAM target remains open**.
+
+This is a second **offline-only** pass over the same 120 immutable saved predictions. No model, OCR, Ollama, Docker, git, network request or dependency change was run. Historical raw/A-B-C/T6d blocks remain unchanged in JSON; the current block is `offline_rescoring_t6e`. The three historical resolution-Q4 private predictions remain unrun, not invalid or counted as successes.
+
+### Owner review and what changed
+
+The owner inspected the five private mismatches locally and reported: PP-small read 5/5 descriptions correctly; 4/5 GLM descriptions contain the product plus a trailing VAT-rate annotation; GLM importe is missing for multi-line item layouts but correct in the inspected same-line layouts; one existing label merges a description and size line; Qwen copies merchant-header text into descriptions. These are **owner-inspection findings**, not a new automated character-accuracy benchmark. No images, receipt text, values or new annotations were copied into this report.
+
+The revised deterministic diagnostic has two additions, preserving all raw model fields:
+
+- **VAT margin cleanup:** remove at most **one** trailing parenthesized rate with 1-2 integer digits and exactly two decimal digits, optional `%`/spaces. Try before the trailing-amount strip and, if no rate was removed, again after it. Other parentheses remain literal. Synthetic `LECHE (21,00)` and `LECHE (21,00) 2.500,00` clean to `LECHE`; `PAN (10,5)` and `SET X3 (ROJO)` stay unchanged. No product-specific rules, annotation edits or threshold tuning are introduced.
+- **`anchor_importe(item, lines)`:** only for an empty model importe, compare the cleaned item description against cleaned OCR description spans (a full line or its prefix before a money token). This avoids penalizing a description merely because the same OCR line also contains prices. Use the highest unchanged E7 similarity **>=0.85**, earliest source line on a tie. Take the first literal two-decimal money token after that description span; otherwise inspect **only the immediately next line**. Reject rows starting with TOTAL/SUBTOTAL/IVA/DESCUENTO; do not search beyond a skipped next line. Parenthesized VAT-rate tokens are not item amounts. Return `importe_from_evidence` separately; never compute, rewrite or overwrite importe.
+
+Every suggested amount is an unchanged substring of an OCR line. Literal presence does **not** establish that this first money token belongs to the item. This diagnostic intentionally has no geometry, cross-item numeric-line reuse guard or full monotonic item alignment. It is **not production E7**, whose current spec marks empty model fields as missing. The owner approved testing a candidate, not silently changing that contract.
+
+### Final comparison: private field quality
+
+All description/pair denominators below remain the same **3 complete private receipts / 5 expected items**. JSON/schema covers all executed synthetic and private images. Raw strict/E7 descriptions and pairs remain 0/5 throughout; the new columns concern the separate cleaned view. Private money uses the unchanged exact atomic-value comparator, never floats or newly invented printed-format truth.
+
+`Wrong/Eval (+U)` evaluates evidence-filled amounts against truth after **one-to-one E7 description matching**. `U` explicitly counts additional fills with no uniquely matching expected description; they are **unevaluated, not assumed correct**. A row with 0/0 had no evaluated evidence fills, not perfect accuracy. Correct/incorrect fills are separate from recovered-pair counts; full field/line/evidence recovery uses a single one-to-one matching, not a sum that can double-count one item.
+
+| Configuration | JSON/schema | Cleaned description strict | Cleaned description E7 | Pairs: field only | Pairs: field OR line OR evidence | Wrong evidence fills / evaluated (+unevaluated) |
+|---|---:|---:|---:|---:|---:|---:|
+| GLM Q4 retry | 13/13 | 3/5 | 4/5 | 1/5 | 2/5 | 1/2 (+3 U) |
+| GLM Q8 retry | 13/13 | 3/5 | 4/5 | 1/5 | 2/5 | 1/2 (+0 U) |
+| GLM context 16384 Q4 | 13/13 | 3/5 | 4/5 | 1/5 | 2/5 | 1/2 (+3 U) |
+| GLM context 16384 Q8 (representative best tie) | 13/13 | 3/5 | 4/5 | 1/5 | 2/5 | **1/2 (+0 U)** |
+| GLM E2 Q4 | 13/13 | 3/5 | 4/5 | 1/5 | 2/5 | 1/2 (+3 U) |
+| GLM E2 Q8 | 13/13 | 3/5 | 4/5 | 1/5 | 2/5 | 1/2 (+0 U) |
+| GLM resolution 1600 Q4 (**partial**) | 10/10 executed | 3/5 | 3/5 | 0/5 | 1/5 | 1/2 (+5 U) |
+| GLM resolution 1600 Q8 | 13/13 | 3/5 | 3/5 | 0/5 | 1/5 | 1/2 (+5 U) |
+| Official GLM BF16 reference | 6/6 | 3/5 | 4/5 | 1/5 | 2/5 | 1/2 (+0 U) |
+| Qwen Q8 text | 12/13 | 0/5 | 0/5 | 0/5 | 0/5 | 0/0 (+0 U) |
+
+The field-OR-line pair count equals field-only in this private set; the single additional recovered pair is unlocked only by OCR evidence. The representative best GLM proposes two **next-line** amounts: one correct and one wrong, so no unscored fill hides behind its 1/2 error result. All seven tied GLM configurations are listed in JSON; context-Q8 is the previously used representative, not evidence that larger context improved quality. Resolution is worse on this diagnostic. BF16 offers no additional recovered pair and remains reference-only.
+
+For completeness, JSON also publishes **positional** evidence-fill errors using the original item indices, independent of description matching. Resolution-Q4/Q8 have **2 wrong / 3 positionally evaluated fills (+4 unevaluated)**, rather than 1/2 (+5 U) under description matching. Other private rows' positional counts equal their displayed counts. This makes wrong fills visible under both alignments; neither alignment converts unassigned candidates into correct values. No amount is inserted into a strict record.
+
+### Synthetic comparison
+
+Synthetic labels and raw metrics are unchanged. All GLM quantizations, levers and BF16 have identical cleaned synthetic counts; the Qwen variant is separate.
+
+| Configuration group | Cleaned description strict / E7 | Field-only pairs | Field OR line OR evidence pairs | Wrong evidence / evaluated (+unevaluated) |
+|---|---:|---:|---:|---:|
+| GLM Q4, Q8, context, E2, resolution, BF16 | 3/6 / 3/6 | 0/6 | 3/6 | 0/3 (+1 U) |
+| Qwen Q8 text | 4/6 / 4/6 | 4/6 | 4/6 | 0/0 (+0 U) |
+
+The three GLM synthetic pairs were already recovered from the description line under T6d; evidence adds **zero** further pairs. Two of six synthetic amount labels remain known-blank absence checks, not positive amount detections. The additional unevaluated GLM evidence candidate is not represented as correct. Every score, evidence-fill source/count, positional error count and unchanged performance metric is retained per configuration/cohort in JSON.
+
+### Taxonomy: representative best GLM and Qwen
+
+The first four categories partition five expected descriptions; summary extras do not belong in that denominator. Amount correctness is orthogonal to this description taxonomy.
+
+| Category | GLM context-Q8 | Qwen text Q8 |
+|---|---:|---:|
+| matched (raw and cleaned E7) | 0 | 0 |
+| whole-line-in-descripcion (now includes bounded VAT contamination) | 4 | 0 |
+| description_misread (residual below-threshold mismatch) | 1 | 5 |
+| item_missing (no remaining non-summary candidate) | 0 | 0 |
+| summary_row_emitted (extra TOTAL/SUBTOTAL rows) | 2 | 0 |
+
+The category name `description_misread` still does **not** prove an optical error. One unchanged label merges two printed lines; Qwen's owner-identified header copying is semantic field confusion, not a reason to strip arbitrary headers. Independently, Qwen's three labeled-image outputs contain **18 item descriptions but only 3 distinct strings summed per image (one per image, 15 repetitions)**; none matches an expected item at E7. No merchant/header-specific handling was added. No missing candidate by this heuristic establishes complete semantic recovery.
+
+### RAM and recommendation
+
+**Q4 sampled family RSS was 3,390,291,968-4,344,467,456 bytes, about 3.4-4.3 GB, versus the 3 GB complete-worker target. This requirement remains OPEN.** Cleanup does not change those measurements. Router/client/model family sums may double-count shared pages and are not an exact physical-memory requirement; they also do not prove an inevitable VM OOM. They do show that fit has not been demonstrated, and no target-VM proof was added. No RSS result from this offline collector is substituted for model/worker measurements. Existing latency, OCR time, model-only RSS and cohort-size qualifications remain valid.
+
+The revised recommendation is **not** that GLM cannot read these receipts: 4/5 descriptions become E7-matching after bounded VAT cleanup, and owner review identified PP-small reading as correct in all five inspected cases. The measured remaining constraints are decomposition/layout association, one merged label, extra summary items, and resource fit. Field-only recovery is still 1/5, and a tempting literal-evidence fill raises recovery only to 2/5 while introducing a known wrong amount. **Do not deploy this fallback for automatic acceptance.** Keep raw/diagnostic fields separate, the annotations and 0.85 threshold fixed, and the RAM gate open. If the owner continues, the next uncertainty is safe spatial/multi-line amount association under the unchanged privacy/architecture contracts, not another claim of poor OCR or a larger-model purchase based on raw-only zeros. No production parser, E7 implementation or acceptance-rule change is included here.
+
+### T6e exact commands and validation
+
+Use the existing external environment and locally assigned `$privateCorpus`; no install or inference command is necessary:
+
+```powershell
+$b = 'C:/Users/Usuario/AppData/Local/tuki-pipeline-spike'
+$py = "$b/venv/Scripts/python.exe"
+C:/Python312/python.exe -B -m unittest discover -s spikes/ticket-pipeline -p test_retry_metrics.py -v
+C:/Python312/python.exe -B -m unittest discover -s spikes/ticket-pipeline -p 'test_*.py' -v
+& $py -B spikes/ticket-pipeline/collect_extended.py --private-root $privateCorpus
+C:/Python312/python.exe -B -m json.tool spikes/ticket-pipeline/measurements.json > $null
+# Existing external audit helper, updated separately for T6e:
+& $py -B "$b/t6e-validate.py" $privateCorpus
+```
+
+Observed RED/GREEN: the VAT test first failed on four subcases (13 tests, exit 1), then passed after the one-token rule; the evidence test failed with `ImportError: cannot import name 'anchor_importe'`, then passed; a multiple-price same-line test failed before description-span matching was added; the scoring/error tests failed with `TypeError: score_cleaned() takes 2 positional arguments but 3 were given`, then passed after the separate evidence metrics were implemented. Final focused result: **17 tests pass, exit 0**; full synthetic parser/metric suite: **19 tests pass, exit 0**. Fixtures contain invented text/values only.
+
+Collector: **120 responses rescored, exit 0**, with all 3 historically unrun images preserved. JSON tool: **exit 0**. External `t6e-validate.py`: **PASS, exit 0** for unchanged historical measurement blocks and raw/JSON/amount/timing/RSS counters; pair, wrong-fill/unevaluated and taxonomy denominators; JSON, 3 Python ASTs and whitespace; private path/hash/ID and full-response exclusion from public artifacts; immutable raw responses, prompts/schema/provenance, annotations and OCR cache bytes. Its collector invocation prohibits subprocess creation and socket connections, so its successful run cannot launch a model/server/Docker or contact a remote service. Source consent/hashes are validated through the existing read-only case loader. The earlier T6d helper remains a historical audit, not validation of the new T6e block.
+
+Scratch retained for parent inspection/cleanup: `C:/Users/Usuario/AppData/Local/tuki-pipeline-spike/`, including new `t6e-validate.py`. No receipt text, private values, paths, per-receipt results or identifiers were copied into public artifacts or this report. No annotation, old OCR installation or existing raw response was modified. Engram writes remain prohibited without registered runtime identity.
+
+Risk: item 2 (local private-data access and aggregate publication). The coordinator owns independent verification and commits.

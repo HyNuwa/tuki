@@ -123,6 +123,7 @@ def amount_diagnostics(result, lines):
 
 
 _MONEY_TOKEN = r"(?:\d{1,3}(?:\.\d{3})+|\d+)[.,]\d{2}"
+_VAT_RATE = r"\(\s*\d{1,2}[.,]\d{2}\s*%?\s*\)"
 
 
 def clean_item(item):
@@ -145,6 +146,9 @@ def clean_item(item):
     prefix = (r"^(?:" + "|".join(quantities) + r")\s*[xX*]\s*(?:" +
               "|".join(prices) + r")(?![\d.,])\s*")
     description, leading = re.subn(prefix, "", description, count=1)
+    # At most one VAT-shaped margin annotation in either position. Other
+    # parentheses remain literal; this is not a general parenthesis remover.
+    description, vat_removed = re.subn(r"\s*" + _VAT_RATE + r"$", "", description, count=1)
     # Exact equality to the model field: equivalent financial values with
     # different printed separators do not license stripping a different token.
     trailing = re.search(r"(?<!\S)(" + (re.escape(amount) if amount else _MONEY_TOKEN) + r")$", description)
@@ -152,8 +156,62 @@ def clean_item(item):
     if trailing:
         recovered = trailing[1] if not amount else ""
         description = description[:trailing.start()].rstrip()
+    if not vat_removed:
+        description, vat_removed = re.subn(r"\s*" + _VAT_RATE + r"$", "", description, count=1)
     return {"descripcion": description, "importe_from_line": recovered,
-            "leading_removed": bool(leading), "trailing_removed": bool(trailing)}
+            "leading_removed": bool(leading), "trailing_removed": bool(trailing),
+            "vat_removed": bool(vat_removed)}
+
+
+def anchor_importe(item, lines):
+    """Diagnostic only: suggest a literal OCR amount for an empty model field.
+
+    Compare cleaned description spans, not whole rows containing prices. Select
+    the highest E7 similarity (>=.85), earliest line on ties. Inspect only that
+    span's suffix and the immediately following line; never search past a
+    summary row or compute a missing value. This does not implement full E7
+    geometry, item-order constraints or numeric-line reuse prevention.
+    """
+    empty = {"importe_from_evidence": "", "source": ""}
+    description = clean_item(item)["descripcion"]
+    if item.get("importe", "") or not description:
+        return empty
+
+    def summary(line):
+        return bool(re.match(r"^\s*(?:TOTAL|SUBTOTAL|IVA|DESCUENTO)\b", line, re.I))
+
+    def first_money(line, start=0):
+        rates = list(re.finditer(_VAT_RATE, line))
+        for token in re.finditer(r"(?<![\w.,])" + _MONEY_TOKEN + r"(?![\w.,])", line):
+            if token.start() >= start and not any(rate.start() <= token.start() < rate.end() for rate in rates):
+                return token[0]
+        return ""
+
+    best = None
+    for index, line in enumerate(lines):
+        if summary(line):
+            continue
+        spans = [line, *[line[:token.start()] for token in re.finditer(_MONEY_TOKEN, line)]]
+        for span in spans:
+            candidate = clean_item({"descripcion": span, "importe": ""})["descripcion"]
+            if not candidate:
+                continue
+            similarity = text_similarity(description, candidate)
+            if similarity >= .85 and (best is None or similarity > best[0]):
+                # Cleanup only removes margins, so the description span remains
+                # a literal substring; full priced rows are not the text label.
+                best = (similarity, index, line.find(candidate) + len(candidate))
+    if best is None:
+        return empty
+    _, index, end = best
+    value = first_money(lines[index], end)
+    if value:
+        return {"importe_from_evidence": value, "source": "same_line"}
+    if index + 1 < len(lines) and not summary(lines[index + 1]):
+        value = first_money(lines[index + 1])
+        if value:
+            return {"importe_from_evidence": value, "source": "next_line"}
+    return empty
 
 
 def _item_matching(expected, predicted, accepts):
@@ -177,7 +235,7 @@ def _item_matching(expected, predicted, accepts):
     return {index: candidate for candidate, index in assigned.items()}
 
 
-def score_cleaned(result, truth):
+def score_cleaned(result, truth, lines=()):
     """Keep historical positional scores; add one-to-one diagnostic recovery.
 
     Taxonomy partitions expected descriptions, not amounts. Unmatched non-summary
@@ -186,6 +244,7 @@ def score_cleaned(result, truth):
     """
     original = result.get("items", [])
     views = [clean_item(item) for item in original]
+    evidence = [anchor_importe(item, lines) for item in original]
     predicted = [{**item, "descripcion": view["descripcion"]} for item, view in zip(original, views)]
     expected = truth["items"]
     cleaned = {**result, "items": predicted}
@@ -194,14 +253,18 @@ def score_cleaned(result, truth):
     def description_ok(i, j):
         return text_similarity(predicted[j]["descripcion"], expected[i]["descripcion"]) >= .85
 
-    def amount_ok(i, j, from_line=False):
-        value = views[j]["importe_from_line"] if from_line else original[j]["importe"]
+    def amount_ok(i, j, source="field"):
+        value = (views[j]["importe_from_line"] if source == "line" else
+                 evidence[j]["importe_from_evidence"] if source == "evidence" else original[j]["importe"])
         label = expected[i].get("importe")
         return label is not None and (_atomic(value) == label if truth.get("money_atomic") else value == label)
 
     field_pairs = _item_matching(expected, predicted, lambda i, j: description_ok(i, j) and amount_ok(i, j))
     combined = _item_matching(expected, predicted, lambda i, j: description_ok(i, j) and (
-        amount_ok(i, j) or bool(views[j]["importe_from_line"]) and amount_ok(i, j, True)))
+        amount_ok(i, j) or bool(views[j]["importe_from_line"]) and amount_ok(i, j, "line")))
+    with_evidence = _item_matching(expected, predicted, lambda i, j: description_ok(i, j) and (
+        amount_ok(i, j) or bool(views[j]["importe_from_line"]) and amount_ok(i, j, "line") or
+        bool(evidence[j]["importe_from_evidence"]) and amount_ok(i, j, "evidence")))
     # Increment over the best field-only matching, not two independently
     # counted sets that might reuse the same expected item.
     line_only = len(combined) - len(field_pairs)
@@ -209,16 +272,32 @@ def score_cleaned(result, truth):
                if re.match(r"^(?:TOTAL|SUBTOTAL)\b", item["descripcion"].upper())}
     recognized = _item_matching(expected, predicted, lambda i, j: j not in summary and description_ok(i, j))
     whole_line = sum(text_similarity(original[j]["descripcion"], expected[i]["descripcion"]) < .85 and
-                     (views[j]["leading_removed"] or views[j]["trailing_removed"])
+                     (views[j]["leading_removed"] or views[j]["trailing_removed"] or views[j]["vat_removed"])
                      for i, j in recognized.items())
     leftovers = {j for j, item in enumerate(predicted) if item["descripcion"] and j not in summary} - set(recognized.values())
     mismatch = min(len(expected) - len(recognized), len(leftovers))
+    fills = {j for j, candidate in enumerate(evidence) if candidate["importe_from_evidence"]}
+    fill_assignment = _item_matching(expected, predicted, lambda i, j: j in fills and j not in summary and
+                                     description_ok(i, j) and expected[i].get("importe") is not None)
+    wrong = sum(not amount_ok(i, j, "evidence") for i, j in fill_assignment.items())
+    positional = [j for j in fills if j < len(expected) and expected[j].get("importe") is not None]
+    positional_wrong = sum(not amount_ok(j, j, "evidence") for j in positional)
     return {"description_strict": strict["fields"]["item_descripcion"],
             "description_similarity_085": fuzzy["description_similarity_085"],
             "descriptions_recovered_similarity_085": len(recognized),
             "pairs_field_importe": len(field_pairs), "pairs_importe_from_line": line_only,
             "pairs_field_or_line_importe": len(combined),
+            "pairs_field_or_line_or_evidence_importe": len(with_evidence),
+            "pairs_additional_from_evidence": len(with_evidence) - len(combined),
             "importe_from_line_candidates": sum(bool(x["importe_from_line"]) for x in views),
+            "evidence_fills": len(fills), "evidence_fills_evaluated": len(fill_assignment),
+            "evidence_fills_correct": len(fill_assignment) - wrong, "evidence_fills_wrong": wrong,
+            "evidence_fills_unevaluated": len(fills) - len(fill_assignment),
+            "evidence_fills_same_line": sum(evidence[j]["source"] == "same_line" for j in fills),
+            "evidence_fills_next_line": sum(evidence[j]["source"] == "next_line" for j in fills),
+            "evidence_fills_positional": {"evaluated": len(positional), "wrong": positional_wrong,
+                                          "correct": len(positional) - positional_wrong,
+                                          "unevaluated": len(fills) - len(positional)},
             "taxonomy": {"matched": len(recognized) - whole_line,
                          "whole_line_in_descripcion": whole_line, "description_misread": mismatch,
                          "item_missing": len(expected) - len(recognized) - mismatch,
