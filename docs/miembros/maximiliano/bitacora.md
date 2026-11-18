@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-18 · feat(web): show automatic ticket results read-only
+- **Qué hice:** T9 (S9, S13). La PWA usa la API de T8: subida con país (AR) y consentimiento servido por la API, procesamiento con consulta cada 2,5 s hasta el estado final, resultado de solo lectura (estado, motivo en castellano, puntaje con umbral y subpuntajes, campos con su estado de anclaje y la región marcada sobre la imagen con recorte para móvil, texto no interpretado) e historial filtrable. Se eliminó el editor de revisión manual. Colores de estado tomados de la paleta existente.
+- **Archivos clave:** `apps/contributor-web/src/` (`App.tsx`, `TicketView.tsx`, `ticket.ts`, `api.ts`, `Upload.tsx`), `apps/contributor-web/test/`, informe `odd/tasks/m3-t9-web-report.md`.
+- **Próximo paso:** brechas de la API (consentimiento solo en inglés, sin login ni historial por usuario, sin lista de países); actualizar el mapa de colores de `DESIGN.md`; deploy T4 (requiere autorización) para medir RAM en la VM.
+
+
 ## 2026-11-18 · docs: align normative docs with the ticket pipeline
 - **Qué hice:** T10 (S14). Notas fechadas al inicio de cada documento normativo que describía la revisión manual: el flujo queda reemplazado por `odd/specs/ticket-pipeline.md` (estados Aceptado/Rechazado/Error de procesamiento, sin edición manual). Nuevo ADR 0005 del pipeline automático con la decisión de E5 (GLM-OCR Q4_K_M GGUF en Ollama), la limpieza de la alícuota de IVA y la RAM en la VM aún sin probar; notas en los ADR 0002 y 0004. Los registros históricos (bitácoras, informes, notas del spike) quedan como historia.
 - **Archivos clave:** `docs/adr/0005-automatic-ticket-pipeline.md`, `DESIGN.md`, `docs/03`–`17`, `odd/specs/mvp-p0.md`, `m2-domain-api-mode-a.md`, `m3-ingestion.md`, `spikes/s3-extraction/demo/PRODUCT.md` y `DESIGN.md`.
