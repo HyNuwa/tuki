@@ -1,0 +1,1 @@
+ALTER TABLE "model_attempts" ADD COLUMN "reason" text;

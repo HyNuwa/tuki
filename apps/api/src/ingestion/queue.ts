@@ -7,10 +7,11 @@ import type { MediaStorage } from "../storage/media.js";
 import type { OcrBridge } from "./bridge.js";
 import type { Extractor } from "./ollama.js";
 import { executeTicket, type PipelineArtifacts } from "./pipeline.js";
+import { DEFAULT_JOB_TIMEOUT_MS } from "./timeouts.js";
 
 export const QUEUE_LOCK = 1414875984;
 export type QueueConfig = { db: Database; storage: MediaStorage; bridge: OcrBridge; extractor: Extractor; hmacKey: Uint8Array;
-  jobTimeoutMs?: number; minOcrConfidence?: number; pipelineConfig?: PipelineConfig; signal?: AbortSignal; sampleOllamaRam?: () => Promise<number | null> };
+  jobTimeoutMs?: number; preparationTimeoutMs?: number; minOcrConfidence?: number; pipelineConfig?: PipelineConfig; signal?: AbortSignal; sampleOllamaRam?: () => Promise<number | null> };
 export const emptyMetrics = (): Metrics => ({ stages: {}, peakRamBytes: null, memory: { node: process.memoryUsage().rss, ocr: null, ollama: null, complete: false } });
 
 /** Session advisory lock enforces one worker across API processes; row claim skips locks. */
@@ -44,14 +45,14 @@ export function createQueueWorker(config: QueueConfig) {
             .orderBy(jobs.createdAt, jobs.id).limit(1).for("update", { skipLocked: true });
           if (!job) return null;
           const [updated] = await tx.update(jobs).set({ status: "running", attempts: job.attempts + 1, token: randomUUID(),
-            deadline: new Date(Date.now() + (config.jobTimeoutMs ?? 300_000)) }).where(eq(jobs.id, job.id)).returning();
+            deadline: new Date(Date.now() + (config.jobTimeoutMs ?? DEFAULT_JOB_TIMEOUT_MS)) }).where(eq(jobs.id, job.id)).returning();
           return updated!;
         });
         if (!claimed) return false;
         const [ticket] = await db.select().from(tickets).where(eq(tickets.id, claimed.ticketId));
         if (!ticket) throw new Error("ticket_missing");
         const metrics = emptyMetrics(); metrics.stages.E0 = ticket.metrics.stages.E0 ?? 0;
-        const signal = AbortSignal.any([AbortSignal.timeout(config.jobTimeoutMs ?? 300_000), ...(config.signal ? [config.signal] : [])]);
+        const signal = AbortSignal.any([AbortSignal.timeout(config.jobTimeoutMs ?? DEFAULT_JOB_TIMEOUT_MS), ...(config.signal ? [config.signal] : [])]);
         let sampling = false;
         const sampleMemory = async () => {
           if (sampling) return; sampling = true;
@@ -92,7 +93,7 @@ export function createQueueWorker(config: QueueConfig) {
           } else if (artifact.stage === "E5") {
             const [current] = await db.select({ versions: tickets.versions }).from(tickets).where(eq(tickets.id, ticket.id));
             await db.insert(modelAttempts).values({ id: randomUUID(), ticketId: ticket.id, jobAttempt: claimed.attempts, modelAttempt: artifact.attempt,
-              raw: artifact.raw, complete: artifact.complete, model: artifact.model, durationMs: Math.round(artifact.durationMs), versions: { ...current!.versions, ...extractor.versions } });
+              raw: artifact.raw, complete: artifact.complete, reason: artifact.reason, model: artifact.model, durationMs: Math.round(artifact.durationMs), versions: { ...current!.versions, ...extractor.versions } });
             metrics.stages.E5 = (metrics.stages.E5 ?? 0) + artifact.durationMs;
             await db.update(tickets).set({ versions: sql`${tickets.versions} || ${JSON.stringify(extractor.versions)}::jsonb` }).where(eq(tickets.id, ticket.id));
           } else { metrics.stages.E6_E9 = artifact.durationMs; Object.assign(metrics.stages, artifact.durations); }
@@ -108,6 +109,7 @@ export function createQueueWorker(config: QueueConfig) {
           const processing = executeTicket({ ticketId: ticket.id, country: ticket.country, image: await storage.read(media.originalKey),
             today: ticket.createdAt.toISOString().slice(0, 10), hmacKey: config.hmacKey, bridge, extractor, signal, persist, existingTickets,
             ...(config.minOcrConfidence === undefined ? {} : { minOcrConfidence: config.minOcrConfidence }),
+            ...(config.preparationTimeoutMs === undefined ? {} : { preparationTimeoutMs: config.preparationTimeoutMs }),
             ...(config.pipelineConfig ? { config: config.pipelineConfig } : {}),
           });
           const result = await Promise.race([processing, new Promise<never>((_, reject) => signal.addEventListener("abort", () => reject(new Error("job_timeout")), { once: true }))]);
@@ -153,4 +155,3 @@ export function createQueueWorker(config: QueueConfig) {
     },
   };
 }
-

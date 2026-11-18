@@ -18,6 +18,21 @@ export const bridgeCode = (error: unknown) => error instanceof ContentFailure ? 
 type Config = { python: string; modelsDir: string; cacheDir: string; minSide?: number; minSharpness?: number };
 type Runner = (mode: "prepare" | "extract", bytes: Uint8Array, signal: AbortSignal) => Promise<unknown>;
 
+function pythonEnvironment(config: Config): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {
+    PYTHONUTF8: "1", PYTHONIOENCODING: "utf-8", PYTHONUNBUFFERED: "1", PYTHONDONTWRITEBYTECODE: "1", PYTHONNOUSERSITE: "1",
+    OCR_MODELS_DIR: config.modelsDir, OCR_CACHE_DIR: config.cacheDir,
+    OCR_MIN_SIDE: String(config.minSide ?? 600), OCR_MIN_SHARPNESS: String(config.minSharpness ?? 100),
+  };
+  // Environment names are case-insensitive on Windows. Never forward ambient
+  // application credentials, Python import overrides or unrelated service keys.
+  for (const name of ["PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "TMPDIR"]) {
+    const key = Object.keys(process.env).find(key => key.toUpperCase() === name);
+    if (key && process.env[key] !== undefined) env[name] = process.env[key];
+  }
+  return env;
+}
+
 /** One persistent child, one JSON-line request. No receipt scratch files. */
 export function createPythonBridge(config: Config, injected?: Runner): OcrBridge {
   let child: ChildProcessWithoutNullStreams | undefined;
@@ -39,8 +54,7 @@ export function createPythonBridge(config: Config, injected?: Runner): OcrBridge
     signal.throwIfAborted();
     if (!child) {
       child = spawn(config.python, ["-B", fileURLToPath(new URL("../../../../spikes/s3-extraction/ocr-worker/pipeline_worker.py", import.meta.url))], {
-        env: { ...process.env, OCR_MODELS_DIR: config.modelsDir, OCR_CACHE_DIR: config.cacheDir,
-          OCR_MIN_SIDE: String(config.minSide ?? 600), OCR_MIN_SHARPNESS: String(config.minSharpness ?? 100) },
+        env: pythonEnvironment(config),
         windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"],
       });
       child.stdin.on("error", () => {});

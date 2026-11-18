@@ -12,6 +12,13 @@ The hash lock was resolved with uv `0.12.1`; all 72 package names installed as b
 Local verification used CPython `3.12.0`; that is evidence, not a recommended production patch level.
 The Linux production environment and its wheel lock require separate verification before deployment.
 
+The example below creates a **new** private environment; its directory is not a
+locator for an existing installation. When reusing an installed worker, set
+`$Python` (and the API's `OCR_PYTHON`) to that environment's actual executable:
+`<environment>/Scripts/python.exe` on Windows or `<environment>/bin/python` on
+Linux. Keep its model/cache directories outside Git; do not assume an older
+`runtime-v1/venv` directory is the currently installed environment.
+
 ```powershell
 $Worker = (Resolve-Path 'spikes/s3-extraction/ocr-worker').Path
 $Private = Join-Path $env:LOCALAPPDATA 'tuki-ocr-worker/runtime-v1'

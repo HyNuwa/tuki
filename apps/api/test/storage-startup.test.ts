@@ -32,12 +32,14 @@ class StartupExit extends Error {
 it("B2 startup rejects physical in-repository storage including dotdot names and junctions", async () => {
   const scratch = await mkdtemp(join(tmpdir(), "tuki-storage-startup-test-"));
   const alias = join(scratch, "external-alias");
-  async function startup(storage: string) {
+  async function startup(storage: string, budget?: { glm: string; job: string }) {
     vi.resetModules();
     vi.stubEnv("STORAGE_DIR", storage);
     vi.stubEnv("DATABASE_URL", "postgres://synthetic:synthetic@127.0.0.1:1/synthetic");
     for (const name of ["OCR_PYTHON", "OCR_MODELS_DIR", "OCR_CACHE_DIR"]) vi.stubEnv(name, "synthetic");
     vi.stubEnv("DATASET_HMAC_KEY", "synthetic-test-key-not-a-secret-value");
+    vi.stubEnv("GLM_TIMEOUT_MS", budget?.glm ?? "120000");
+    vi.stubEnv("JOB_TIMEOUT_MS", budget?.job ?? "390000");
     boundaries.serve.mockClear(); boundaries.connect.mockClear();
     boundaries.localMediaStorage.mockClear();
     let code: StartupExit["code"] = 0, stderr = "";
@@ -68,6 +70,7 @@ it("B2 startup rejects physical in-repository storage including dotdot names and
     for (const storage of [join(root, "..media"), join(root, "apps"), join(alias, "new-evidence")]) {
       expect.soft(await startup(storage), storage).toEqual({ code: 1, listening: false, stderr: "storage_outside_repository_required\n" });
     }
+    expect(await startup(join(scratch, "new", "outside-media"), { glm: "200000", job: "300000" })).toEqual({ code: 1, listening: false, stderr: "configuration_invalid\n" });
     expect(await startup(join(scratch, "new", "outside-media"))).toEqual({ code: 0, listening: true, stderr: "" });
   } finally { await rm(scratch, { recursive: true, force: true }); }
 });

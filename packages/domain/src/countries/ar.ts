@@ -42,6 +42,9 @@ export function createArgentinaModule(options: { localidades?: readonly Locality
       /(?<!\d)(?:\d{7,8}|\d{1,2}\.\d{3}\.\d{3})(?!\d)/u,
     ],
     retencion_dias: options.retencion_dias ?? 30,
+    normalizar_descripcion_item(raw) {
+      return raw.trim().replace(/\s*\(\d{1,2}[,.]\d{2}\s*%?\)\s*$/u, "").trim() || null;
+    },
     normalizar_id_fiscal(raw) {
       const value = raw.trim().replace(/^(?:CUIT|CUIL)\s*:?\s*/iu, "").replace(/[\s-]/gu, "");
       return /^\d{11}$/.test(value) ? { tipo: "CUIT", valor: value } : null;

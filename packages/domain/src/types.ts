@@ -37,6 +37,7 @@ export interface CountryModule {
   readonly tolerancia_total: string;
   readonly patrones_dato_personal: readonly RegExp[];
   readonly retencion_dias: number;
+  normalizar_descripcion_item(raw: string): string | null;
   normalizar_id_fiscal(raw: string): FiscalId | null;
   validar_id_fiscal(id: FiscalId): boolean;
   tipo_emisor(id: FiscalId): IssuerType;

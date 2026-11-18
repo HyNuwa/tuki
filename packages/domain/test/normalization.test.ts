@@ -84,3 +84,9 @@ it.each([
   expect(result.campos["items.0.descripcion"]).toEqual({ raw, valor: expected });
   expect(result.campos["items.0.importe"]).toEqual({ raw: "", valor: null });
 });
+
+it("delegates description cleanup to the country module rather than imposing AR VAT syntax", () => {
+  const input = ticket(); input.items[0]!.descripcion = "SYNTHETIC BREAD (21,00)";
+  const country = { ...argentina, codigo: "ZZ", normalizar_descripcion_item: (raw: string) => raw.trim() || null };
+  expect(normalizeTicket(input, country).campos["items.0.descripcion"]).toEqual({ raw: "SYNTHETIC BREAD (21,00)", valor: "SYNTHETIC BREAD (21,00)" });
+});

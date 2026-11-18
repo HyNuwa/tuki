@@ -191,7 +191,6 @@ Both contain only synthetic test images. They were not deleted by this worker:
 - `%TEMP%/tuki-t8-api-test-WbQgsL` — initial full API run.
 - `%TEMP%/tuki-t8-api-test-ijVVvC` — authorized focused retention recheck.
 
-On this machine `%TEMP%` resolved to `C:/Users/Usuario/AppData/Local/Temp`.
 Testcontainers stopped each owned container. Existing Python/startup fixture
 cleanup remains fixture-owned; no pre-existing scratch was selected or removed.
 
@@ -206,3 +205,108 @@ child-process ordering).
 2. VAT suffix cleanup belongs to the normalized value while literal OCR anchoring must retain the original description.
 3. A session-wide PostgreSQL lock and short SKIP LOCKED claims provide distinct global-concurrency and row-selection guarantees.
 4. Retention must remove duplicated raw text inside anchored result fields, not only OCR and model-output tables.
+
+## Correction batch — B1, A9, A5, A10, A11 (2026-11-17)
+
+Baseline: the coordinator reported independent domain 153, API typecheck,
+Python 38 and API Testcontainers 27/27 passing at `e2bac0f`. This follow-up is
+one bounded correction batch; no other advisory was implemented, no dependency
+was added, and no Git mutation or real-model execution was performed.
+
+### Corrected items
+
+- **B1:** `generate()` now returns a failed model attempt for its own inference
+  deadline (`inference_timeout`) and the 2 MiB envelope limit
+  (`ollama_output_limit`). Both retain `raw=""`, `complete=false`, model identity
+  and a stable reason when no complete model response string could be decoded.
+  HTTP-envelope fragments are not repaired or misrepresented as literal model
+  output. The pipeline persists each attempt, retries E5 once, then returns
+  `extraccion_invalida`; the queue finishes after one job attempt and does not
+  rerun E1-E4. Token-limited decoded responses retain their actual raw string.
+  Connection refusal, metadata/transport failures and whole-job cancellation
+  remain infrastructure failures. The new real-PostgreSQL tests assert both
+  failed persisted rows, final state/motivo, one E1/E4 execution and no requeue.
+- **B1 timeout budget:** `OCR_TIMEOUT_MS` bounds combined E1-E4 (default 120000).
+  The default whole-job budget is derived as `OCR_TIMEOUT_MS + 2 *
+  GLM_TIMEOUT_MS + 30000` (390000 with defaults). Metadata lookups are bounded
+  separately; startup rejects an explicit job budget below that minimum.
+- **B1 persistence:** additive migration `0002_model_attempt_reason.sql` adds
+  nullable `model_attempts.reason`. It does not rewrite historical attempts.
+- **A9:** the VAT suffix pattern now exists only in the AR module's
+  `normalizar_descripcion_item` implementation. The country interface exposes
+  that policy, and generic E6 delegates to it. Existing AR tests retain identical
+  behavior/raw values; a synthetic non-AR policy proves E6 does not impose AR's
+  suffix cleanup on another module. E7/anchoring is unchanged.
+- **A5:** Python receives an explicit allowlist: OS PATH/temp/SystemRoot values,
+  fixed Python runtime flags and configured OCR model/cache settings. It no
+  longer inherits application/environment secrets or Python import overrides.
+  A real spawned fake-child test verifies `DATASET_HMAC_KEY` and `DATABASE_URL`
+  are absent without printing any environment values.
+- **A10:** the API integration fixture removes only its freshly allocated
+  `tuki-t8-api-test-*` directory in teardown. It first verifies the resolved
+  absolute target's parent and prefix, and asserts ENOENT after removal. Earlier
+  task/verifier scratch is not selected or deleted.
+- **A11:** worker README distinguishes fresh environment-creation examples from
+  the actual executable of an existing private installation; paths are described
+  generically for Windows and Linux, without a user-specific venv locator.
+
+### RED and final verification
+
+RED before implementation, as recorded by the first worker (the B1 RED is also
+reproduced by the coordinator's probe output):
+
+- `test/model-attempts.test.ts`: both cases threw out of the public
+  `executeTicket` path (`TimeoutError`, `ollama_output_limit`) instead of
+  persisting attempts and returning a content failure.
+- Country-policy test: the generic normalizer stripped the synthetic other
+  country's suffix despite its explicit identity policy.
+- Python-child test: the secret-presence boolean was true.
+- Startup test: an insufficient explicit job budget incorrectly reached the
+  listener instead of returning `configuration_invalid`.
+
+Final foreground checks, run serially with no heavy work in parallel:
+
+| Command | Observed result |
+| --- | --- |
+| `pnpm --filter @tuki/domain test` | **154 passed**, 11 files; all existing VAT/anchoring behavior remains covered. |
+| `pnpm --filter @tuki/domain typecheck` | **Pass**. |
+| `pnpm --filter @tuki/api typecheck` | **Pass**. |
+| Existing private Python, from `spikes/s3-extraction/ocr-worker`: `$Python -B -m unittest discover -s tests -v` | **38 passed**, synthetic/injected engines only. |
+| B1 probe (fake Ollama whose `/api/generate` hangs, `timeoutMs` 300) | `RESULT {"estado":"Error de procesamiento","motivo":"extraccion_invalida"} generates 2 persisted [ 'E2', 'E4', 'E5', 'E5' ]` (before the fix: `THROWN TimeoutError`, 1 generate, no E5). |
+| `pnpm --filter @tuki/api test` | **Not proven.** Docker daemon unreachable (Docker Desktop Linux engine pipe missing): `api.test.ts` failed in `beforeAll`, 9 other files passed (16 tests passed, 18 skipped). The Testcontainers queue tests for B1 (no requeue, two persisted failed rows) and the A10 teardown still need one run with Docker up. |
+| Scoped `git diff --check` | **Pass**. |
+
+A first worker's report of a passing 34-test API run could not be confirmed and
+is replaced by the observed result above. The parent's recheck should remain
+limited to B1/A9/A5/A10/A11, not a new advisory sweep.
+
+### Explicitly open follow-ups — not fixed in this batch
+
+- **A1:** shutdown cancellation still consumes queue attempts.
+- **A2:** perceptual-hash duplicate detection remains exact-match and its extra
+  duplicate mark remains outside the domain pipeline.
+- **A3:** a seeded legacy-artifact purge-row integration test is still missing.
+- **A4:** unsupported MIME still returns 415 rather than creating an
+  `Error de procesamiento` ticket; HEIC support remains unimplemented.
+- **A6:** logical duplicate rows are still loaded per job.
+- **A7:** status/result endpoints remain unauthenticated; public deployment stays
+  gated on authentication and ownership.
+- **A8:** peak RAM / the 3 GB budget remain unproven on the target VM.
+
+### Scratch and ownership
+
+The integration fixture prints its `tuki-t8-api-test-*` directory under the OS
+temp directory and its teardown removes it (A10); with Docker down this run never
+reached fixture allocation. Workers created no retained manual scratch and did
+not delete earlier task scratch or the coordinator's probe directory.
+Git, member log/state updates, commit and the bounded independent recheck remain
+coordinator-owned.
+
+Risk: items 1 (additive reason-column migration), 2 (Python credential boundary),
+3 (country-module interface and timeout configuration), 4 (model/job deadlines).
+
+## Correction Key Learnings
+
+1. A model inference deadline is an E5 attempt outcome, distinct from whole-job cancellation or an unreachable transport.
+2. Persisting failed-attempt reason codes enables calibration without exposing exception contents or inventing partial model text.
+3. Country-specific description cleanup belongs behind the same country-module boundary as fiscal and numeric rules.

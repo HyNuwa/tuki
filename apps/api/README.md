@@ -22,7 +22,8 @@ load `.env` files. Never commit credentials or receipt artifacts.
 | `OLLAMA_URL` | Default `http://127.0.0.1:11434`; only literal loopback HTTP, no credentials, path or redirects. |
 | `GLM_OCR_MODEL` | Default `tuki-glm-ocr-q4km`, the spike's locally derived Q4_K_M model. Must already exist in Ollama. |
 | `GLM_TIMEOUT_MS` | Inference HTTP timeout, default 120000. |
-| `JOB_TIMEOUT_MS` | Whole-job timeout, default 300000. |
+| `JOB_TIMEOUT_MS` | Whole-job timeout; default `OCR_TIMEOUT_MS + 2 * GLM_TIMEOUT_MS + 30000` (390000). Smaller explicit budgets are rejected at startup. |
+| `OCR_TIMEOUT_MS` | Combined E1-E4 preparation/OCR budget, default 120000. |
 | `OCR_MIN_SIDE` | Minimum original short edge, default 600 pixels. |
 | `OCR_MIN_SHARPNESS` | Minimum Laplacian variance, default 100. Initial, not calibrated. |
 | `OCR_MIN_CONFIDENCE` | Mean OCR confidence threshold, default 0.6. |
@@ -47,6 +48,9 @@ runtime. A persistent JSON-lines child keeps PP-OCRv6 resident across successful
 jobs. E1-E3 are model-free; E4 and E5 are sequential. Timeouts kill and await the
 OCR process tree before the queue slot is released. There are no image scratch
 files in the new Python bridge. Infrastructure failures reset the child.
+The Python child receives only explicitly selected OS/temp/PATH values, fixed
+Python runtime flags and OCR model/cache settings; database credentials and the
+dataset HMAC key are never inherited.
 
 ## Queue and persistence
 
@@ -62,7 +66,12 @@ Queued/running job states are not ticket states. The final ticket states are
 only `accepted`, `rejected`, `processing_error`, with the domain's Spanish labels.
 Infrastructure failures get **three total attempts** (initial plus two retries),
 then `error_interno`; content failures never requeue. E5 alone retries invalid
-JSON/schema/output-limit responses once. An abandoned running row is recovered
+JSON/schema responses, per-inference timeouts and output/token-limit failures
+once, then returns `extraccion_invalida` without queue retry. Failed model
+attempts retain `complete=false` and a stable `reason`; timeout/oversized HTTP
+envelopes store empty raw text when no complete model string could be decoded.
+Connection refusal/unreachable Ollama and whole-job timeout remain infrastructure
+failures. An abandoned running row is recovered
 only while holding the database-wide worker lock; each artifact write is fenced
 by the current job token and the held connection.
 
@@ -170,5 +179,6 @@ server is a **fake Ollama**, and OCR/evidence/memory are synthetic test doubles;
 no PP-OCRv6/GLM model is loaded. Python tests use invented images and injected
 engines. Docker failure is missing required proof, not permission to replace
 PostgreSQL with a mock or restart Docker. Testcontainers stops its own container;
-the integration test prints and retains its synthetic scratch directory for
-coordinator cleanup.
+the integration test prints its synthetic scratch path and removes that owned
+fixture after the suite, with the resolved target checked beneath the OS temp
+directory before removal. Earlier retained task scratch is not selected.

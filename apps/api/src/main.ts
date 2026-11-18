@@ -8,6 +8,7 @@ import { createOllamaExtractor } from "./ingestion/ollama.js";
 import { createQueueWorker } from "./ingestion/queue.js";
 import { purgeExpired } from "./ingestion/retention.js";
 import { createOllamaMemorySampler } from "./ingestion/memory.js";
+import { DEFAULT_GLM_TIMEOUT_MS, DEFAULT_OCR_TIMEOUT_MS, resolveJobTimeoutMs } from "./ingestion/timeouts.js";
 import { localMediaStorage } from "./storage/media.js";
 import { outsideRepositoryStorage } from "./storage/directory.js";
 
@@ -30,6 +31,10 @@ const ocrConfidence = process.env.OCR_MIN_CONFIDENCE === undefined ? .6 : Number
 if (!Number.isFinite(ocrConfidence) || ocrConfidence < 0 || ocrConfidence > 1) {
   process.stderr.write("configuration_invalid\n"); process.exit(1);
 }
+const glmTimeoutMs = positive("GLM_TIMEOUT_MS", DEFAULT_GLM_TIMEOUT_MS), preparationTimeoutMs = positive("OCR_TIMEOUT_MS", DEFAULT_OCR_TIMEOUT_MS);
+let jobTimeoutMs: number;
+try { jobTimeoutMs = resolveJobTimeoutMs(glmTimeoutMs, preparationTimeoutMs, process.env.JOB_TIMEOUT_MS === undefined ? undefined : positive("JOB_TIMEOUT_MS", 0)); }
+catch { process.stderr.write("configuration_invalid\n"); process.exit(1); }
 const { db, client } = connect(DATABASE_URL);
 const storage = localMediaStorage(directory);
 const minSide = positive("OCR_MIN_SIDE", 600), minSharpness = positive("OCR_MIN_SHARPNESS", 100);
@@ -37,11 +42,11 @@ const bridge = createPythonBridge({ python: OCR_PYTHON, modelsDir: OCR_MODELS_DI
   minSide, minSharpness });
 let extractor;
 try { extractor = await createOllamaExtractor({ ...(process.env.OLLAMA_URL ? { url: process.env.OLLAMA_URL } : {}),
-  ...(process.env.GLM_OCR_MODEL ? { model: process.env.GLM_OCR_MODEL } : {}), timeoutMs: positive("GLM_TIMEOUT_MS", 120_000) }); }
+  ...(process.env.GLM_OCR_MODEL ? { model: process.env.GLM_OCR_MODEL } : {}), timeoutMs: glmTimeoutMs }); }
 catch { process.stderr.write("configuration_invalid\n"); await client.end(); process.exit(1); }
 const stopping = new AbortController();
 const worker = createQueueWorker({ db, storage, bridge, extractor, hmacKey: Buffer.from(DATASET_HMAC_KEY),
-  jobTimeoutMs: positive("JOB_TIMEOUT_MS", 300_000), signal: stopping.signal,
+  jobTimeoutMs, preparationTimeoutMs, signal: stopping.signal,
   minOcrConfidence: ocrConfidence,
   ...(process.env.OLLAMA_PID ? { sampleOllamaRam: createOllamaMemorySampler(positive("OLLAMA_PID", 0)) } : {}) });
 const app = createApp({ db, storage, versions: { ...extractor.versions, screening: { minSide, minSharpness, minOcrConfidence: ocrConfidence }, preprocessing: "opencv-perspective-exif-v1" } });

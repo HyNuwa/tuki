@@ -32,7 +32,7 @@ export const ticketArtifacts = pgTable("ticket_artifacts", {
 export const modelAttempts = pgTable("model_attempts", {
   id: text().primaryKey(), ticketId: text("ticket_id").notNull().references(() => tickets.id),
   jobAttempt: integer("job_attempt").notNull(), modelAttempt: integer("model_attempt").notNull(),
-  raw: text().notNull(), complete: boolean().notNull(), model: text().notNull(), durationMs: integer("duration_ms").notNull(),
+  raw: text().notNull(), complete: boolean().notNull(), reason: text(), model: text().notNull(), durationMs: integer("duration_ms").notNull(),
   versions: jsonb().$type<Record<string, unknown>>().notNull(),
 });
 export const jobRuns = pgTable("job_runs", {

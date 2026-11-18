@@ -58,7 +58,7 @@ export function normalizeTicket(ticket: TicketV1, country: CountryModule): Norma
     if (typeof value === "string") {
       let valor: string | null = value.trim() || null;
       if (valor !== null) {
-        if (/^items\.\d+\.descripcion$/.test(path)) valor = valor.replace(/\s*\(\d{1,2}[,.]\d{2}\s*%?\)\s*$/u, "").trim() || null;
+        if (/^items\.\d+\.descripcion$/.test(path)) valor = country.normalizar_descripcion_item(value);
         else if (isMoneyPath(path)) valor = normalizeAmount(value, country);
         else if (path.endsWith(".cantidad")) valor = canonicalDecimal(value.trim().replace(",", "."));
         else if (path === "comprobante.fecha") valor = normalizeDate(value, country);

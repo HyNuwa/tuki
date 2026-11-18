@@ -2,17 +2,18 @@ import { createHash } from "node:crypto";
 import { countryModules, defaultPipelineConfig, parseTicketJson, processTicket, processingError,
   type LogicalTicket, type PipelineConfig, type PipelineResult, type ProcessingError } from "@tuki/domain";
 import { ContentFailure, type OcrBridge, type OcrEvidence, type PreparedImage } from "./bridge.js";
-import type { Extractor } from "./ollama.js";
+import type { Extractor, ModelAttemptFailure } from "./ollama.js";
+import { DEFAULT_OCR_TIMEOUT_MS } from "./timeouts.js";
 
 export type PipelineArtifacts =
   | { stage: "E2"; prepared: PreparedImage }
   | { stage: "E4"; evidence: OcrEvidence; durationMs: number }
-  | { stage: "E5"; raw: string; attempt: number; complete: boolean; model: string; durationMs: number }
+  | { stage: "E5"; raw: string; attempt: number; complete: boolean; reason: ModelAttemptFailure | null; model: string; durationMs: number }
   | { stage: "E6_E9"; durationMs: number; durations: Record<string, number> };
 export type ExecuteInput = {
   ticketId: string; country: string; image: Uint8Array; today: string; hmacKey: Uint8Array;
   bridge: OcrBridge; extractor: Extractor; signal: AbortSignal; config?: PipelineConfig; minOcrConfidence?: number;
-  existingTickets?: readonly LogicalTicket[]; persist(artifact: PipelineArtifacts): Promise<void>;
+  existingTickets?: readonly LogicalTicket[]; preparationTimeoutMs?: number; persist(artifact: PipelineArtifacts): Promise<void>;
 };
 
 /** E1-E5 I/O orchestration. E6-E9 and dataset privacy stay exclusively in domain. */
@@ -22,9 +23,12 @@ export async function executeTicket(input: ExecuteInput): Promise<PipelineResult
   if (!country) return processingError(input.ticketId, input.country, "pais_no_soportado");
   try {
     signal.throwIfAborted();
-    const prepared = await bridge.prepare(input.image, signal);
+    const preparationSignal = AbortSignal.any([signal, AbortSignal.timeout(input.preparationTimeoutMs ?? DEFAULT_OCR_TIMEOUT_MS)]);
+    const prepared = await bridge.prepare(input.image, preparationSignal);
+    preparationSignal.throwIfAborted();
     signal.throwIfAborted(); await input.persist({ stage: "E2", prepared });
-    const startedOcr = performance.now(), evidence = await bridge.extract(prepared.image, signal);
+    const startedOcr = performance.now(), evidence = await bridge.extract(prepared.image, preparationSignal);
+    preparationSignal.throwIfAborted();
     signal.throwIfAborted(); await input.persist({ stage: "E4", evidence, durationMs: performance.now() - startedOcr });
     if (!evidence.lines.length || evidence.lines.reduce((sum, line) => sum + line.score, 0) / evidence.lines.length < (input.minOcrConfidence ?? .6))
       return processingError(input.ticketId, input.country, "texto_ilegible");
@@ -33,7 +37,7 @@ export async function executeTicket(input: ExecuteInput): Promise<PipelineResult
       const output = await extractor.generate(prepared.image, signal);
       signal.throwIfAborted();
       // Persist the untouched response even if JSON/schema/token limit validation fails.
-      await input.persist({ stage: "E5", raw: output.raw, complete: output.complete, model: output.model, attempt, durationMs: performance.now() - started });
+      await input.persist({ stage: "E5", raw: output.raw, complete: output.complete, reason: output.reason ?? null, model: output.model, attempt, durationMs: performance.now() - started });
       if (!output.complete || !parseTicketJson(output.raw).success) continue;
       const config = input.config ?? defaultPipelineConfig;
       const beginDomain = performance.now();

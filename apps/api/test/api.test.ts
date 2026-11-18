@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { mkdtemp, readFile, readdir } from "node:fs/promises";
+import { access, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { createServer, type Server } from "node:http";
 import { once } from "node:events";
 import { eq, sql } from "drizzle-orm";
@@ -46,12 +46,14 @@ async function upload(options: { bytes?: Uint8Array; country?: string; consent?:
 }
 beforeAll(async () => {
   container = await new PostgreSqlContainer("postgres:16.13-alpine").start();
-  directory = await mkdtemp(join(tmpdir(), "tuki-t8-api-test-")); console.info(`SCRATCH_RETAINED=${directory}`);
+  directory = await mkdtemp(join(tmpdir(), "tuki-t8-api-test-")); process.stdout.write(`FIXTURE_DIRECTORY=${directory}\n`);
   png = await readFile(new URL("../../contributor-web/public/samples/legible.png", import.meta.url));
   connection = connect(container.getConnectionUri()); await migrateDatabase(connection.db); storage = localMediaStorage(directory);
   server = createServer(async (req, res) => {
     if (req.url === "/api/tags") return res.end(JSON.stringify({ models: [{ name: "synthetic-q4", digest: "a".repeat(64), details: { quantization_level: "Q4_K_M" } }] }));
     let body = ""; for await (const chunk of req) body += chunk; calls.push(JSON.parse(body));
+    if (mode === "model_timeout") { res.setHeader("Content-Type", "application/json"); res.flushHeaders(); return; }
+    if (mode === "model_output_limit") return res.end(JSON.stringify({ response: "x".repeat(2 * 1024 * 1024), done: true }));
     const data = syntheticTicket(); if (mode === "empty") data.items[0]!.importe = "";
     const raw = mode === "invalid" ? "  invalid synthetic output\n" : JSON.stringify(data);
     res.setHeader("Content-Type", "application/json"); res.end(JSON.stringify({ response: raw, model: "synthetic-q4", done: true }));
@@ -61,9 +63,17 @@ beforeAll(async () => {
   app = createApp({ db: connection.db, storage, versions: extractor.versions });
 }, 120_000);
 afterAll(async () => {
-  if (server) { server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve())); }
-  if (connection) await connection.client.end(); if (container) await container.stop();
-  // Coordinator owns cleanup of the printed synthetic-only scratch directory.
+  try {
+    if (server) { server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve())); }
+    if (connection) await connection.client.end(); if (container) await container.stop();
+  } finally {
+    if (directory) {
+      const target = resolve(directory);
+      if (dirname(target) !== resolve(tmpdir()) || !basename(target).startsWith("tuki-t8-api-test-")) throw new Error("invalid_fixture_cleanup_path");
+      await rm(target, { recursive: true, force: true });
+      await expect(access(target)).rejects.toMatchObject({ code: "ENOENT" });
+    }
+  }
 });
 
 it("enqueues an immutable original and persists accepted result, artifacts and separate dataset", async () => {
@@ -127,6 +137,27 @@ it("times out hung jobs and exhausts exactly three queue attempts", async () => 
   failure = "timeout"; const { id } = await (await upload()).json(); const runner = worker(20);
   for (let attempt = 1; attempt <= 3; attempt++) expect(await runner.runNext()).toBe(true);
   failure = null; const result = await get(`/contributions/${id}`); expect(result.job).toMatchObject({ attempts: 3, status: "failed" }); expect(result.errorCode).toBe("error_interno");
+});
+
+it.each([["model_timeout", "inference_timeout"], ["model_output_limit", "ollama_output_limit"]] as const)("does not requeue failed E5 model attempts for %s", async (responseMode, reason) => {
+  mode = responseMode; let preparations = 0, recognitions = 0;
+  try {
+    const limited = await createOllamaExtractor({ url: `http://127.0.0.1:${(server.address() as { port: number }).port}`, model: "synthetic-q4", timeoutMs: 300 });
+    const { id } = await (await upload()).json(), before = calls.length;
+    const runner = createQueueWorker({ db: connection.db, storage, extractor: limited, hmacKey: key, jobTimeoutMs: 5000,
+      bridge: { ...bridge, async prepare(bytes, signal) { preparations++; return bridge.prepare(bytes, signal); },
+        async extract(bytes, signal) { recognitions++; return bridge.extract(bytes, signal); } } });
+    expect(await runner.runNext()).toBe(true);
+    const result = await get(`/contributions/${id}`);
+    expect(result.state).toBe("processing_error"); expect(result.result.motivo).toBe("extraccion_invalida");
+    expect(result.job).toMatchObject({ attempts: 1, status: "failed" }); expect(calls.length - before).toBe(2);
+    expect(preparations).toBe(1); expect(recognitions).toBe(1);
+    const attempts = await connection.db.select().from(modelAttempts).where(eq(modelAttempts.ticketId, id));
+    expect(attempts).toHaveLength(2);
+    for (const attempt of attempts) expect(attempt).toMatchObject({ jobAttempt: 1, raw: "", complete: false, reason });
+    expect(await runner.runNext()).toBe(false);
+    expect(await connection.db.select().from(datasetRecords).where(eq(datasetRecords.ticketId, id))).toEqual([]);
+  } finally { mode = "valid"; }
 });
 
 it("claims another row with SKIP LOCKED rather than waiting on the first", async () => {
