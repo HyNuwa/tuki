@@ -1,5 +1,7 @@
 # 13 — Resumen para el equipo
 
+> **Actualización — 2026-11-17 (decisión del dueño):** [ticket-pipeline.md](../odd/specs/ticket-pipeline.md) reemplaza lo indicado aquí sobre extracción, revisión o corrección humana, estados, aceptación, dataset y persistencia de tickets. El flujo es automático: PP-OCRv6 aporta evidencia, GLM-OCR extrae desde la imagen y el código ancla, valida y puntúa; no es un extractor por reglas. Los estados finales son «Aceptado», «Rechazado» y «Error de procesamiento»; el identificador fiscal y el QR son opcionales y no deciden la aceptación. La nueva spec no define registro on-chain ni lógica de la dApp.
+
 **Estado: propuesta de startup para validar, no compañía operativa. Actualizado: 13 de noviembre de 2026 (red de pagos: Base, [ADR 0003](adr/0003-red-de-pagos-base.md)).** Sin código, sin usuarios reales y sin dinero real. **La arquitectura no está aprobada para fondos reales.**
 
 **Cambio de dirección:** la propuesta anterior (pagar QR argentinos con USDC mediante una red RFQ de payment solvers) quedó archivada en el tag `archive/qr-usdc-rfq`. La dirección actual es un marketplace de datos del mundo real para agentes de IA.

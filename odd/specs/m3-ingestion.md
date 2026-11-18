@@ -1,5 +1,7 @@
 # M3 — Ingestion pipeline, extractor and contributor flow
 
+> **Amendment — 2026-11-17 (owner decision):** [ticket-pipeline.md](ticket-pipeline.md) supersedes the extraction contract, ticket states, review/appeal flow, acceptance, dataset and persistence requirements below wherever covered by that spec. PP-OCRv6 supplies evidence and GLM-OCR extracts from the same image; deterministic code normalizes, anchors, validates and scores, not rule-parses receipts. There is no human review or correction: final states are «Aceptado», «Rechazado» and «Error de procesamiento». Fiscal ID and QR are optional metadata, not acceptance gates; on-chain registration and dApp logic remain outside the new spec. The `Extractor` provider below is decided: E5 runs GLM-OCR Q4_K_M (GGUF) served by Ollama over local HTTP, without PyTorch, with schema-forced output; E6 strips the per-item VAT-rate suffix in the AR country module. Fitting the 3 GB worker RAM budget on the VM is still unproven. See [ADR 0005](../../docs/adr/0005-automatic-ticket-pipeline.md).
+
 > Parent: [`mvp-p0.md`](mvp-p0.md) — modules 4 (acceptance, quotas, caps), 8 (contributor API/PWA), 9, 14, Milestones row 3. Implements Q1, Q3, Q11, Q13.1, Q13.5; PRD P0-05, P0-06, P0-10; errors E1, E3, E4, E6, E11; invariants I3, I6, I9, I13.
 
 ## 1. Scope

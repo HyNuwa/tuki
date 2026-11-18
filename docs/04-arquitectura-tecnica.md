@@ -1,5 +1,7 @@
 # 04 — Arquitectura técnica: marketplace de observaciones verificadas de comercio físico
 
+> **Actualización — 2026-11-17 (decisión del dueño):** [ticket-pipeline.md](../odd/specs/ticket-pipeline.md) reemplaza lo indicado aquí sobre extracción, revisión o corrección humana, estados, aceptación, dataset y persistencia de tickets. El flujo es automático: PP-OCRv6 aporta evidencia, GLM-OCR extrae desde la imagen y el código ancla, valida y puntúa; no es un extractor por reglas. Los estados finales son «Aceptado», «Rechazado» y «Error de procesamiento»; el identificador fiscal y el QR son opcionales y no deciden la aceptación. La nueva spec no define registro on-chain ni lógica de la dApp. **Runtime de E5:** GLM-OCR Q4_K_M (GGUF) servido por Ollama por HTTP local, sin PyTorch, con salida forzada al esquema `ticket.v1`; E6 quita el sufijo de alícuota de IVA de cada ítem (módulo de Argentina). Que el worker entre en el presupuesto de 3 GB de RAM de la VM sigue sin probarse. Ver [ADR 0005](adr/0005-automatic-ticket-pipeline.md).
+
 **Estado:** diseño conceptual (2026-11-12). **La arquitectura no está aprobada para fondos reales.** Ninguna pieza está probada en código.
 - La demo usa testnet, un pago x402 `exact` hacia un tesoro de tareas con custodia temporal y ledger interno [Simulado], y contribuyentes del equipo. **x402 `exact` no es un escrow.**
 - No hay que mover fondos reales de agentes ni pagar a contribuyentes reales antes de cerrar los pendientes de [16 — Modelo de seguridad, verificación y pagos](16-modelo-seguridad-verificacion-pagos.md), §10.

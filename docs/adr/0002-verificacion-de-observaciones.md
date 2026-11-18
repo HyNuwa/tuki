@@ -1,5 +1,7 @@
 # ADR 0002 — Verificación de observaciones y qué se vende como "verificado"
 
+**Reemplazado en parte por el ADR 0005:** [Automatic ticket pipeline](0005-automatic-ticket-pipeline.md) (decisión del dueño, 2026-11-17; extracción, aceptación y tratamiento interno de tickets según la nueva spec).
+
 **Estado:** propuesta pendiente.
 **Fecha:** 2026-11-12
 **Contexto relacionado:** [doc 16](../16-modelo-seguridad-verificacion-pagos.md) (§2 verificación por capas, §3 fraude), [doc 15](../15-stack-tecnologico.md) (spikes S3, S4, S5).

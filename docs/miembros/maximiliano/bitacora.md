@@ -2,6 +2,12 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-18 · docs: align normative docs with the ticket pipeline
+- **Qué hice:** T10 (S14). Notas fechadas al inicio de cada documento normativo que describía la revisión manual: el flujo queda reemplazado por `odd/specs/ticket-pipeline.md` (estados Aceptado/Rechazado/Error de procesamiento, sin edición manual). Nuevo ADR 0005 del pipeline automático con la decisión de E5 (GLM-OCR Q4_K_M GGUF en Ollama), la limpieza de la alícuota de IVA y la RAM en la VM aún sin probar; notas en los ADR 0002 y 0004. Los registros históricos (bitácoras, informes, notas del spike) quedan como historia.
+- **Archivos clave:** `docs/adr/0005-automatic-ticket-pipeline.md`, `DESIGN.md`, `docs/03`–`17`, `odd/specs/mvp-p0.md`, `m2-domain-api-mode-a.md`, `m3-ingestion.md`, `spikes/s3-extraction/demo/PRODUCT.md` y `DESIGN.md`.
+- **Próximo paso:** T9, web de solo lectura sobre la API nueva.
+
+
 ## 2026-11-18 · fix(api): count model timeouts as failed attempts
 - **Qué hice:** corrección única tras la verificación independiente de T8. Bloqueante B1: un timeout por inferencia o el límite de 2 MiB de salida ahora son un intento fallido de modelo (se guarda con `complete=false` y motivo, se hace el segundo intento y termina en «Error de procesamiento» con `extraccion_invalida`, sin volver a la cola); antes la cola lo trataba como falla de infraestructura. `JOB_TIMEOUT_MS` por defecto alcanza para OCR + dos intentos (390 s). La regla de la alícuota de IVA pasa al módulo AR; el proceso Python recibe un entorno mínimo sin `DATASET_HMAC_KEY` ni `DATABASE_URL`; las pruebas de la API limpian su temporal. Migración aditiva `0002_model_attempt_reason.sql`.
 - **Archivos clave:** `apps/api/src/ingestion/` (`ollama.ts`, `pipeline.ts`, `queue.ts`, `bridge.ts`, `timeouts.ts`), `packages/domain/src/countries/ar.ts`, `apps/api/test/model-attempts.test.ts`, `odd/tasks/m3-t8-api-report.md`.
