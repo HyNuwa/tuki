@@ -1,5 +1,9 @@
 # 15 — Decisiones del stack tecnológico
 
+> **Actualización — 2026-11-17 (decisión del dueño):** [ticket-pipeline.md](../odd/specs/ticket-pipeline.md) reemplaza lo indicado aquí sobre extracción, revisión o corrección humana, estados, aceptación, dataset y persistencia de tickets. El flujo es automático: PP-OCRv6 aporta evidencia, GLM-OCR extrae desde la imagen y el código ancla, valida y puntúa; no es un extractor por reglas. Los estados finales son «Aceptado», «Rechazado» y «Error de procesamiento»; el identificador fiscal y el QR son opcionales y no deciden la aceptación. La nueva spec no define registro on-chain ni lógica de la dApp. **Runtime de E5:** GLM-OCR Q4_K_M (GGUF) servido por Ollama por HTTP local, sin PyTorch, con salida forzada al esquema `ticket.v1`; E6 quita el sufijo de alícuota de IVA de cada ítem (módulo de Argentina). Que el worker entre en el presupuesto de 3 GB de RAM de la VM sigue sin probarse. Ver [ADR 0005](adr/0005-automatic-ticket-pipeline.md).
+>
+> **Stack vigente:** React + Vite PWA, según [mvp-p0.md Q10](../odd/specs/mvp-p0.md#decisions-from-the-grilling-session-2026-11-14); las menciones de Next.js de este documento quedan reemplazadas.
+
 **Estado:** borrador (2026-11-12; red de pagos cambiada a Base el 2026-11-13, ver [ADR 0003](adr/0003-red-de-pagos-base.md)). Ninguna pieza está probada en código. **La arquitectura no está aprobada para fondos reales.**
 **Alcance:** "Núcleo MVP" se refiere a la **demo de hackathon** con alcance simplificado (testnet, contribuyentes del equipo, revisión manual; ver "Alcance del hackathon"). El protocolo objetivo y el piloto real tienen condiciones propias ([doc 16](16-modelo-seguridad-verificacion-pagos.md), §10).
 **Criterio:** primero resolver verificación de observaciones y flujo de fondos de los encargos. Una integración entra solo si resuelve una necesidad identificada en [doc 04](04-arquitectura-tecnica.md).

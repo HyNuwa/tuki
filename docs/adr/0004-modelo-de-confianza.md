@@ -4,6 +4,8 @@
 **Fecha:** 2026-11-14
 **Relacionado:** [ADR 0001](0001-red-y-custodia-de-presupuestos.md) (custodia), [ADR 0002](0002-verificacion-de-observaciones.md) (verificación), [ADR 0003](0003-red-de-pagos-base.md) (Base), [doc 16](../16-modelo-seguridad-verificacion-pagos.md) (§4 fondos, §4.3 reserva, §7 privacidad).
 
+> **Actualización — 2026-11-17 (decisión del dueño):** el [ADR 0005](0005-automatic-ticket-pipeline.md) y [ticket-pipeline.md](../../odd/specs/ticket-pipeline.md) reemplazan la revisión humana de tickets mencionada aquí ("mandarla a revisión", "revisión" dentro de la evidencia offchain): el procesamiento es automático y termina en «Aceptado», «Rechazado» o «Error de procesamiento». El resto del modelo de confianza (fondos, firmas de verificadores, reserva y procedencia) no cambia.
+
 ## Contexto
 
 El objetivo arquitectónico pasa de "Web2.5" (la plataforma verifica, decide y paga; la cadena solo registra transferencias) a **Web3 con confianza minimizada**: la plataforma opera, pero contratos y verificadores independientes limitan lo que puede decidir sola. Un protocolo completamente permissionless queda como objetivo de largo plazo, no de la demo.

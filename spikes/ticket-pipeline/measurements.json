@@ -1,0 +1,4840 @@
+{
+  "benchmark-small.json": {
+    "model": "small",
+    "device": "cpu",
+    "threads": 4,
+    "total_with_setup_s": 364.062791700002,
+    "summary": {
+      "synthetic": {
+        "images": 3,
+        "latency_p50_s": 8.015749599995615,
+        "latency_max_s": 8.864278799999738,
+        "peak_process_rss_bytes": 881844224,
+        "json_syntax_valid": 3,
+        "schema_valid": 0,
+        "description_substrings_recovered": 4,
+        "annotated_items": 4,
+        "longest_annotated_item_count": 2,
+        "generation_limit_hits": 0
+      },
+      "private": {
+        "images": 10,
+        "latency_p50_s": 13.338718099999824,
+        "latency_max_s": 34.025107400004345,
+        "peak_process_rss_bytes": 1027407872,
+        "json_syntax_valid": 10,
+        "schema_valid": 0,
+        "description_substrings_recovered": 9,
+        "annotated_items": 16,
+        "longest_annotated_item_count": 4,
+        "generation_limit_hits": 0
+      }
+    }
+  },
+  "benchmark-medium.json": {
+    "model": "medium",
+    "device": "cpu",
+    "threads": 4,
+    "total_with_setup_s": 749.7282528999931,
+    "summary": {
+      "synthetic": {
+        "images": 3,
+        "latency_p50_s": 29.186837800007197,
+        "latency_max_s": 37.286146200000076,
+        "peak_process_rss_bytes": 1031569408,
+        "json_syntax_valid": 3,
+        "schema_valid": 0,
+        "description_substrings_recovered": 4,
+        "annotated_items": 4,
+        "longest_annotated_item_count": 2,
+        "generation_limit_hits": 0
+      },
+      "private": {
+        "images": 10,
+        "latency_p50_s": 54.73858910000126,
+        "latency_max_s": 89.69347240000207,
+        "peak_process_rss_bytes": 1119420416,
+        "json_syntax_valid": 10,
+        "schema_valid": 0,
+        "description_substrings_recovered": 7,
+        "annotated_items": 16,
+        "longest_annotated_item_count": 4,
+        "generation_limit_hits": 0
+      }
+    }
+  },
+  "benchmark-ollama-all.json": {
+    "model": "glm-ocr",
+    "runtime": {
+      "version": "0.40.16"
+    },
+    "device": "cpu",
+    "quantization": "Q4_K_M",
+    "summary": {
+      "synthetic": {
+        "images": 3,
+        "latency_p50_s": 82.92322679999052,
+        "latency_max_s": 84.71111859999655,
+        "peak_process_rss_bytes": 2539667456,
+        "json_syntax_valid": 0,
+        "schema_valid": 0,
+        "description_substrings_recovered": 0,
+        "annotated_items": 4,
+        "longest_annotated_item_count": 2,
+        "generation_limit_hits": 0
+      },
+      "private": {
+        "images": 10,
+        "latency_p50_s": 72.86769724999613,
+        "latency_max_s": 211.22742759999528,
+        "peak_process_rss_bytes": 2539667456,
+        "json_syntax_valid": 0,
+        "schema_valid": 0,
+        "description_substrings_recovered": 0,
+        "annotated_items": 16,
+        "longest_annotated_item_count": 4,
+        "generation_limit_hits": 0
+      }
+    },
+    "synthetic_rows": [
+      {
+        "cohort": "synthetic",
+        "latency_s": 82.92322679999052,
+        "peak_process_rss_bytes": 2438639616,
+        "json_syntax_valid": false,
+        "schema_valid": false,
+        "items_recovered": 0,
+        "annotated_items": 2,
+        "generated_tokens": 392,
+        "generation_limit_hit": false,
+        "case": "legible"
+      },
+      {
+        "cohort": "synthetic",
+        "latency_s": 74.42540110000118,
+        "peak_process_rss_bytes": 2539667456,
+        "json_syntax_valid": false,
+        "schema_valid": false,
+        "items_recovered": 0,
+        "annotated_items": 2,
+        "generated_tokens": 376,
+        "generation_limit_hit": false,
+        "case": "degraded"
+      },
+      {
+        "cohort": "synthetic",
+        "latency_s": 84.71111859999655,
+        "peak_process_rss_bytes": 2539667456,
+        "json_syntax_valid": false,
+        "schema_valid": false,
+        "items_recovered": 0,
+        "annotated_items": 0,
+        "generated_tokens": 197,
+        "generation_limit_hit": false,
+        "case": "incomplete"
+      }
+    ]
+  },
+  "qr-counts.json": {
+    "synthetic": {
+      "photos": 3,
+      "decoded_qr_photos": 0,
+      "arca_qr_photos": 0
+    },
+    "private": {
+      "photos": 10,
+      "decoded_qr_photos": 0,
+      "arca_qr_photos": 0
+    }
+  },
+  "bf16-timeout.json": {
+    "completed_image_batch": false,
+    "cpu_s": 1235.171875,
+    "requested_generation_max_time_s": 120,
+    "peak_rss_bytes": 981262336,
+    "elapsed_s": 679.745937,
+    "outcome": "aborted",
+    "reason": "outer_reference_budget_exceeded"
+  },
+  "word_box_probe": [
+    {
+      "cohort": "synthetic",
+      "latency_s": 11.07770320000418,
+      "peak_process_rss_bytes": 804970496,
+      "json_syntax_valid": true,
+      "schema_valid": false,
+      "items_recovered": 2,
+      "annotated_items": 2,
+      "lines": 6,
+      "word_box_key_present": true,
+      "word_text_key_present": true,
+      "multi_character_word_segments": 28,
+      "case": "legible"
+    },
+    {
+      "cohort": "synthetic",
+      "latency_s": 6.975100700001349,
+      "peak_process_rss_bytes": 883527680,
+      "json_syntax_valid": true,
+      "schema_valid": false,
+      "items_recovered": 2,
+      "annotated_items": 2,
+      "lines": 6,
+      "word_box_key_present": true,
+      "word_text_key_present": true,
+      "multi_character_word_segments": 29,
+      "case": "degraded"
+    },
+    {
+      "cohort": "synthetic",
+      "latency_s": 6.071419200001401,
+      "peak_process_rss_bytes": 883810304,
+      "json_syntax_valid": true,
+      "schema_valid": false,
+      "items_recovered": 0,
+      "annotated_items": 0,
+      "lines": 7,
+      "word_box_key_present": true,
+      "word_text_key_present": true,
+      "multi_character_word_segments": 21,
+      "case": "incomplete"
+    }
+  ],
+  "constrained_output_retry": {
+    "format_constrained": true,
+    "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+    "schema_sha256": "0d44df0430b9a9fa2149400df4d3c8a411d55e129c133e74950df4bcf28197d9",
+    "variants": {
+      "Q4_K_M": {
+        "synthetic": {
+          "images": 3,
+          "quality_labeled_images": 3,
+          "json_valid": 3,
+          "schema_valid": 3,
+          "latency_p50_s": 42.609362000002875,
+          "latency_max_s": 45.33430000000226,
+          "peak_sampled_rss_bytes": 2636587008,
+          "fields": {
+            "total": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "item_descripcion": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "item_importe": {
+              "correct": 2,
+              "evaluated": 6
+            },
+            "fecha": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "razon_social": {
+              "correct": 0,
+              "evaluated": 3
+            }
+          },
+          "expected_items": 6,
+          "predicted_items": 7,
+          "items_recovered": 0,
+          "unmatched_or_spurious_items": 7,
+          "summary_rows_as_items": 2,
+          "nonempty_amounts": 8,
+          "empty_amounts": 18,
+          "literal_presence_matches": 8,
+          "generation_limit_hits": 0
+        },
+        "private": {
+          "images": 10,
+          "quality_labeled_images": 3,
+          "json_valid": 10,
+          "schema_valid": 10,
+          "latency_p50_s": 31.569910850004817,
+          "latency_max_s": 93.0176838000043,
+          "peak_sampled_rss_bytes": 3390291968,
+          "fields": {
+            "total": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "item_descripcion": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "item_importe": {
+              "correct": 1,
+              "evaluated": 5
+            },
+            "fecha": {
+              "correct": 0,
+              "evaluated": 0
+            },
+            "razon_social": {
+              "correct": 0,
+              "evaluated": 0
+            }
+          },
+          "expected_items": 5,
+          "predicted_items": 14,
+          "items_recovered": 0,
+          "unmatched_or_spurious_items": 14,
+          "summary_rows_as_items": 3,
+          "nonempty_amounts": 96,
+          "empty_amounts": 49,
+          "literal_presence_matches": 95,
+          "generation_limit_hits": 0
+        }
+      },
+      "Q8_0": {
+        "synthetic": {
+          "images": 3,
+          "quality_labeled_images": 3,
+          "json_valid": 3,
+          "schema_valid": 3,
+          "latency_p50_s": 45.506644100009,
+          "latency_max_s": 46.728300300004776,
+          "peak_sampled_rss_bytes": 2930348032,
+          "fields": {
+            "total": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "item_descripcion": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "item_importe": {
+              "correct": 2,
+              "evaluated": 6
+            },
+            "fecha": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "razon_social": {
+              "correct": 0,
+              "evaluated": 3
+            }
+          },
+          "expected_items": 6,
+          "predicted_items": 6,
+          "items_recovered": 0,
+          "unmatched_or_spurious_items": 6,
+          "summary_rows_as_items": 1,
+          "nonempty_amounts": 8,
+          "empty_amounts": 16,
+          "literal_presence_matches": 8,
+          "generation_limit_hits": 0
+        },
+        "private": {
+          "images": 10,
+          "quality_labeled_images": 3,
+          "json_valid": 10,
+          "schema_valid": 10,
+          "latency_p50_s": 29.597352899996622,
+          "latency_max_s": 86.39458629999717,
+          "peak_sampled_rss_bytes": 4055535616,
+          "fields": {
+            "total": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "item_descripcion": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "item_importe": {
+              "correct": 1,
+              "evaluated": 5
+            },
+            "fecha": {
+              "correct": 0,
+              "evaluated": 0
+            },
+            "razon_social": {
+              "correct": 0,
+              "evaluated": 0
+            }
+          },
+          "expected_items": 5,
+          "predicted_items": 8,
+          "items_recovered": 0,
+          "unmatched_or_spurious_items": 8,
+          "summary_rows_as_items": 2,
+          "nonempty_amounts": 84,
+          "empty_amounts": 34,
+          "literal_presence_matches": 82,
+          "generation_limit_hits": 0
+        }
+      }
+    },
+    "runtime": {
+      "version": "0.40.16"
+    },
+    "metric_revision": "2: atomic annotations also accept unambiguous dot-decimal strings; raw responses unchanged"
+  },
+  "extended_comparison": {
+    "historical_baselines": {
+      "Q4_K_M": {
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 42.609362000002875,
+            "latency_max_s": 45.33430000000226,
+            "peak_sampled_rss_bytes": 2636587008,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": null
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 31.569910850004817,
+            "latency_max_s": 93.0176838000043,
+            "peak_sampled_rss_bytes": 3390291968,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 96,
+            "empty_amounts": 49,
+            "literal_presence_matches": 95,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": null
+          }
+        },
+        "model_process_rss": "not recorded in historical run; family RSS only"
+      },
+      "Q8_0": {
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 45.506644100009,
+            "latency_max_s": 46.728300300004776,
+            "peak_sampled_rss_bytes": 2930348032,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": null
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 29.597352899996622,
+            "latency_max_s": 86.39458629999717,
+            "peak_sampled_rss_bytes": 4055535616,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 84,
+            "empty_amounts": 34,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": null
+          }
+        },
+        "model_process_rss": "not recorded in historical run; family RSS only"
+      }
+    },
+    "experiments": {
+      "extended-ctx-GLM-Q4_K_M": {
+        "model": "tuki-glm-ocr-q4km",
+        "num_ctx": 16384,
+        "input": "image only",
+        "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 36.48377000000028,
+            "latency_max_s": 39.260275999999976,
+            "peak_sampled_rss_bytes": 3174318080,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3102957568
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 24.62240614999996,
+            "latency_max_s": 77.57631720000018,
+            "peak_sampled_rss_bytes": 4344467456,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 96,
+            "empty_amounts": 49,
+            "literal_presence_matches": 95,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 4274143232
+          }
+        },
+        "model_digest": "5b1c7ee47a0eab894fb974a3ad635f6b43eeeb2d5728c5a42c5855ea633720c1",
+        "context_evidence": {
+          "max_prompt_tokens": 2202,
+          "max_runtime_prompt_tokens": 2202,
+          "max_prompt_plus_output_tokens": 2812,
+          "truncated_release_log_hits": 0,
+          "image_decode_batches": 19,
+          "thinking_characters": 0
+        }
+      },
+      "extended-ctx-GLM-Q8_0": {
+        "model": "glm-ocr:q8_0",
+        "num_ctx": 16384,
+        "input": "image only",
+        "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 42.71823129999984,
+            "latency_max_s": 43.83697919999986,
+            "peak_sampled_rss_bytes": 3466280960,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3394138112
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 27.83974649999982,
+            "latency_max_s": 84.24774929999967,
+            "peak_sampled_rss_bytes": 4068093952,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 84,
+            "empty_amounts": 34,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3986186240
+          }
+        },
+        "model_digest": "6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f",
+        "context_evidence": {
+          "max_prompt_tokens": 2202,
+          "max_runtime_prompt_tokens": 2202,
+          "max_prompt_plus_output_tokens": 2489,
+          "truncated_release_log_hits": 0,
+          "image_decode_batches": 19,
+          "thinking_characters": 0
+        }
+      },
+      "extended-e2-GLM-Q4_K_M": {
+        "model": "tuki-glm-ocr-q4km",
+        "num_ctx": 8192,
+        "input": "image only",
+        "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 39.662786299999425,
+            "latency_max_s": 45.722983900000145,
+            "peak_sampled_rss_bytes": 2636296192,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 2564403200
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 27.792354599999726,
+            "latency_max_s": 94.90385250000054,
+            "peak_sampled_rss_bytes": 3819585536,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 97,
+            "empty_amounts": 50,
+            "literal_presence_matches": 96,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3742089216
+          }
+        },
+        "model_digest": "5b1c7ee47a0eab894fb974a3ad635f6b43eeeb2d5728c5a42c5855ea633720c1",
+        "context_evidence": {
+          "max_prompt_tokens": 2202,
+          "max_runtime_prompt_tokens": 2202,
+          "max_prompt_plus_output_tokens": 2809,
+          "truncated_release_log_hits": 0,
+          "image_decode_batches": 19,
+          "thinking_characters": 0
+        }
+      },
+      "extended-e2-GLM-Q8_0": {
+        "model": "glm-ocr:q8_0",
+        "num_ctx": 8192,
+        "input": "image only",
+        "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 44.305076499999814,
+            "latency_max_s": 44.32392450000043,
+            "peak_sampled_rss_bytes": 2817994752,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 2749374464
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 29.03599734999989,
+            "latency_max_s": 88.68798650000008,
+            "peak_sampled_rss_bytes": 3690684416,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 81,
+            "empty_amounts": 38,
+            "literal_presence_matches": 77,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3612602368
+          }
+        },
+        "model_digest": "6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f",
+        "context_evidence": {
+          "max_prompt_tokens": 2202,
+          "max_runtime_prompt_tokens": 2202,
+          "max_prompt_plus_output_tokens": 2489,
+          "truncated_release_log_hits": 0,
+          "image_decode_batches": 19,
+          "thinking_characters": 0
+        }
+      },
+      "extended-res-GLM-Q4_K_M": {
+        "model": "tuki-glm-ocr-q4km",
+        "num_ctx": 8192,
+        "input": "image only",
+        "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 168.11487109999962,
+            "latency_max_s": 189.36667040000066,
+            "peak_sampled_rss_bytes": 3511947264,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3473825792
+          },
+          "private": {
+            "images": 7,
+            "quality_labeled_images": 3,
+            "json_valid": 7,
+            "schema_valid": 7,
+            "latency_p50_s": 133.22334880000017,
+            "latency_max_s": 246.5341371000004,
+            "peak_sampled_rss_bytes": 3997884416,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 33,
+            "empty_amounts": 44,
+            "literal_presence_matches": 32,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3930443776
+          }
+        },
+        "model_digest": "5b1c7ee47a0eab894fb974a3ad635f6b43eeeb2d5728c5a42c5855ea633720c1"
+      },
+      "extended-res-GLM-Q8_0": {
+        "model": "glm-ocr:q8_0",
+        "num_ctx": 8192,
+        "input": "image only",
+        "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 187.5888744999993,
+            "latency_max_s": 198.191597,
+            "peak_sampled_rss_bytes": 3814264832,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 9,
+            "empty_amounts": 15,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 3764879360
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 119.96326435000037,
+            "latency_max_s": 220.8852926999998,
+            "peak_sampled_rss_bytes": 4649922560,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 86,
+            "empty_amounts": 36,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 4599996416
+          }
+        },
+        "model_digest": "6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f",
+        "context_evidence": {
+          "max_prompt_tokens": 3462,
+          "max_runtime_prompt_tokens": 3462,
+          "max_prompt_plus_output_tokens": 4191,
+          "truncated_release_log_hits": 0,
+          "image_decode_batches": 38,
+          "thinking_characters": 0
+        }
+      },
+      "extended-a-Qwen-Q8_0": {
+        "model": "qwen3.5:0.8b-q8_0",
+        "num_ctx": 8192,
+        "input": "OCR lines only",
+        "prompt_sha256": "0f1e19581ecf1e229b8b8990757cb7a2e6ebc33e6148ef4d123fe817b2fec8e7",
+        "summary": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 15.41198089999989,
+            "latency_max_s": 17.24984160000031,
+            "peak_sampled_rss_bytes": 1538830336,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 5,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 5,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 5,
+            "summary_rows_as_items": 0,
+            "nonempty_amounts": 21,
+            "empty_amounts": 0,
+            "literal_presence_matches": 14,
+            "generation_limit_hits": 0,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 1467916288
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 9,
+            "schema_valid": 9,
+            "latency_p50_s": 20.33010940000031,
+            "latency_max_s": 169.91320349999978,
+            "peak_sampled_rss_bytes": 2331308032,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 18,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 18,
+            "summary_rows_as_items": 0,
+            "nonempty_amounts": 83,
+            "empty_amounts": 2,
+            "literal_presence_matches": 56,
+            "generation_limit_hits": 1,
+            "description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "items_recovered_similarity_085": 0,
+            "peak_model_process_rss_bytes": 2259070976
+          }
+        },
+        "model_digest": "7c00f78aed0fd757e9ba2f2720896768fd22da24b7fb6fe17096bb1e85bb2d25",
+        "context_evidence": {
+          "max_prompt_tokens": 1585,
+          "max_prompt_plus_output_tokens": 5681,
+          "truncated_release_log_hits": 0,
+          "image_decode_batches": 0,
+          "thinking_characters": 0
+        }
+      }
+    },
+    "ocr_original": {
+      "synthetic": {
+        "images": 3,
+        "latency_p50_s": 3.4331139000000803,
+        "latency_max_s": 3.6316799000001083,
+        "peak_rss_bytes": 879198208
+      },
+      "private": {
+        "images": 10,
+        "latency_p50_s": 7.213723350000009,
+        "latency_max_s": 11.436171600000307,
+        "peak_rss_bytes": 1094328320
+      }
+    },
+    "bf16_reference": {
+      "requested_images": 6,
+      "completed_images": 6,
+      "format_backend": "lm-format-enforcer 0.11.3",
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "weight_sha256": "a16eb0de98d199293371c560f95f83130d2a2c9612449df16839f08ff9498815",
+      "summary": {
+        "synthetic": {
+          "images": 3,
+          "quality_labeled_images": 3,
+          "json_valid": 3,
+          "schema_valid": 3,
+          "latency_p50_s": 344.28816369999913,
+          "latency_max_s": 373.2093031000004,
+          "peak_sampled_rss_bytes": 2780557312,
+          "fields": {
+            "total": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "item_descripcion": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "item_importe": {
+              "correct": 2,
+              "evaluated": 6
+            },
+            "fecha": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "razon_social": {
+              "correct": 0,
+              "evaluated": 3
+            }
+          },
+          "expected_items": 6,
+          "predicted_items": 6,
+          "items_recovered": 0,
+          "unmatched_or_spurious_items": 6,
+          "summary_rows_as_items": 1,
+          "nonempty_amounts": 8,
+          "empty_amounts": 16,
+          "literal_presence_matches": 8,
+          "generation_limit_hits": 0,
+          "description_similarity_085": {
+            "correct": 0,
+            "evaluated": 6
+          },
+          "items_recovered_similarity_085": 0,
+          "peak_model_process_rss_bytes": 2780557312
+        },
+        "private": {
+          "images": 3,
+          "quality_labeled_images": 3,
+          "json_valid": 3,
+          "schema_valid": 3,
+          "latency_p50_s": 165.2728360000001,
+          "latency_max_s": 265.7931116,
+          "peak_sampled_rss_bytes": 2780557312,
+          "fields": {
+            "total": {
+              "correct": 3,
+              "evaluated": 3
+            },
+            "item_descripcion": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "item_importe": {
+              "correct": 1,
+              "evaluated": 5
+            },
+            "fecha": {
+              "correct": 0,
+              "evaluated": 0
+            },
+            "razon_social": {
+              "correct": 0,
+              "evaluated": 0
+            }
+          },
+          "expected_items": 5,
+          "predicted_items": 8,
+          "items_recovered": 0,
+          "unmatched_or_spurious_items": 8,
+          "summary_rows_as_items": 2,
+          "nonempty_amounts": 17,
+          "empty_amounts": 14,
+          "literal_presence_matches": 17,
+          "generation_limit_hits": 0,
+          "description_similarity_085": {
+            "correct": 0,
+            "evaluated": 5
+          },
+          "items_recovered_similarity_085": 0,
+          "peak_model_process_rss_bytes": 2780557312
+        }
+      },
+      "outcome": "complete",
+      "process_exit_code": 0,
+      "whole_step_elapsed_s": 1658.5310000000009,
+      "peak_model_process_rss_bytes": 2780557312,
+      "original_deadline_epoch": 1794933198.72304,
+      "whole_step_elapsed_including_setup_s": 1934.3187437057495
+    },
+    "preparation": {
+      "lever-e2-preparation": {
+        "changes": {
+          "exif_only_fallback": 13
+        },
+        "ocr": {
+          "synthetic": {
+            "latency_p50_s": 3.116409399999611,
+            "latency_max_s": 3.5518498000001273
+          },
+          "private": {
+            "latency_p50_s": 5.980054950000067,
+            "latency_max_s": 9.89349029999994
+          }
+        }
+      },
+      "lever-res-preparation": {
+        "changes": {
+          "resized": 13
+        },
+        "ocr": {
+          "synthetic": {
+            "latency_p50_s": 6.386941400000069,
+            "latency_max_s": 6.625831899999866
+          },
+          "private": {
+            "latency_p50_s": 9.654296100000465,
+            "latency_max_s": 12.244486300000062
+          }
+        }
+      }
+    },
+    "failures": {
+      "extended-res-GLM-Q4_K_M-failure": "RuntimeError"
+    }
+  },
+  "offline_rescoring": {
+    "task": "T6d / S10",
+    "offline_only": true,
+    "saved_outputs_rescored": 120,
+    "text_similarity_threshold": 0.85,
+    "definitions": {
+      "description_fields": "Positional, unchanged denominators: 6 synthetic / 5 complete-private items; raw and cleaned reported separately.",
+      "pairs": "One-to-one E7 >=0.85 description plus amount equality; field-only versus additional line-derived recovery. Private amount labels are atoms, not printed literals.",
+      "blank_synthetic_amounts": "Two of six item labels are known-blank absence checks, not positive amount recovery.",
+      "taxonomy": "First four counts partition expected descriptions; summary rows (TOTAL/SUBTOTAL prefix after cleanup) are extra predictions, not part of that partition. Matched means raw+cleaned E7; whole-line means cleaned E7 only with prefix/suffix removal. Unmatched non-summary predictions count as below-threshold description_misread up to remaining labels, then item_missing; this heuristic does not establish optical-error causality.",
+      "preservation": "No raw text, model fields, thresholds, annotations, inference settings or historical timing/RSS changed. No model runs; historical records retained."
+    },
+    "configurations": {
+      "retry-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 42.609362000002875,
+            "latency_max_s": 45.33430000000226,
+            "peak_sampled_rss_bytes": 2636587008,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": null
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 31.569910850004817,
+            "latency_max_s": 93.0176838000043,
+            "peak_sampled_rss_bytes": 3390291968,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 96,
+            "empty_amounts": 49,
+            "literal_presence_matches": 95,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 3
+              }
+            },
+            "peak_model_process_rss_bytes": null
+          }
+        }
+      },
+      "retry-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 45.506644100009,
+            "latency_max_s": 46.728300300004776,
+            "peak_sampled_rss_bytes": 2930348032,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "peak_model_process_rss_bytes": null
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 29.597352899996622,
+            "latency_max_s": 86.39458629999717,
+            "peak_sampled_rss_bytes": 4055535616,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 84,
+            "empty_amounts": 34,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": null
+          }
+        }
+      },
+      "extended-ctx-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 36.48377000000028,
+            "latency_max_s": 39.260275999999976,
+            "peak_sampled_rss_bytes": 3174318080,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 3102957568
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 24.62240614999996,
+            "latency_max_s": 77.57631720000018,
+            "peak_sampled_rss_bytes": 4344467456,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 96,
+            "empty_amounts": 49,
+            "literal_presence_matches": 95,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 3
+              }
+            },
+            "peak_model_process_rss_bytes": 4274143232
+          }
+        }
+      },
+      "extended-ctx-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 42.71823129999984,
+            "latency_max_s": 43.83697919999986,
+            "peak_sampled_rss_bytes": 3466280960,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "peak_model_process_rss_bytes": 3394138112
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 27.83974649999982,
+            "latency_max_s": 84.24774929999967,
+            "peak_sampled_rss_bytes": 4068093952,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 84,
+            "empty_amounts": 34,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 3986186240
+          }
+        }
+      },
+      "extended-e2-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 39.662786299999425,
+            "latency_max_s": 45.722983900000145,
+            "peak_sampled_rss_bytes": 2636296192,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 2564403200
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 27.792354599999726,
+            "latency_max_s": 94.90385250000054,
+            "peak_sampled_rss_bytes": 3819585536,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 97,
+            "empty_amounts": 50,
+            "literal_presence_matches": 96,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 3
+              }
+            },
+            "peak_model_process_rss_bytes": 3742089216
+          }
+        }
+      },
+      "extended-e2-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 44.305076499999814,
+            "latency_max_s": 44.32392450000043,
+            "peak_sampled_rss_bytes": 2817994752,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "peak_model_process_rss_bytes": 2749374464
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 29.03599734999989,
+            "latency_max_s": 88.68798650000008,
+            "peak_sampled_rss_bytes": 3690684416,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 81,
+            "empty_amounts": 38,
+            "literal_presence_matches": 77,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 3612602368
+          }
+        }
+      },
+      "extended-res-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 10,
+        "not_run_images": 3,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 168.11487109999962,
+            "latency_max_s": 189.36667040000066,
+            "peak_sampled_rss_bytes": 3511947264,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 3473825792
+          },
+          "private": {
+            "images": 7,
+            "quality_labeled_images": 3,
+            "json_valid": 7,
+            "schema_valid": 7,
+            "latency_p50_s": 133.22334880000017,
+            "latency_max_s": 246.5341371000004,
+            "peak_sampled_rss_bytes": 3997884416,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 33,
+            "empty_amounts": 44,
+            "literal_presence_matches": 32,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 3930443776
+          }
+        }
+      },
+      "extended-res-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 187.5888744999993,
+            "latency_max_s": 198.191597,
+            "peak_sampled_rss_bytes": 3814264832,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 9,
+            "empty_amounts": 15,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "peak_model_process_rss_bytes": 3764879360
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 119.96326435000037,
+            "latency_max_s": 220.8852926999998,
+            "peak_sampled_rss_bytes": 4649922560,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 86,
+            "empty_amounts": 36,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 4599996416
+          }
+        }
+      },
+      "extended-a-Qwen-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 15.41198089999989,
+            "latency_max_s": 17.24984160000031,
+            "peak_sampled_rss_bytes": 1538830336,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 5,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 5,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 5,
+            "summary_rows_as_items": 0,
+            "nonempty_amounts": 21,
+            "empty_amounts": 0,
+            "literal_presence_matches": 14,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 4,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 4,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 4,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 1,
+                "summary_row_emitted": 0
+              }
+            },
+            "peak_model_process_rss_bytes": 1467916288
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 9,
+            "schema_valid": 9,
+            "latency_p50_s": 20.33010940000031,
+            "latency_max_s": 169.91320349999978,
+            "peak_sampled_rss_bytes": 2331308032,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 18,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 18,
+            "summary_rows_as_items": 0,
+            "nonempty_amounts": 83,
+            "empty_amounts": 2,
+            "literal_presence_matches": 56,
+            "generation_limit_hits": 1,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 0
+              }
+            },
+            "peak_model_process_rss_bytes": 2259070976
+          }
+        }
+      },
+      "extended-c-BF16": {
+        "planned_images": 6,
+        "saved_outputs": 6,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 344.28816369999913,
+            "latency_max_s": 373.2093031000004,
+            "peak_sampled_rss_bytes": 2780557312,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "peak_model_process_rss_bytes": 2780557312
+          },
+          "private": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 165.2728360000001,
+            "latency_max_s": 265.7931116,
+            "peak_sampled_rss_bytes": 2780557312,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 17,
+            "empty_amounts": 14,
+            "literal_presence_matches": 17,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "peak_model_process_rss_bytes": 2780557312
+          }
+        }
+      }
+    },
+    "private_quality_winner": null,
+    "representative_tied_glm_configuration": "extended-ctx-GLM-Q8_0",
+    "representative_private_failure_taxonomy": {
+      "matched": 0,
+      "whole_line_in_descripcion": 0,
+      "description_misread": 5,
+      "item_missing": 0,
+      "summary_row_emitted": 2
+    },
+    "recommendation": "Separate recognition from decomposition: synthetic cleaned descriptions improve (GLM 3/6, Qwen text 4/6), but all private cleaned descriptions/pairs remain 0/5. No private quality-winning lever. Automatic acceptance is not supported; do not infer general Spanish-reading incapacity or tune thresholds from raw-only zeros. Context-Q8 is the previously reported representative tie, not a selected winner."
+  },
+  "offline_rescoring_t6e": {
+    "task": "T6e / S10",
+    "offline_only": true,
+    "saved_outputs_rescored": 120,
+    "text_similarity_threshold": 0.85,
+    "definitions": {
+      "description_fields": "Positional, unchanged denominators: 6 synthetic / 5 complete-private items; raw and cleaned reported separately.",
+      "pairs": "One-to-one E7 >=0.85 description plus amount equality: field only, field/line, and field/line/evidence. Private amount labels are atoms, not printed literals. All diagnostic amounts remain separate from model fields.",
+      "cleanup": "T6d margin cleanup plus at most one trailing two-decimal parenthesized VAT rate, attempted before and after the trailing-amount strip; other parentheses untouched.",
+      "evidence_anchor": "For empty model importe only: highest >=0.85 E7 similarity to cleaned OCR description spans (full line or prefix before a money token), earliest line on ties; first literal non-VAT money token after that span, else immediately next line; reject TOTAL/SUBTOTAL/IVA/DESCUENTO prefixes. No arithmetic, geometry, two-line expansion or cross-item reuse prevention.",
+      "evidence_errors": "Primary: evidence fills assigned one-to-one to >=0.85 matching expected descriptions; compare with existing atomic/literal money semantics. Unassigned fills are explicitly unevaluated, never presumed correct. Additional positional correct/wrong counts use original item indices even below the description threshold; this is sensitive to row alignment.",
+      "blank_synthetic_amounts": "Two of six item labels are known-blank absence checks, not positive amount recovery.",
+      "taxonomy": "First four counts partition expected descriptions; summary rows (TOTAL/SUBTOTAL prefix after cleanup) are extra predictions. Matched means raw+cleaned E7; whole-line means cleaned E7 only with quantity/amount/VAT removal. Unmatched non-summary predictions count as below-threshold description_misread up to remaining labels, then item_missing; the name does not establish optical-error causality.",
+      "preservation": "No raw text, model fields, thresholds, annotations, inference settings or historical timing/RSS changed. No model runs; historical records retained."
+    },
+    "configurations": {
+      "retry-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 42.609362000002875,
+            "latency_max_s": 45.33430000000226,
+            "peak_sampled_rss_bytes": 2636587008,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 7,
+              "distinct_descriptions_summed_per_image": 7,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": null
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 31.569910850004817,
+            "latency_max_s": 93.0176838000043,
+            "peak_sampled_rss_bytes": 3390291968,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 96,
+            "empty_amounts": 49,
+            "literal_presence_matches": 95,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 1,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 1,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 2,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 5,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 3,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 5,
+              "evidence_fills_positional": {
+                "evaluated": 2,
+                "correct": 1,
+                "wrong": 1,
+                "unevaluated": 3
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 0,
+                "summary_row_emitted": 3
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 14,
+              "distinct_descriptions_summed_per_image": 14,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": null
+          }
+        }
+      },
+      "retry-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 45.506644100009,
+            "latency_max_s": 46.728300300004776,
+            "peak_sampled_rss_bytes": 2930348032,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 6,
+              "distinct_descriptions_summed_per_image": 6,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": null
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 29.597352899996622,
+            "latency_max_s": 86.39458629999717,
+            "peak_sampled_rss_bytes": 4055535616,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 84,
+            "empty_amounts": 34,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 1,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 1,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 2,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 2,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 0,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 2,
+              "evidence_fills_positional": {
+                "evaluated": 2,
+                "correct": 1,
+                "wrong": 1,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 8,
+              "distinct_descriptions_summed_per_image": 8,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": null
+          }
+        }
+      },
+      "extended-ctx-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 36.48377000000028,
+            "latency_max_s": 39.260275999999976,
+            "peak_sampled_rss_bytes": 3174318080,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 7,
+              "distinct_descriptions_summed_per_image": 7,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3102957568
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 24.62240614999996,
+            "latency_max_s": 77.57631720000018,
+            "peak_sampled_rss_bytes": 4344467456,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 96,
+            "empty_amounts": 49,
+            "literal_presence_matches": 95,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 1,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 1,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 2,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 5,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 3,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 5,
+              "evidence_fills_positional": {
+                "evaluated": 2,
+                "correct": 1,
+                "wrong": 1,
+                "unevaluated": 3
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 0,
+                "summary_row_emitted": 3
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 14,
+              "distinct_descriptions_summed_per_image": 14,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 4274143232
+          }
+        }
+      },
+      "extended-ctx-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 42.71823129999984,
+            "latency_max_s": 43.83697919999986,
+            "peak_sampled_rss_bytes": 3466280960,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 6,
+              "distinct_descriptions_summed_per_image": 6,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3394138112
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 27.83974649999982,
+            "latency_max_s": 84.24774929999967,
+            "peak_sampled_rss_bytes": 4068093952,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 84,
+            "empty_amounts": 34,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 1,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 1,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 2,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 2,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 0,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 2,
+              "evidence_fills_positional": {
+                "evaluated": 2,
+                "correct": 1,
+                "wrong": 1,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 8,
+              "distinct_descriptions_summed_per_image": 8,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3986186240
+          }
+        }
+      },
+      "extended-e2-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 39.662786299999425,
+            "latency_max_s": 45.722983900000145,
+            "peak_sampled_rss_bytes": 2636296192,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 7,
+              "distinct_descriptions_summed_per_image": 7,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 2564403200
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 27.792354599999726,
+            "latency_max_s": 94.90385250000054,
+            "peak_sampled_rss_bytes": 3819585536,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 3,
+            "nonempty_amounts": 97,
+            "empty_amounts": 50,
+            "literal_presence_matches": 96,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 1,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 1,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 2,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 5,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 3,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 5,
+              "evidence_fills_positional": {
+                "evaluated": 2,
+                "correct": 1,
+                "wrong": 1,
+                "unevaluated": 3
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 0,
+                "summary_row_emitted": 3
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 14,
+              "distinct_descriptions_summed_per_image": 14,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3742089216
+          }
+        }
+      },
+      "extended-e2-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 44.305076499999814,
+            "latency_max_s": 44.32392450000043,
+            "peak_sampled_rss_bytes": 2817994752,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 6,
+              "distinct_descriptions_summed_per_image": 6,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 2749374464
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 29.03599734999989,
+            "latency_max_s": 88.68798650000008,
+            "peak_sampled_rss_bytes": 3690684416,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 81,
+            "empty_amounts": 38,
+            "literal_presence_matches": 77,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 1,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 1,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 2,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 2,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 0,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 2,
+              "evidence_fills_positional": {
+                "evaluated": 2,
+                "correct": 1,
+                "wrong": 1,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 8,
+              "distinct_descriptions_summed_per_image": 8,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3612602368
+          }
+        }
+      },
+      "extended-res-GLM-Q4_K_M": {
+        "planned_images": 13,
+        "saved_outputs": 10,
+        "not_run_images": 3,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 168.11487109999962,
+            "latency_max_s": 189.36667040000066,
+            "peak_sampled_rss_bytes": 3511947264,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 7,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 7,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 8,
+            "empty_amounts": 18,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 6,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 7,
+              "distinct_descriptions_summed_per_image": 7,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3473825792
+          },
+          "private": {
+            "images": 7,
+            "quality_labeled_images": 3,
+            "json_valid": 7,
+            "schema_valid": 7,
+            "latency_p50_s": 133.22334880000017,
+            "latency_max_s": 246.5341371000004,
+            "peak_sampled_rss_bytes": 3997884416,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 33,
+            "empty_amounts": 44,
+            "literal_presence_matches": 32,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 1,
+              "pairs_field_or_line_or_evidence_importe": 1,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 7,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 5,
+              "evidence_fills_same_line": 1,
+              "evidence_fills_next_line": 6,
+              "evidence_fills_positional": {
+                "evaluated": 3,
+                "correct": 1,
+                "wrong": 2,
+                "unevaluated": 4
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 2,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 14,
+              "distinct_descriptions_summed_per_image": 14,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3930443776
+          }
+        }
+      },
+      "extended-res-GLM-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 187.5888744999993,
+            "latency_max_s": 198.191597,
+            "peak_sampled_rss_bytes": 3814264832,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 9,
+            "empty_amounts": 15,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 6,
+              "distinct_descriptions_summed_per_image": 6,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 3764879360
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 10,
+            "schema_valid": 10,
+            "latency_p50_s": 119.96326435000037,
+            "latency_max_s": 220.8852926999998,
+            "peak_sampled_rss_bytes": 4649922560,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 14,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 14,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 86,
+            "empty_amounts": 36,
+            "literal_presence_matches": 82,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 1,
+              "pairs_field_or_line_or_evidence_importe": 1,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 7,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 5,
+              "evidence_fills_same_line": 1,
+              "evidence_fills_next_line": 6,
+              "evidence_fills_positional": {
+                "evaluated": 3,
+                "correct": 1,
+                "wrong": 2,
+                "unevaluated": 4
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 2,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 14,
+              "distinct_descriptions_summed_per_image": 14,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 4599996416
+          }
+        }
+      },
+      "extended-a-Qwen-Q8_0": {
+        "planned_images": 13,
+        "saved_outputs": 13,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 15.41198089999989,
+            "latency_max_s": 17.24984160000031,
+            "peak_sampled_rss_bytes": 1538830336,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 5,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 5,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 5,
+            "summary_rows_as_items": 0,
+            "nonempty_amounts": 21,
+            "empty_amounts": 0,
+            "literal_presence_matches": 14,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 4,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 4,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 4,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 4,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 0,
+              "evidence_fills_evaluated": 0,
+              "evidence_fills_correct": 0,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 0,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 0,
+                "correct": 0,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 1,
+                "summary_row_emitted": 0
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 5,
+              "distinct_descriptions_summed_per_image": 5,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 1467916288
+          },
+          "private": {
+            "images": 10,
+            "quality_labeled_images": 3,
+            "json_valid": 9,
+            "schema_valid": 9,
+            "latency_p50_s": 20.33010940000031,
+            "latency_max_s": 169.91320349999978,
+            "peak_sampled_rss_bytes": 2331308032,
+            "fields": {
+              "total": {
+                "correct": 2,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 18,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 18,
+            "summary_rows_as_items": 0,
+            "nonempty_amounts": 83,
+            "empty_amounts": 2,
+            "literal_presence_matches": 56,
+            "generation_limit_hits": 1,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 0,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 0,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 0,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 0,
+              "evidence_fills_evaluated": 0,
+              "evidence_fills_correct": 0,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 0,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 0,
+                "correct": 0,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 0,
+                "description_misread": 5,
+                "item_missing": 0,
+                "summary_row_emitted": 0
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 18,
+              "distinct_descriptions_summed_per_image": 3,
+              "duplicate_descriptions_within_image": 15
+            },
+            "peak_model_process_rss_bytes": 2259070976
+          }
+        }
+      },
+      "extended-c-BF16": {
+        "planned_images": 6,
+        "saved_outputs": 6,
+        "not_run_images": 0,
+        "cohorts": {
+          "synthetic": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 344.28816369999913,
+            "latency_max_s": 373.2093031000004,
+            "peak_sampled_rss_bytes": 2780557312,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 6
+              },
+              "item_importe": {
+                "correct": 2,
+                "evaluated": 6
+              },
+              "fecha": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 3
+              }
+            },
+            "expected_items": 6,
+            "predicted_items": 6,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 6,
+            "summary_rows_as_items": 1,
+            "nonempty_amounts": 8,
+            "empty_amounts": 16,
+            "literal_presence_matches": 8,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 6
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "description_similarity_085": {
+                "correct": 3,
+                "evaluated": 6
+              },
+              "descriptions_recovered_similarity_085": 3,
+              "pairs_field_importe": 0,
+              "pairs_importe_from_line": 3,
+              "pairs_field_or_line_importe": 3,
+              "importe_from_line_candidates": 5,
+              "pairs_field_or_line_or_evidence_importe": 3,
+              "pairs_additional_from_evidence": 0,
+              "evidence_fills": 4,
+              "evidence_fills_evaluated": 3,
+              "evidence_fills_correct": 3,
+              "evidence_fills_wrong": 0,
+              "evidence_fills_unevaluated": 1,
+              "evidence_fills_same_line": 4,
+              "evidence_fills_next_line": 0,
+              "evidence_fills_positional": {
+                "evaluated": 4,
+                "correct": 4,
+                "wrong": 0,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 3,
+                "description_misread": 1,
+                "item_missing": 2,
+                "summary_row_emitted": 1
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 6,
+              "distinct_descriptions_summed_per_image": 6,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 2780557312
+          },
+          "private": {
+            "images": 3,
+            "quality_labeled_images": 3,
+            "json_valid": 3,
+            "schema_valid": 3,
+            "latency_p50_s": 165.2728360000001,
+            "latency_max_s": 265.7931116,
+            "peak_sampled_rss_bytes": 2780557312,
+            "fields": {
+              "total": {
+                "correct": 3,
+                "evaluated": 3
+              },
+              "item_descripcion": {
+                "correct": 0,
+                "evaluated": 5
+              },
+              "item_importe": {
+                "correct": 1,
+                "evaluated": 5
+              },
+              "fecha": {
+                "correct": 0,
+                "evaluated": 0
+              },
+              "razon_social": {
+                "correct": 0,
+                "evaluated": 0
+              }
+            },
+            "expected_items": 5,
+            "predicted_items": 8,
+            "items_recovered": 0,
+            "unmatched_or_spurious_items": 8,
+            "summary_rows_as_items": 2,
+            "nonempty_amounts": 17,
+            "empty_amounts": 14,
+            "literal_presence_matches": 17,
+            "generation_limit_hits": 0,
+            "raw_description_similarity_085": {
+              "correct": 0,
+              "evaluated": 5
+            },
+            "raw_pairs_similarity_085": 0,
+            "cleaned": {
+              "description_strict": {
+                "correct": 3,
+                "evaluated": 5
+              },
+              "description_similarity_085": {
+                "correct": 4,
+                "evaluated": 5
+              },
+              "descriptions_recovered_similarity_085": 4,
+              "pairs_field_importe": 1,
+              "pairs_importe_from_line": 0,
+              "pairs_field_or_line_importe": 1,
+              "importe_from_line_candidates": 0,
+              "pairs_field_or_line_or_evidence_importe": 2,
+              "pairs_additional_from_evidence": 1,
+              "evidence_fills": 2,
+              "evidence_fills_evaluated": 2,
+              "evidence_fills_correct": 1,
+              "evidence_fills_wrong": 1,
+              "evidence_fills_unevaluated": 0,
+              "evidence_fills_same_line": 0,
+              "evidence_fills_next_line": 2,
+              "evidence_fills_positional": {
+                "evaluated": 2,
+                "correct": 1,
+                "wrong": 1,
+                "unevaluated": 0
+              },
+              "taxonomy": {
+                "matched": 0,
+                "whole_line_in_descripcion": 4,
+                "description_misread": 1,
+                "item_missing": 0,
+                "summary_row_emitted": 2
+              }
+            },
+            "description_repetition_on_labeled_images": {
+              "predicted_items": 8,
+              "distinct_descriptions_summed_per_image": 8,
+              "duplicate_descriptions_within_image": 0
+            },
+            "peak_model_process_rss_bytes": 2780557312
+          }
+        }
+      }
+    },
+    "best_glm_by_diagnostic_pairs": [
+      "retry-GLM-Q4_K_M",
+      "retry-GLM-Q8_0",
+      "extended-ctx-GLM-Q4_K_M",
+      "extended-ctx-GLM-Q8_0",
+      "extended-e2-GLM-Q4_K_M",
+      "extended-e2-GLM-Q8_0",
+      "extended-c-BF16"
+    ],
+    "representative_best_glm": "extended-ctx-GLM-Q8_0",
+    "private_taxonomies": {
+      "extended-ctx-GLM-Q8_0": {
+        "matched": 0,
+        "whole_line_in_descripcion": 4,
+        "description_misread": 1,
+        "item_missing": 0,
+        "summary_row_emitted": 2
+      },
+      "extended-a-Qwen-Q8_0": {
+        "matched": 0,
+        "whole_line_in_descripcion": 0,
+        "description_misread": 5,
+        "item_missing": 0,
+        "summary_row_emitted": 0
+      }
+    },
+    "q4_ram_finding": {
+      "minimum_family_rss_bytes": 3390291968,
+      "maximum_family_rss_bytes": 4344467456,
+      "target": "3 GB peak for the complete worker (spec section 9)",
+      "status": "OPEN: observed PC family RSS about 3.4-4.3 GB exceeds the target; sampled family RSS can double-count shared pages, and deployment VM physical-memory proof is absent"
+    },
+    "owner_local_review": {
+      "source": "Owner inspected five private item mismatches locally; no receipt text or values recorded",
+      "pp_small_description_reading": {
+        "correct": 5,
+        "evaluated": 5,
+        "method": "owner inspection, not automated character scoring"
+      },
+      "vat_suffix_in_glm_description": {
+        "count": 4,
+        "evaluated": 5
+      },
+      "multiline_amount_layout": "GLM importe empty when the printed amount lies on a different OCR line; same-line amounts read correctly in the owner's inspected cases",
+      "merged_label": "One existing label combines a description and size line; annotations unchanged",
+      "qwen_header_copy": "Owner identified the repeated descriptions as merchant-header text; no special-case handling added"
+    },
+    "recommendation": "Separate recognition from decomposition: baseline/context/E2/BF16 GLM reaches 3/5 strict and 4/5 E7 private descriptions, 1/5 field-only pairs and 2/5 field/line/evidence pairs; 1 of 2 description-matched evidence fills is WRONG. Remaining unassigned fills are explicitly unevaluated. Resolution gives 1/5 pairs; Qwen text remains 0/5 descriptions/pairs. Literal OCR presence does not prove correct amount association. Keep automatic-acceptance and 3 GB RAM gates open, do not change annotations or thresholds, and do not install this diagnostic fallback as production E7."
+  }
+}

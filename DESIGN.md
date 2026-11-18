@@ -205,6 +205,8 @@ components:
 
 # Design System: Tuki Contributor PWA
 
+> **Workflow amendment — 2026-11-17 (owner decision):** [ticket-pipeline.md](odd/specs/ticket-pipeline.md) supersedes the manual-review states, editable review/provenance interactions, fiscal-pending endpoint and prohibition of an accepted state below, including their frontmatter tokens. Ticket results are read-only, with final states «Aceptado», «Rechazado» and «Error de procesamiento», determined by the automatic pipeline rather than human review. The visual direction, typography and base palette remain applicable; this note does not prescribe a new state-to-color mapping.
+
 ## Overview
 
 **Creative North Star: "The Thermal Strip"**

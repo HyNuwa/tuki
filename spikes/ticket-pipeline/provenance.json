@@ -1,0 +1,434 @@
+{
+  "model-provenance-paddle.json": [
+    {
+      "repository": "PaddlePaddle/PP-OCRv6_small_det",
+      "revision": "106c97591b235f607453300d9fc8c1cad1b25488",
+      "files": [
+        {
+          "name": "inference.json",
+          "sha256": "89240f689a4a77aad75ef55a8df0a15c8e1d4980a327d17e58f24bbadde5aeab",
+          "bytes": 229307
+        },
+        {
+          "name": "inference.pdiparams",
+          "sha256": "5043d4ccc8d63402ccea8feefcee4db57077431a873e78d2191836a178a492da",
+          "bytes": 9817888
+        },
+        {
+          "name": "inference.yml",
+          "sha256": "193f435274bf9f0b5f71a929bbfbcf148282df7e633b34e7c373e8f44741b516",
+          "bytes": 885
+        }
+      ]
+    },
+    {
+      "repository": "PaddlePaddle/PP-OCRv6_small_rec",
+      "revision": "bd619643acac4b9650c040234da8d944476ee3f1",
+      "files": [
+        {
+          "name": "inference.json",
+          "sha256": "f0bf53c853937a917affdd74467472167727f8ab0f0f7bded01c4a16c27e46e6",
+          "bytes": 208004
+        },
+        {
+          "name": "inference.pdiparams",
+          "sha256": "406e1e689c9a7fbb04178007a3fe10cf852afe7bf8bb3bc6dbb9d532b13bd907",
+          "bytes": 21074618
+        },
+        {
+          "name": "inference.yml",
+          "sha256": "ab078671bb49f06228eadccd34f1bb501e157f7a047095ffb943ba81512c77d1",
+          "bytes": 150579
+        }
+      ]
+    },
+    {
+      "repository": "PaddlePaddle/PP-OCRv6_medium_det",
+      "revision": "8e0f56fb2ef86b461d99cfc7ac5c137738985f61",
+      "files": [
+        {
+          "name": "inference.json",
+          "sha256": "0f1a7ec35da36173529c7a60238b7f7919e3831929c3f700ad90ad4896adecd5",
+          "bytes": 312150
+        },
+        {
+          "name": "inference.pdiparams",
+          "sha256": "85218d2e3d98f5a21c58b4220627be923a97aee5db3cc71f39536ab31ac53960",
+          "bytes": 61960476
+        },
+        {
+          "name": "inference.yml",
+          "sha256": "7298d5ead546584af2504d03355f881ac7a7bc0eb1e282d3e159277c1d0af871",
+          "bytes": 886
+        }
+      ]
+    },
+    {
+      "repository": "PaddlePaddle/PP-OCRv6_medium_rec",
+      "revision": "e5a92bcbc5cc1b494628e458d267778f0704fd7c",
+      "files": [
+        {
+          "name": "inference.json",
+          "sha256": "0b2e25e990bd072f1bf77d59d67d508bce6c4bd44af6624e0fb27d6da2cd00e8",
+          "bytes": 221814
+        },
+        {
+          "name": "inference.pdiparams",
+          "sha256": "1b01c79a914587933f615569e75de54f2e638ebb5d3f3b3c1b38c24ede8c7319",
+          "bytes": 76465087
+        },
+        {
+          "name": "inference.yml",
+          "sha256": "991b700facf5b50a7de193468207d5f4255b538dde0d312ae3b7c7a9b6873129",
+          "bytes": 150580
+        }
+      ]
+    }
+  ],
+  "model-provenance-glm.json": [
+    {
+      "repository": "zai-org/GLM-OCR",
+      "revision": "2e85a62840ccac27daa451df36c736c4636b8628",
+      "files": [
+        {
+          "name": "chat_template.jinja",
+          "sha256": "062e7ee4cc8defa88a5938b5d456dc60366ffd80647f918946ee747bf09ddc7c",
+          "bytes": 4606
+        },
+        {
+          "name": "config.json",
+          "sha256": "ad537817b2becde827cbb23569a1dd83a352ee64cc34ce751a4ef000ecce4b5f",
+          "bytes": 1737
+        },
+        {
+          "name": "generation_config.json",
+          "sha256": "4e2a3412f65b2a21d315d928986c55723d3e60dfb92c3982a5b9fd56835b0aa5",
+          "bytes": 165
+        },
+        {
+          "name": "model.safetensors",
+          "sha256": "a16eb0de98d199293371c560f95f83130d2a2c9612449df16839f08ff9498815",
+          "bytes": 2650579464
+        },
+        {
+          "name": "preprocessor_config.json",
+          "sha256": "02cc50c36240882ae35e8cd4077a25a379664108185d728d261cb785aefeccff",
+          "bytes": 367
+        },
+        {
+          "name": "processor_config.json",
+          "sha256": "a56fbd559186fefd6c22a3acc6a393a18a9fe52c264692a122a143d24042112b",
+          "bytes": 1334
+        },
+        {
+          "name": "tokenizer.json",
+          "sha256": "aa0fd058c73a5718bb191f6672dc16d122ee0147b20c123d1726514298f9968a",
+          "bytes": 6838609
+        },
+        {
+          "name": "tokenizer_config.json",
+          "sha256": "95abd49942be9cdc6e2653528aed7b4c1cb9e180828421d3488ab38da3057016",
+          "bytes": 1138
+        }
+      ]
+    }
+  ],
+  "ollama-portable-provenance.json": {
+    "version": "v0.40.16",
+    "archive_sha256": "50fcf5ad54277f2fa5d173ebfc93bcb017adbc0c9ef2314daabc96ca9e6aa64e",
+    "source": "https://github.com/ollama/ollama/releases/download/v0.40.16/ollama-windows-amd64.zip",
+    "cpu_files": [
+      "lib/ollama/CPP_HTTPLIB_LICENSE",
+      "lib/ollama/ggml-base.dll",
+      "lib/ollama/ggml-cpu-alderlake.dll",
+      "lib/ollama/ggml-cpu-cannonlake.dll",
+      "lib/ollama/ggml-cpu-cascadelake.dll",
+      "lib/ollama/ggml-cpu-cooperlake.dll",
+      "lib/ollama/ggml-cpu-haswell.dll",
+      "lib/ollama/ggml-cpu-icelake.dll",
+      "lib/ollama/ggml-cpu-ivybridge.dll",
+      "lib/ollama/ggml-cpu-piledriver.dll",
+      "lib/ollama/ggml-cpu-sandybridge.dll",
+      "lib/ollama/ggml-cpu-sapphirerapids.dll",
+      "lib/ollama/ggml-cpu-skylakex.dll",
+      "lib/ollama/ggml-cpu-sse42.dll",
+      "lib/ollama/ggml-cpu-x64.dll",
+      "lib/ollama/ggml-cpu-zen4.dll",
+      "lib/ollama/ggml.dll",
+      "lib/ollama/GO_LICENSE",
+      "lib/ollama/libc++.dll",
+      "lib/ollama/libllama-common.dll",
+      "lib/ollama/libllama-quantize-impl.dll",
+      "lib/ollama/libllama-server-impl.dll",
+      "lib/ollama/libllama.dll",
+      "lib/ollama/libmtmd.dll",
+      "lib/ollama/libomp.dll",
+      "lib/ollama/libunwind.dll",
+      "lib/ollama/libwinpthread-1.dll",
+      "lib/ollama/llama-quantize.exe",
+      "lib/ollama/llama-server.exe",
+      "lib/ollama/LLAMA_CPP_LICENSE",
+      "lib/ollama/LLAMA_CPP_VENDORS_LICENSE",
+      "ollama.exe"
+    ]
+  },
+  "ollama-model-provenance.json": {
+    "manifest_sha256": "89d735dd9c07791953756edd275e5501464df61288b1cd5486c5c50c8c058b32",
+    "source": "https://registry.ollama.ai/v2/library/glm-ocr/manifests/latest",
+    "manifest": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "config": {
+        "mediaType": "application/vnd.docker.container.image.v1+json",
+        "digest": "sha256:cf3ed78794b5d112b9b82eeb0d155e43b4048d3bee5ba92200db84b551ad9aed",
+        "size": 173
+      },
+      "layers": [
+        {
+          "mediaType": "application/vnd.ollama.image.model",
+          "digest": "sha256:33a72e292f125d9fb0e5b6aeb049fb35f6529d250059385ecf50d843e0e08809",
+          "size": 1786007360,
+          "from": "dhiltgen/glm-ocr:bf16-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.projector",
+          "digest": "sha256:713115ee2f749a4c03627c29ccf71900ed63f219b0c79b562eac15d6d08bcb7b",
+          "size": 869018176,
+          "from": "dhiltgen/glm-ocr:bf16-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.template",
+          "digest": "sha256:b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315",
+          "size": 13,
+          "from": "dhiltgen/glm-ocr:bf16-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.params",
+          "digest": "sha256:ae40a217c1c4002e9358f0f6597a349acaace0cfb95dc53db7ce646d57a56271",
+          "size": 18,
+          "from": "dhiltgen/glm-ocr:bf16-llamacpp"
+        }
+      ],
+      "runner": "llamacpp",
+      "format": "gguf"
+    },
+    "config": {
+      "model_format": "gguf",
+      "model_family": "glm4",
+      "model_families": [
+        "glm4"
+      ],
+      "model_type": "891.14M",
+      "file_type": "F16",
+      "renderer": "glm-ocr",
+      "parser": "glm-ocr",
+      "requires": "0.30.0"
+    }
+  },
+  "prompt_sha256": "c3e39e92269f3bcecf81eaae47b0caa79515f5616185bbb124028ee9d0266825",
+  "quantized-provenance.json": {
+    "decoder_sha256": "76ebac0ef61c5a29c263a27f7db18b939951cd5d63f6190661f50fdd8e4f1377",
+    "decoder_bytes": 548747072,
+    "source_decoder_sha256": "sha256:33a72e292f125d9fb0e5b6aeb049fb35f6529d250059385ecf50d843e0e08809",
+    "projector_sha256": "sha256:713115ee2f749a4c03627c29ccf71900ed63f219b0c79b562eac15d6d08bcb7b",
+    "quantization": "Q4_K_M",
+    "tool": "llama-quantize.exe bundled with Ollama v0.40.16"
+  },
+  "ollama-model-provenance-q8_0.json": {
+    "manifest_sha256": "6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f",
+    "source": "https://registry.ollama.ai/v2/library/glm-ocr/manifests/q8_0",
+    "manifest": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "config": {
+        "mediaType": "application/vnd.docker.container.image.v1+json",
+        "digest": "sha256:ed01de6ff6852a225f6a9ee58bf38076e8c6b7e3a69e0a942986900c9338e625",
+        "size": 174
+      },
+      "layers": [
+        {
+          "mediaType": "application/vnd.ollama.image.model",
+          "digest": "sha256:573c8850da0126266ba1e63a0ad8253a1257ad82f99295820fc84cfa43bead97",
+          "size": 950669120,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.projector",
+          "digest": "sha256:713115ee2f749a4c03627c29ccf71900ed63f219b0c79b562eac15d6d08bcb7b",
+          "size": 869018176,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.template",
+          "digest": "sha256:b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315",
+          "size": 13,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        },
+        {
+          "mediaType": "application/vnd.ollama.image.params",
+          "digest": "sha256:ae40a217c1c4002e9358f0f6597a349acaace0cfb95dc53db7ce646d57a56271",
+          "size": 18,
+          "from": "dhiltgen/glm-ocr:q8_0-llamacpp"
+        }
+      ],
+      "runner": "llamacpp",
+      "format": "gguf"
+    },
+    "config": {
+      "model_format": "gguf",
+      "model_family": "glm4",
+      "model_families": [
+        "glm4"
+      ],
+      "model_type": "891.14M",
+      "file_type": "Q8_0",
+      "renderer": "glm-ocr",
+      "parser": "glm-ocr",
+      "requires": "0.30.0"
+    },
+    "tag": "q8_0"
+  },
+  "constrained_retry_runtime_models": [
+    {
+      "name": "glm-ocr:q8_0",
+      "digest": "6e5935a916fc8d6878a67c60c2b99648f54e10b4a4af4cbbfb2c308953000e5f",
+      "size": 1819687501,
+      "quantization_level": "Q8_0"
+    },
+    {
+      "name": "tuki-glm-ocr-q4km:latest",
+      "digest": "5b1c7ee47a0eab894fb974a3ad635f6b43eeeb2d5728c5a42c5855ea633720c1",
+      "size": 1417765435,
+      "quantization_level": "Q4_K_M"
+    }
+  ],
+  "qwen_text_sources": {
+    "ollama-model-provenance-qwen3.5-0.8b-q8_0.json": {
+      "manifest_sha256": "7c00f78aed0fd757e9ba2f2720896768fd22da24b7fb6fe17096bb1e85bb2d25",
+      "source": "https://registry.ollama.ai/v2/library/qwen3.5/manifests/0.8b-q8_0",
+      "manifest": {
+        "schemaVersion": 2,
+        "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "config": {
+          "mediaType": "application/vnd.docker.container.image.v1+json",
+          "digest": "sha256:6ca237406b16208ee9701509641d2eb24779a73fa5e0b2b6fbc379284474488f",
+          "size": 178
+        },
+        "layers": [
+          {
+            "mediaType": "application/vnd.ollama.image.projector",
+            "digest": "sha256:5ba2eb9bf28c5b5ff7a705f07bd9269f0f2dbd6cb2b4c46d5f98ed8d15d18883",
+            "size": 207346304,
+            "from": "mmproj.gguf"
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.model",
+            "digest": "sha256:889ea3b9143cdc32146c7d530ce5f3d452ec18069086f6f4167ce9ae72a9691f",
+            "size": 811843520,
+            "from": "model.gguf"
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.template",
+            "digest": "sha256:b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315",
+            "size": 13
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.license",
+            "digest": "sha256:50cbab8a892c5f2993b8c7351a99182507472def3b1374558308605d99b86b32",
+            "size": 11343
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.params",
+            "digest": "sha256:9371364b27a52acac9d87f88bd93c9db1174d8d6ec57f6888925cdc1788871ff",
+            "size": 65
+          }
+        ],
+        "runner": "llamacpp",
+        "format": "gguf"
+      },
+      "config": {
+        "model_format": "gguf",
+        "model_family": "qwen35",
+        "model_families": [
+          "qwen35"
+        ],
+        "model_type": "752.39M",
+        "file_type": "Q8_0",
+        "renderer": "qwen3.5",
+        "parser": "qwen3.5",
+        "requires": "0.30.0"
+      },
+      "tag": "0.8b-q8_0"
+    },
+    "ollama-model-provenance-qwen3.5-0.8b.json": {
+      "manifest_sha256": "de63045f29755d4721c09d54c9b45c2dadb644f4fd7d604d4cac90d96049971c",
+      "source": "https://registry.ollama.ai/v2/library/qwen3.5/manifests/0.8b",
+      "manifest": {
+        "schemaVersion": 2,
+        "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "config": {
+          "mediaType": "application/vnd.docker.container.image.v1+json",
+          "digest": "sha256:1226d1a5284ac9844d3cac42321227d361d4417af63515132495e5afaf9c2462",
+          "size": 234
+        },
+        "layers": [
+          {
+            "mediaType": "application/vnd.ollama.image.projector",
+            "digest": "sha256:5ba2eb9bf28c5b5ff7a705f07bd9269f0f2dbd6cb2b4c46d5f98ed8d15d18883",
+            "size": 207346304,
+            "from": "qwen35-validation-20260930:0.8b-stock-q8_0-q8draft2"
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.model",
+            "digest": "sha256:889ea3b9143cdc32146c7d530ce5f3d452ec18069086f6f4167ce9ae72a9691f",
+            "size": 811843520,
+            "from": "qwen35-validation-20260930:0.8b-stock-q8_0-q8draft2"
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.draft",
+            "digest": "sha256:b0108ebdcf5adea94899909c0cd6c12565f079f819991e68e464cb2e69a5d93d",
+            "size": 302867776,
+            "from": "qwen35-validation-20260930:0.8b-stock-q8_0-q8draft2"
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.template",
+            "digest": "sha256:b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315",
+            "size": 13,
+            "from": "qwen35-validation-20260930:0.8b-stock-q8_0-q8draft2"
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.license",
+            "digest": "sha256:50cbab8a892c5f2993b8c7351a99182507472def3b1374558308605d99b86b32",
+            "size": 11343,
+            "from": "qwen35-validation-20260930:0.8b-stock-q8_0-q8draft2"
+          },
+          {
+            "mediaType": "application/vnd.ollama.image.params",
+            "digest": "sha256:3cfce0087eaaa51070eb51ea44b80e6ccfb89d08ce58f4aeb0e48261aa9da329",
+            "size": 87,
+            "from": "qwen35-validation-20260930:0.8b-stock-q8_0-q8draft2"
+          }
+        ],
+        "runner": "llamacpp",
+        "format": "gguf"
+      },
+      "config": {
+        "model_format": "gguf",
+        "model_family": "qwen35",
+        "model_families": [
+          "qwen35"
+        ],
+        "model_type": "752.39M",
+        "file_type": "Q8_0",
+        "renderer": "qwen3.5",
+        "parser": "qwen3.5",
+        "requires": "0.30.0",
+        "draft": {
+          "model_format": "gguf",
+          "architecture": "qwen35"
+        }
+      },
+      "tag": "0.8b"
+    }
+  }
+}

@@ -1,5 +1,7 @@
 # Spec: MVP P0 — verified real-world commerce data marketplace for AI agents (Base Sepolia, minimized trust)
 
+> **Amendment — 2026-11-17 (owner decision):** [ticket-pipeline.md](ticket-pipeline.md) supersedes this parent's ticket extraction, manual-review flow, acceptance, dataset and persistence requirements wherever they conflict. The pipeline is automatic: PP-OCRv6 supplies evidence, GLM-OCR extracts from the image, and deterministic code anchors, validates and scores; it is not a rule-based extractor. Final ticket states are «Aceptado», «Rechazado» and «Error de procesamiento»; fiscal ID and QR are optional metadata, not acceptance gates. The original decisions below are retained; on-chain registration and dApp logic are outside the new spec's scope.
+
 > Source of truth for this spec: docs 03, 04, 15, 16, ADR 0002 (verification), ADR 0003 (Base) and ADR 0004 (trust model, ratified 2026-11-14 for testnet), plus the grilling decisions Q1–Q13 of 2026-11-14 recorded below. Domain terms follow those docs: **DataProduct**, **Task**, **Contribution**, **Observation**, **Contributor**, **Agent** (buyer), **Verifier**. Testnet only: every screen and response is marked "DEMO — TESTNET, NO REAL MONEY".
 >
 > **Evidence tags:** **[Verified]** checked against source code, official docs or the chain; **[Design]** own decision, configurable, not yet implemented; **[Pending]** unverified fact or open blocker that must be resolved in the named experiment, never assumed to work; **[Simulated]** stands in for a real guarantee in the demo and is labelled as such.

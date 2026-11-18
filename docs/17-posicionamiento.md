@@ -1,5 +1,7 @@
 # Posicionamiento: marketplace de datos del mundo real para agentes de IA
 
+> **Actualización — 2026-11-17 (decisión del dueño):** [ticket-pipeline.md](../odd/specs/ticket-pipeline.md) reemplaza lo indicado aquí sobre extracción, revisión o corrección humana, estados, aceptación, dataset y persistencia de tickets. El flujo es automático: PP-OCRv6 aporta evidencia, GLM-OCR extrae desde la imagen y el código ancla, valida y puntúa; no es un extractor por reglas. Los estados finales son «Aceptado», «Rechazado» y «Error de procesamiento»; el identificador fiscal y el QR son opcionales y no deciden la aceptación. La nueva spec no define registro on-chain ni lógica de la dApp.
+
 **Fecha:** 2026-11-12. **Estado:** síntesis estratégica para validar. No hay producto, compradores, contribuyentes ni dinero real. No es una decisión de inversión ni una aprobación para operar con fondos reales.
 **Base:** investigación de competidores y de posicionamiento en [`agent-data-marketplace/`](../agent-data-marketplace/) (nivel Light) y revisión del usuario del 2026-11-12. La [investigación profunda sobre demanda agéntica y verificación](../agent-data-marketplace/deep-research/demanda-agentica-y-verificacion.md) (2026-11-13) se integró después: suma Loopuman, Execution Market y WURK a los competidores de tareas físicas y debilita el atributo 3.
 

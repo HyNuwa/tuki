@@ -12,6 +12,13 @@ The hash lock was resolved with uv `0.12.1`; all 72 package names installed as b
 Local verification used CPython `3.12.0`; that is evidence, not a recommended production patch level.
 The Linux production environment and its wheel lock require separate verification before deployment.
 
+The example below creates a **new** private environment; its directory is not a
+locator for an existing installation. When reusing an installed worker, set
+`$Python` (and the API's `OCR_PYTHON`) to that environment's actual executable:
+`<environment>/Scripts/python.exe` on Windows or `<environment>/bin/python` on
+Linux. Keep its model/cache directories outside Git; do not assume an older
+`runtime-v1/venv` directory is the currently installed environment.
+
 ```powershell
 $Worker = (Resolve-Path 'spikes/s3-extraction/ocr-worker').Path
 $Private = Join-Path $env:LOCALAPPDATA 'tuki-ocr-worker/runtime-v1'
@@ -116,3 +123,34 @@ passed offline package/model integrity checks and a real synthetic CPU smoke, th
 Windows UNC bypass. One scoped fix and recheck confirmed both UNC spellings are rejected for input,
 models and cache before filesystem access. No remote endpoint was contacted by those intercepted probes.
 These results do not establish production Linux support, dependency vulnerability absence or M2b viability.
+
+## Automatic API worker (T8)
+
+`pipeline_worker.py` is the persistent JSON-lines adapter used by `apps/api`.
+It extends this worker rather than creating a second OCR engine. The original
+single-image CLI and its tests remain available.
+
+Each input line is `{ "mode": "prepare" | "extract", "image": "<base64>" }`.
+Responses are `{ "ok": true, "value": ... }` or `{ "ok": false, "code": ... }`.
+No paths, exception text or raw EXIF enter diagnostics. stdin/stdout are bounded;
+there is one request at a time and no request-image filesystem scratch.
+
+`prepare` decodes a single PNG/JPEG/WebP (5 MiB / 4 MP), screens minimum short
+edge and Laplacian sharpness, computes a perceptual hash, applies EXIF orientation,
+rectifies a sufficiently large quadrilateral, and otherwise falls back to only
+EXIF correction. The homography maps processed coordinates to the original
+raster. QR decoding uses the original raster and is optional; fiscal meaning is
+handled only by the domain country module. Output PNG metadata is stripped.
+OpenCV/numpy are already pinned transitive dependencies of the existing lockfile;
+no environment or dependency installation was changed.
+
+`extract` lazily verifies and loads the same pinned PP-OCRv6 small CPU engine
+once, then returns literal lines, line boxes and confidence in reading order.
+It does not parse receipt semantics, fill amounts or invoke GLM. GLM-OCR Q4_K_M
+is called separately over loopback HTTP by the API. The API enforces the whole-job
+timeout and kills/awaits the persistent child on infrastructure failure.
+
+The adapter clears the last request/response references before waiting for the
+next line. Python RSS reports a process lifetime high-water mark, not an isolated
+per-job allocation. Full VM memory and model-quality measurements remain open.
+Synthetic tests in `tests/test_pipeline.py` never initialize a real OCR model.

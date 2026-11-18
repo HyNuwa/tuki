@@ -1,89 +1,117 @@
-import { spawn } from "node:child_process";
+import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import type { Extraction } from "@tuki/domain";
+import type { ImageGeometry, OcrLine, ProcessingErrorReason } from "@tuki/domain";
 
-export type NormalizedImage = { image: Uint8Array; width: number; height: number; exif: { hasCameraExif: boolean; softwareTagPresent: boolean; captureTimeConsistent: boolean } };
+export type PreparedImage = { image: Uint8Array; width: number; height: number; geometry: ImageGeometry;
+  perceptualHash: string; qrPayloads: string[]; flags: string[]; durations: Record<string, number>; peakRamBytes: number | null };
+export type OcrEvidence = { lines: OcrLine[]; modelVersion: string; peakRamBytes: number | null };
 export type OcrBridge = {
-  normalize(bytes: Uint8Array): Promise<NormalizedImage>;
-  extract(image: Uint8Array): Promise<Pick<Extraction, "draft" | "ocr">>;
+  prepare(bytes: Uint8Array, signal: AbortSignal): Promise<PreparedImage>;
+  extract(bytes: Uint8Array, signal: AbortSignal): Promise<OcrEvidence>;
+  close(): Promise<void>;
 };
-type Config = { python: string; modelsDir: string; cacheDir: string };
-type Runner = (mode: "normalize" | "extract", bytes: Uint8Array) => Promise<unknown>;
-const safeCodes = new Set(["invalid_image", "unsupported_image", "upload_limit", "image_limit", "ocr_timeout", "ocr_busy", "ocr_unavailable", "invalid_ocr_result"]);
-export const bridgeCode = (error: unknown): string => error instanceof Error && safeCodes.has(error.message) ? error.message : "ocr_unavailable";
+export class ContentFailure extends Error {
+  constructor(readonly reason: ProcessingErrorReason) { super(reason); }
+}
+const contentCodes = new Set(["archivo_invalido", "imagen_ilegible", "texto_ilegible"]);
+export const bridgeCode = (error: unknown) => error instanceof ContentFailure ? error.reason : "error_interno";
+type Config = { python: string; modelsDir: string; cacheDir: string; minSide?: number; minSharpness?: number };
+type Runner = (mode: "prepare" | "extract", bytes: Uint8Array, signal: AbortSignal) => Promise<unknown>;
 
-export function pythonRunner(config: Config): Runner {
-  return async (mode, bytes) => {
-    // The surviving API process owns the cleanup boundary, not the child that
-    // a timeout may terminate before Python can leave its context manager.
-    let requestDirectory: string;
-    try { requestDirectory = await mkdtemp(join(tmpdir(), "tuki-api-request-")); }
-    catch { throw new Error("ocr_unavailable"); }
-    try {
-      return await new Promise((resolve, reject) => {
-        const child = spawn(config.python, ["-B", fileURLToPath(new URL("../../../../spikes/s3-extraction/demo/extract_cli.py", import.meta.url)), mode], {
-          env: { ...process.env, OCR_MODELS_DIR: config.modelsDir, OCR_CACHE_DIR: config.cacheDir, OCR_REQUEST_DIR: requestDirectory }, windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"],
-        });
-        let output = Buffer.alloc(0), invalid = false, timedOut = false;
-        let termination: Promise<void> = Promise.resolve();
-        const terminateTree = () => {
-          termination = new Promise<void>(done => {
-            if (!child.pid) return done();
-            if (process.platform === "win32") {
-              const killer = spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
-              killer.once("error", () => { child.kill(); done(); });
-              killer.once("close", () => done());
-            } else { try { process.kill(-child.pid, "SIGKILL"); } catch { child.kill(); } done(); }
-          });
-        };
-        const timer = setTimeout(() => { timedOut = true; terminateTree(); }, 120_000);
-        child.stdout.on("data", (chunk: Buffer) => {
-          if (output.length + chunk.length > 24 * 1024 * 1024) { invalid = true; terminateTree(); }
-          else output = Buffer.concat([output, chunk]);
-        });
-        child.stderr.on("data", () => { invalid = true; });
-        child.stdin.on("error", () => {});
-        child.once("error", () => { clearTimeout(timer); reject(new Error("ocr_unavailable")); });
-        child.once("close", async code => {
-          clearTimeout(timer);
-          await termination;
-          if (timedOut) return reject(new Error("ocr_timeout"));
-          if (invalid) return reject(new Error("ocr_unavailable"));
-          try {
-            const value = JSON.parse(output.toString("utf8"));
-            if (code !== 0) return reject(new Error(safeCodes.has(value.code) ? value.code : "ocr_unavailable"));
-            resolve(value);
-          } catch { reject(new Error("ocr_unavailable")); }
-        });
-        child.stdin.end(bytes);
-      });
-    } finally {
-      // Only remove the exact freshly created directory owned by this call,
-      // after close and any process-tree termination have completed.
-      try { await rm(requestDirectory, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }); }
-      catch { throw new Error("ocr_unavailable"); }
-    }
+function pythonEnvironment(config: Config): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {
+    PYTHONUTF8: "1", PYTHONIOENCODING: "utf-8", PYTHONUNBUFFERED: "1", PYTHONDONTWRITEBYTECODE: "1", PYTHONNOUSERSITE: "1",
+    OCR_MODELS_DIR: config.modelsDir, OCR_CACHE_DIR: config.cacheDir,
+    OCR_MIN_SIDE: String(config.minSide ?? 600), OCR_MIN_SHARPNESS: String(config.minSharpness ?? 100),
   };
+  // Environment names are case-insensitive on Windows. Never forward ambient
+  // application credentials, Python import overrides or unrelated service keys.
+  for (const name of ["PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "TMPDIR"]) {
+    const key = Object.keys(process.env).find(key => key.toUpperCase() === name);
+    if (key && process.env[key] !== undefined) env[name] = process.env[key];
+  }
+  return env;
 }
 
-/** One extraction slot for this API process, released on every outcome. */
-export function createPythonBridge(config: Config, run: Runner = pythonRunner(config)): OcrBridge {
+/** One persistent child, one JSON-line request. No receipt scratch files. */
+export function createPythonBridge(config: Config, injected?: Runner): OcrBridge {
+  let child: ChildProcessWithoutNullStreams | undefined;
   let busy = false;
+  const stop = async () => {
+    const target = child; child = undefined;
+    if (!target || target.exitCode !== null || target.signalCode !== null) return;
+    const closed = new Promise<void>(resolve => target.once("close", () => resolve()));
+    if (process.platform === "win32" && target.pid) {
+      await new Promise<void>(resolve => {
+        const killer = spawn("taskkill", ["/pid", String(target.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
+        killer.once("error", () => { target.kill(); resolve(); });
+        killer.once("close", code => { if (code) target.kill(); resolve(); });
+      });
+    } else { try { process.kill(-target.pid!, "SIGKILL"); } catch { target.kill("SIGKILL"); } }
+    await closed;
+  };
+  const run: Runner = injected ?? (async (mode, bytes, signal) => {
+    signal.throwIfAborted();
+    if (!child) {
+      child = spawn(config.python, ["-B", fileURLToPath(new URL("../../../../spikes/s3-extraction/ocr-worker/pipeline_worker.py", import.meta.url))], {
+        env: pythonEnvironment(config),
+        windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"],
+      });
+      child.stdin.on("error", () => {});
+      // Keep a listener between requests as spawn/exit can race idle periods.
+      child.on("error", () => {});
+      const started = child;
+      started.once("close", () => { if (child === started) child = undefined; });
+    }
+    const active = child;
+    try {
+      return await new Promise<unknown>((resolve, reject) => {
+        let output = Buffer.alloc(0), stderr = false;
+        const cleanup = () => {
+          active.stdout.off("data", data); active.stderr.off("data", noise); active.off("error", failed); active.off("close", failed); signal.removeEventListener("abort", aborted);
+        };
+        const failed = () => { cleanup(); reject(new Error("ocr_unavailable")); };
+        const aborted = () => { cleanup(); reject(new Error("ocr_timeout")); };
+        const noise = () => { stderr = true; };
+        const data = (chunk: Buffer) => {
+          output = Buffer.concat([output, chunk]);
+          if (output.length > 32 * 1024 * 1024) return failed();
+          if (!output.includes(10)) return;
+          cleanup();
+          try {
+            if (stderr || output.indexOf(10) !== output.length - 1) throw new Error();
+            const response = JSON.parse(output.toString("utf8"));
+            if (!response.ok) {
+              if (contentCodes.has(response.code)) return reject(new ContentFailure(response.code));
+              throw new Error();
+            }
+            resolve(response.value);
+          } catch { reject(new Error("ocr_unavailable")); }
+        };
+        active.stdout.on("data", data); active.stderr.on("data", noise); active.once("error", failed); active.once("close", failed);
+        signal.addEventListener("abort", aborted, { once: true });
+        if (signal.aborted) return aborted();
+        active.stdin.write(`${JSON.stringify({ mode, image: Buffer.from(bytes).toString("base64") })}\n`);
+      });
+    } catch (error) { await stop(); throw error; }
+  });
+  async function call(mode: "prepare" | "extract", bytes: Uint8Array, signal: AbortSignal) {
+    if (busy) throw new Error("ocr_busy"); busy = true;
+    try { return await run(mode, bytes, signal); } finally { busy = false; }
+  }
   return {
-    async normalize(bytes) {
-      const value = await run("normalize", bytes) as { image: string; width: number; height: number; exif: NormalizedImage["exif"] };
+    async prepare(bytes, signal) {
+      const value = await call("prepare", bytes, signal) as Omit<PreparedImage, "image"> & { image: string };
       if (!value || typeof value.image !== "string" || !Number.isInteger(value.width) || !Number.isInteger(value.height) || value.width <= 0 || value.height <= 0 || value.width * value.height > 4_000_000 ||
-        !value.exif || [value.exif.hasCameraExif, value.exif.softwareTagPresent, value.exif.captureTimeConsistent].some(flag => typeof flag !== "boolean")) throw new Error("invalid_image");
+        !value.geometry || !Number.isInteger(value.geometry.width) || !Number.isInteger(value.geometry.height) || !value.geometry.toOriginal || value.geometry.toOriginal.length !== 9 || value.geometry.toOriginal.some(v => !Number.isFinite(v)) ||
+        !/^[a-f0-9]{16}$/.test(value.perceptualHash) || !Array.isArray(value.qrPayloads) || !Array.isArray(value.flags)) throw new Error("invalid_ocr_result");
       return { ...value, image: Buffer.from(value.image, "base64") };
     },
-    async extract(bytes) {
-      if (busy) throw new Error("ocr_busy");
-      busy = true;
-      try { return await run("extract", bytes) as Pick<Extraction, "draft" | "ocr">; }
-      finally { busy = false; }
-    },
+    async extract(bytes, signal) {
+      const value = await call("extract", bytes, signal) as OcrEvidence;
+      if (!value || !Array.isArray(value.lines) || value.lines.length > 1000 || typeof value.modelVersion !== "string" || value.lines.some(line =>
+        typeof line.line_id !== "string" || typeof line.text !== "string" || line.text.length > 4096 || !Number.isFinite(line.score) || line.score < 0 || line.score > 1 || !Array.isArray(line.box) || line.box.length !== 4 || line.box.some(point => point.length !== 2 || point.some(n => !Number.isFinite(n))))) throw new Error("invalid_ocr_result");
+      return value;
+    }, close: stop,
   };
 }

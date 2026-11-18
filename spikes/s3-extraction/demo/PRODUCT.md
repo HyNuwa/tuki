@@ -1,4 +1,6 @@
 # Receipt review demo
+
+> **Superseded prototype — 2026-11-17 (owner decision):** This document describes the older local manual-review demo, not the current product requirements. [ticket-pipeline.md](../../../odd/specs/ticket-pipeline.md) supersedes its rule-parser extraction, editable review, fiscal-pending end state and prohibition of «Aceptado». The current ticket pipeline is automatic, without human review or correction, and ends in «Aceptado», «Rechazado» or «Error de procesamiento»; the prototype implementation is retained, not claimed migrated.
 <!-- impeccable:product-schema 1 -->
 
 ## Platform

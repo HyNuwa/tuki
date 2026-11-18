@@ -1,8 +1,10 @@
 # Estado · Maximiliano
 
-**Última actualización:** 2026-11-15
+**Última actualización:** 2026-11-18
 
 ## Current focus
+**Pipeline automático de tickets (2026-11-17):** spec `odd/specs/ticket-pipeline.md` adoptada. Dominio (T7) y API (T8) implementados: cola en Postgres, worker E1–E4, GLM-OCR Q4_K_M vía Ollama en E5 (decisión L19, tras el spike T6), persistencia y purga a 30 días. T8 verificado y corregido (timeouts del modelo como intento fallido). Docs alineados (T10, ADR 0005) y web de solo lectura (T9) funcionando contra la API; `pnpm -r typecheck` limpio. Próximo paso: brechas de la API para la web (consentimiento en castellano, login/historial por usuario, países) y mapa de colores en DESIGN.md. Bloqueos: RAM de GLM Q4 en la VM sin medir (3,4–4,3 GB en esta PC vs 3 GB); deploy T4 sin autorizar; disco casi lleno.
+
 **PWA de contribuyentes (2026-11-15):** diseño "Tira térmica" registrado (`DESIGN.md`, `design/contributor-pwa/`) y aplicado a la demo `spikes/s3-extraction/demo/` (procedencia por valor, recorte del fragmento OCR, fuentes propias). Stack: React + Vite (`mvp-p0` Q10). Alexxe ya no forma parte del equipo; Maximiliano tiene todas las áreas. Próximo paso: Panel e Historial en la app. Bloqueos: ninguno.
 
 M2b S3 extraction/redaction experiment, branch `feat/m2b-s3-extraction`, locally based on completed/unpublished M1 `9a9d6d6`. Maximiliano coordinates the explicitly authorized work; Alexxe's departure is not assumed and Alexxe's personal folder is unchanged. The M1 2-of-2/key-holder requirements remain unchanged.

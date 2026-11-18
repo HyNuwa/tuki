@@ -1,5 +1,7 @@
 # Tareas
 
+> **Actualización de responsables — 2026-11-17:** Alexxe dejó el equipo; Maximiliano es responsable de todas las áreas. La distribución y las referencias a Alexxe que siguen se conservan como antecedente y no asignan trabajo activo. Esto no elimina los requisitos de revisión independiente ni modifica el esquema de firmas 2-de-2.
+
 El trabajo se reparte por la frontera **cadena / servidor**. Las specs de cada hito están en [`odd/specs/`](../../odd/specs/README.md) y la columna "Responsable" de ese índice manda. Listas por persona: [maximiliano.md](maximiliano.md) y [alexxe.md](alexxe.md).
 
 ## Áreas

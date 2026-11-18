@@ -1,5 +1,7 @@
 # 14 — Plan operativo: hitos ordenados por riesgo
 
+> **Actualización — 2026-11-17 (decisión del dueño):** [ticket-pipeline.md](../odd/specs/ticket-pipeline.md) reemplaza lo indicado aquí sobre extracción, revisión o corrección humana, estados, aceptación, dataset y persistencia de tickets. El flujo es automático: PP-OCRv6 aporta evidencia, GLM-OCR extrae desde la imagen y el código ancla, valida y puntúa; no es un extractor por reglas. Los estados finales son «Aceptado», «Rechazado» y «Error de procesamiento»; el identificador fiscal y el QR son opcionales y no deciden la aceptación. La nueva spec no define registro on-chain ni lógica de la dApp.
+
 **Estado:** aprobado para la demo en testnet (2026-11-14, Q12 del grilling). Reemplaza el plan rígido de siete días, que suponía un tesoro de tareas custodial y quedó incompatible con el [ADR 0004](adr/0004-modelo-de-confianza.md). El archivo conserva su nombre para no romper enlaces.
 
 **Fuente normativa:** la spec [`odd/specs/mvp-p0.md`](../odd/specs/mvp-p0.md) (decisiones Q1–Q13, módulos, pruebas y criterios de cada hito). Este documento resume el orden y la validación con compradores; ante una diferencia, manda la spec.

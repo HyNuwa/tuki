@@ -2,6 +2,78 @@
 
 Una entrada por commit que toca código, la más nueva arriba.
 
+## 2026-11-18 · feat(web): show automatic ticket results read-only
+- **Qué hice:** T9 (S9, S13). La PWA usa la API de T8: subida con país (AR) y consentimiento servido por la API, procesamiento con consulta cada 2,5 s hasta el estado final, resultado de solo lectura (estado, motivo en castellano, puntaje con umbral y subpuntajes, campos con su estado de anclaje y la región marcada sobre la imagen con recorte para móvil, texto no interpretado) e historial filtrable. Se eliminó el editor de revisión manual. Colores de estado tomados de la paleta existente.
+- **Archivos clave:** `apps/contributor-web/src/` (`App.tsx`, `TicketView.tsx`, `ticket.ts`, `api.ts`, `Upload.tsx`), `apps/contributor-web/test/`, informe `odd/tasks/m3-t9-web-report.md`.
+- **Próximo paso:** brechas de la API (consentimiento solo en inglés, sin login ni historial por usuario, sin lista de países); actualizar el mapa de colores de `DESIGN.md`; deploy T4 (requiere autorización) para medir RAM en la VM.
+
+
+## 2026-11-18 · docs: align normative docs with the ticket pipeline
+- **Qué hice:** T10 (S14). Notas fechadas al inicio de cada documento normativo que describía la revisión manual: el flujo queda reemplazado por `odd/specs/ticket-pipeline.md` (estados Aceptado/Rechazado/Error de procesamiento, sin edición manual). Nuevo ADR 0005 del pipeline automático con la decisión de E5 (GLM-OCR Q4_K_M GGUF en Ollama), la limpieza de la alícuota de IVA y la RAM en la VM aún sin probar; notas en los ADR 0002 y 0004. Los registros históricos (bitácoras, informes, notas del spike) quedan como historia.
+- **Archivos clave:** `docs/adr/0005-automatic-ticket-pipeline.md`, `DESIGN.md`, `docs/03`–`17`, `odd/specs/mvp-p0.md`, `m2-domain-api-mode-a.md`, `m3-ingestion.md`, `spikes/s3-extraction/demo/PRODUCT.md` y `DESIGN.md`.
+- **Próximo paso:** T9, web de solo lectura sobre la API nueva.
+
+
+## 2026-11-18 · fix(api): count model timeouts as failed attempts
+- **Qué hice:** corrección única tras la verificación independiente de T8. Bloqueante B1: un timeout por inferencia o el límite de 2 MiB de salida ahora son un intento fallido de modelo (se guarda con `complete=false` y motivo, se hace el segundo intento y termina en «Error de procesamiento» con `extraccion_invalida`, sin volver a la cola); antes la cola lo trataba como falla de infraestructura. `JOB_TIMEOUT_MS` por defecto alcanza para OCR + dos intentos (390 s). La regla de la alícuota de IVA pasa al módulo AR; el proceso Python recibe un entorno mínimo sin `DATASET_HMAC_KEY` ni `DATABASE_URL`; las pruebas de la API limpian su temporal. Migración aditiva `0002_model_attempt_reason.sql`.
+- **Archivos clave:** `apps/api/src/ingestion/` (`ollama.ts`, `pipeline.ts`, `queue.ts`, `bridge.ts`, `timeouts.ts`), `packages/domain/src/countries/ar.ts`, `apps/api/test/model-attempts.test.ts`, `odd/tasks/m3-t8-api-report.md`.
+- **Próximo paso:** cerrar T10 (alineación de docs) y T9 (web de solo lectura).
+
+
+## 2026-11-17 · feat(api): run tickets through the automatic pipeline
+- **Qué hice:** T8. La API reemplaza la revisión manual por el pipeline automático de `odd/specs/ticket-pipeline.md`: subida con país declarado e imagen original inmutable con SHA-256; cola `jobs` en Postgres con `FOR UPDATE SKIP LOCKED`, concurrencia 1, timeout y hasta 2 reintentos de infraestructura; E1–E4 en el worker Python (filtros, preproceso, QR de ARCA, PP-OCRv6); E5 con GLM-OCR Q4_K_M vía Ollama por HTTP local, esquema forzado y salida cruda guardada por intento; E6–E9 con el dominio; persistencia de artefactos, versiones, duraciones por etapa y RAM; tabla de dataset aparte con rol lector propio; purga a 30 días (también de los datos de revisión manual anteriores). Migración aditiva `0001_automatic_pipeline.sql`. API de solo lectura para T9; endpoints de revisión retirados.
+- **Archivos clave:** `apps/api/src/ingestion/` (`queue.ts`, `pipeline.ts`, `ollama.ts`, `retention.ts`, `memory.ts`), `apps/api/src/db/schema.ts`, `apps/api/drizzle/0001_automatic_pipeline.sql`, `spikes/s3-extraction/ocr-worker/pipeline_worker.py`, informe `odd/tasks/m3-t8-api-report.md`.
+- **Próximo paso:** verificación independiente (riesgos 1–4) y T9 (web de solo lectura). Pendientes: RAM en la VM, calidad con fotos reales, HEIC.
+
+
+## 2026-11-17 · feat(domain): strip VAT rate suffix and observe stages
+- **Qué hice:** E6 quita del `valor` de cada descripción una única alícuota de IVA final como `(21,00)`; el `raw` queda literal y es lo que se ancla en E7, porque la línea OCR trae la misma alícuota. Observador opcional de etapas E6–E9 (no-op por defecto, reloj inyectado) para que la API mida cada etapa sin duplicar lógica.
+- **Archivos clave:** `packages/domain/src/normalize.ts`, `pipeline.ts`, `test/vat-pipeline.test.ts`, `test/instrumentation.test.ts`, `test/normalization.test.ts`.
+- **Próximo paso:** commit de T8 en la API y verificación independiente.
+
+
+## 2026-11-17 · test(repo): rescore items with VAT cleanup and anchoring
+- **Qué hice:** T6e, re-puntaje offline de las 120 salidas guardadas tras la revisión local del dueño (sin texto privado en el repo). La limpieza diagnóstica E6 ahora quita la alícuota de IVA `(NN,NN)` del final de la descripción; un anclaje diagnóstico E7 toma el importe de la evidencia OCR solo si el modelo lo dejó vacío. Mejor GLM: descripciones privadas 4/5 (E7 ≥0,85); pares 1/5 solo con el campo, 2/5 con evidencia; de los 2 importes anclados evaluados, 1 es incorrecto. Qwen 0.8B: 0/5 (copia el encabezado del comercio en cada ítem).
+- **Archivos clave:** `spikes/ticket-pipeline/retry_metrics.py` y su prueba, `collect_extended.py`, `README.md`, `ASSUMPTIONS.md`, `measurements.json`.
+- **Próximo paso:** decisión del dueño sobre E5: GLM lee bien las descripciones pero no los importes en ítems de varias líneas; RAM de Q4 (3,4–4,3 GB) sigue abierta frente al objetivo de 3 GB.
+
+
+## 2026-11-17 · test(repo): compare Qwen text and GLM-OCR levers
+- **Qué hice:** T6c/T6d del spike. (A) Qwen3.5-0.8B Q8 publicado, solo texto de PP-OCRv6 small con `line_id`, razonamiento apagado y esquema forzado: JSON 12/13, total privado 2/3, p50 20 s, RSS 2,3 GB. (B) GLM-OCR Q4/Q8 con contexto 16384 (sin truncamiento, máx. 2202 tokens), prototipo E2 (cayó a solo EXIF en las 13 imágenes) y lado largo 1600 px (Q4 parcial, 7/10 privadas, por la guarda de disco): ninguna mejora. (C) BF16 oficial en CPU, 6 imágenes: reproduce las fallas (p50 privado 165 s, RSS 2,8 GB). Re-puntaje offline: los modelos copian la línea entera (`2 x 1.250,00 LECHE 2.500,00`) en `descripcion`; con limpieza determinística las descripciones sintéticas suben a 3/6 (GLM) y 4/6 (Qwen), pero los pares privados siguen en 0/5 en todas las variantes.
+- **Archivos clave:** `spikes/ticket-pipeline/extended_spike.py`, `bf16_reference.py`, `collect_extended.py`, `prompt-qwen-text-v1.txt`, `retry_metrics.py` y su prueba, `README.md`, `ASSUMPTIONS.md`, `measurements.json`.
+- **Próximo paso:** decisión del dueño sobre la extracción de ítems (E5); T8 sigue bloqueado.
+
+
+## 2026-11-17 · test(repo): measure GLM-OCR with schema-constrained output
+- **Qué hice:** reintento aprobado de T6 con el esquema `ticket.v1` forzado en el campo `format` de Ollama, temperatura 0 y el mismo prompt. Q4_K_M y Q8_0 publicados: JSON válido 13/13 en ambos, total correcto 3/3 en los tickets privados anotados, pero ítems 0/5 pares descripción+importe (1/5 importes) y 0/6 en sintéticos; Q4 emite 3 filas TOTAL/SUBTOTAL como ítems. Latencia p50 ~30 s, máx ~90 s; RSS pico 3,4 GB (Q4) y 4,1 GB (Q8).
+- **Archivos clave:** `spikes/ticket-pipeline/quality_retry.py`, `retry_metrics.py` y su prueba, `ticket-v1-format.schema.json`, `ASSUMPTIONS.md` (filas 1, 2 y 4), `measurements.json`.
+- **Próximo paso:** decisión del dueño: GLM-OCR no completa los ítems y Q8 no entra en el presupuesto de 3 GB de la VM.
+
+
+## 2026-11-17 · test(repo): record ticket pipeline assumption spike
+- **Qué hice:** spike T6 de los supuestos de la sección 11 de `odd/specs/ticket-pipeline.md`, local y solo CPU. GLM-OCR Q4_K_M vía Ollama (distribución recomendada por el autor): 0/13 respuestas JSON válidas con el prompt exacto (decimales con coma sin comillas, importes vacíos, TOTAL como ítem); p50 73 s y máximo 211 s por imagen en esta PC; RSS pico ~2,5 GB. Referencia BF16 abortada a los 680 s sin resultados. PP-OCRv6 cubre español (confirmado); small p50 13 s vs medium 55 s; las cajas son por palabra, no por carácter. Formato QR de ARCA confirmado; 0 QR decodificados en 10 fotos privadas.
+- **Archivos clave:** `spikes/ticket-pipeline/ASSUMPTIONS.md`, `README.md`, `measurements.json` (solo agregados), `arca_qr.py` y su prueba sintética.
+- **Próximo paso:** decisión del dueño sobre cómo seguir con GLM-OCR, porque el supuesto 2 falló y el 4 no se cumple en esta PC. Scratch fuera del repo: `C:/Users/Usuario/AppData/Local/tuki-pipeline-spike/`.
+
+
+## 2026-11-17 · feat(domain): add automatic ticket pipeline core
+- **Qué hice:** reemplazar el dominio de revisión manual por el núcleo puro de `odd/specs/ticket-pipeline.md` §5–§8 y §12: esquema `ticket.v1` estricto, normalización E6 con decimales exactos, anclaje E7 con desempates y texto no interpretado, validaciones V1–V8, subpuntajes configurables con tope 0,50, estados Aceptado/Rechazado/Error de procesamiento, registro del dataset con `comercio_id` HMAC por clave recibida, privacidad por `tipo_emisor` y filtro final de datos personales; módulo de país AR con lector del QR de ARCA.
+- **Archivos clave:** `packages/domain/src/` (`pipeline.ts`, `anchor.ts`, `validate.ts`, `score.ts`, `dataset.ts`, `countries/ar.ts`), `packages/domain/test/`, informe `odd/tasks/m3-t7-domain-report.md`.
+- **Próximo paso:** T8 (API) y T9 (web) migran los consumidores que hoy no compilan contra el dominio nuevo (diagnósticos exactos en el informe). RED/GREEN por etapa; 144 pruebas sintéticas y typecheck del dominio aprobados. Riesgos 2 y 3: privacidad del dataset y retiro de exportaciones de revisión manual; verificación independiente pendiente.
+
+
+## 2026-11-17 · test(api): run storage startup checks in process
+- **Qué hice:** estabilizar la regresión B2 de `STORAGE_DIR`, que pasaba sola (~19-24 s) pero excedía 30 s en la suite completa. Ahora ejerce el arranque real y la validación canónica en proceso, con base, OCR y listener simulados; conserva los cuatro casos (`..media`, junction hacia el repo, directorio interno rechazado, externo aceptado).
+- **Archivos clave:** `apps/api/test/storage-startup.test.ts`.
+- **Próximo paso:** repetir las 6 integraciones PostgreSQL cuando Docker Desktop vuelva a estar disponible (hoy omitidas: el pipe del motor no existe). Los 4 tests sin base de la API pasan y el typecheck también.
+
+
+## 2026-11-17 · docs(specs): adopt automatic ticket pipeline spec
+- **Qué hice:** guardar la spec del dueño del producto `odd/specs/ticket-pipeline.md` (PP-OCRv6 como evidencia + GLM-OCR con esquema fijo, anclaje, puntaje y estados Aceptado/Rechazado/Error de procesamiento, sin revisión humana), indexarla y alinear `PRODUCT.md`, que reemplaza el flujo de revisión manual.
+- **Archivos clave:** `odd/specs/ticket-pipeline.md`, `odd/specs/README.md`, `PRODUCT.md`.
+- **Próximo paso:** alinear el resto de la documentación normativa, rehacer M3 como pipeline automático y confirmar los supuestos de la sección 11 con las 15 fotos. La comparación Qwen/LFM/Laya se detuvo.
+
+
 ## 2026-11-15 · fix(api): clean OCR timeouts and canonicalize storage paths
 - **Qué hice:** corregir juntos B1 (S5) y B2 (S6) del verificador independiente. La API ahora crea y elimina su propio directorio temporal después de terminar el árbol del proceso; Python solo anida evidencia dentro de ese directorio. El guard de STORAGE_DIR usa rutas físicas y límite por componente, resolviendo ancestros existentes y junctions; los alias rotos fallan de forma cerrada.
 - **Archivos clave:** `apps/api/src/ingestion/bridge.ts`, `src/storage/directory.ts`, `src/main.ts`, pruebas de timeout/arranque, `spikes/s3-extraction/demo/extract_cli.py` y su prueba CLI. No se modificó ni borró el scratch del verificador.

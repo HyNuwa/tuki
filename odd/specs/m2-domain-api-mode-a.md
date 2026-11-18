@@ -1,5 +1,7 @@
 # M2a — Monorepo, domain, API and Mode A (plus frozen W3 formats)
 
+> **Amendment — 2026-11-17 (owner decision):** [ticket-pipeline.md](ticket-pipeline.md) supersedes the ticket extraction and manual-review assumptions below, including the manual-review viability condition in §8. Ticket processing is automatic, with final states «Aceptado», «Rechazado» and «Error de procesamiento»; fiscal ID and QR do not gate acceptance. This amendment does not change the frozen W3 formats or payment contracts.
+
 > Parent: [`mvp-p0.md`](mvp-p0.md) — modules 1, 2, 3, 4 (quote only), 11 (thresholds used by catalog/coverage), 12 (formats only), 13 (Mode A entries), API contract, Data model, Milestones row 2, Testing Decisions (Seam 1). Implements Q2, Q3, Q4, Q5, Q10, Q13; PRD P0-01, P0-02, P0-03 (quote), P0-10; errors E5, E8, E9, E12. Prior art: `spikes/s0-x402-celo-sepolia/` (`seller.ts`, `settlement-guard.ts`, `facilitator.ts`, `network.ts`, `test/fake-facilitator.ts`, `test/idempotency.test.ts`).
 
 ## 1. Scope

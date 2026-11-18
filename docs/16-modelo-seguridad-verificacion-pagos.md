@@ -1,8 +1,10 @@
 # 16 — Modelo de seguridad, verificación y pagos
 
+> **Actualización — 2026-11-17 (decisión del dueño):** [ticket-pipeline.md](../odd/specs/ticket-pipeline.md) reemplaza lo indicado aquí sobre extracción, revisión o corrección humana, estados, aceptación, dataset y persistencia de tickets. El flujo es automático: PP-OCRv6 aporta evidencia, GLM-OCR extrae desde la imagen y el código ancla, valida y puntúa; no es un extractor por reglas. Los estados finales son «Aceptado», «Rechazado» y «Error de procesamiento»; el identificador fiscal y el QR son opcionales y no deciden la aceptación. La nueva spec no define registro on-chain ni lógica de la dApp.
+
 **Estado:** borrador de diseño (2026-11-12), actualizado el 2026-11-14 con el [ADR 0004](adr/0004-modelo-de-confianza.md) (confianza minimizada) y las decisiones Q1–Q13 de la spec [`odd/specs/mvp-p0.md`](../odd/specs/mvp-p0.md), que manda ante cualquier diferencia. **La arquitectura no está aprobada para fondos reales.** Nada de este documento está probado en código. No mover fondos reales de agentes ni pagar a contribuyentes reales hasta cerrar los pendientes de la sección 10.
 
-**Documentos relacionados:** [04 — Arquitectura técnica](04-arquitectura-tecnica.md), [15 — Decisiones del stack](15-stack-tecnologico.md), [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md), [ADR 0002](adr/0002-verificacion-de-observaciones.md), [ADR 0003](adr/0003-red-de-pagos-base.md), [ADR 0004](adr/0004-modelo-de-confianza.md).
+**Documentos relacionados:** [04 — Arquitectura técnica](04-arquitectura-tecnica.md), [15 — Decisiones del stack](15-stack-tecnologico.md), [ADR 0001](adr/0001-red-y-custodia-de-presupuestos.md), [ADR 0002](adr/0002-verificacion-de-observaciones.md), [ADR 0003](adr/0003-red-de-pagos-base.md), [ADR 0004](adr/0004-modelo-de-confianza.md), [ADR 0005](adr/0005-automatic-ticket-pipeline.md) (pipeline automático de tickets).
 
 **Reglas económicas:** las reglas de cobro, recompensa y reserva son **valores de testnet [Diseño]** (spec, Q5), no validados comercialmente.
 

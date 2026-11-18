@@ -1,0 +1,57 @@
+{
+  "title": "ticket.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["comercio", "comprobante", "items", "totales", "pago"],
+  "properties": {
+    "comercio": {
+      "type": "object", "additionalProperties": false,
+      "required": ["razon_social", "id_fiscal", "domicilio"],
+      "properties": {
+        "razon_social": {"type": "string"}, "id_fiscal": {"type": "string"},
+        "domicilio": {"type": "string"}
+      }
+    },
+    "comprobante": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tipo", "letra", "punto_venta", "numero", "fecha", "hora", "codigo_autorizacion"],
+      "properties": {
+        "tipo": {"type": "string"}, "letra": {"type": "string"},
+        "punto_venta": {"type": "string"}, "numero": {"type": "string"},
+        "fecha": {"type": "string"}, "hora": {"type": "string"},
+        "codigo_autorizacion": {"type": "string"}
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["descripcion", "cantidad", "precio_unitario", "importe"],
+        "properties": {
+          "descripcion": {"type": "string"}, "cantidad": {"type": "string"},
+          "precio_unitario": {"type": "string"}, "importe": {"type": "string"}
+        }
+      }
+    },
+    "totales": {
+      "type": "object", "additionalProperties": false,
+      "required": ["subtotal", "descuentos", "impuestos", "total"],
+      "properties": {
+        "subtotal": {"type": "string"}, "descuentos": {"type": "string"},
+        "total": {"type": "string"},
+        "impuestos": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["nombre", "importe"],
+            "properties": {"nombre": {"type": "string"}, "importe": {"type": "string"}}
+          }
+        }
+      }
+    },
+    "pago": {
+      "type": "object", "additionalProperties": false, "required": ["forma"],
+      "properties": {"forma": {"type": "string"}}
+    }
+  }
+}
